@@ -1,0 +1,4 @@
+@config "./Prototype.tailwind.cjs";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,4 @@
+@config "./TagSearchResults.tailwind.cjs";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

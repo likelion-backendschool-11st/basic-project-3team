@@ -1,0 +1,4 @@
+@config "./AccountEdit.tailwind.cjs";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

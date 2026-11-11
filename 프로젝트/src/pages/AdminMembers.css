@@ -1,0 +1,4 @@
+@config "./AdminMembers.tailwind.cjs";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

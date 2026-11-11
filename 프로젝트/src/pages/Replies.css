@@ -1,0 +1,4 @@
+@config "./Replies.tailwind.cjs";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
