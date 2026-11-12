@@ -14,10 +14,10 @@ API 명세는 `docs/api.md`를 따른다.
 ### Backend
 | 구분 | 내용 |
 |---|---|
-| Runtime | Node.js LTS (TODO: 팀 버전 확정 후 README에 기록) |
+| Runtime | Node.js v26.13.1 LTS |
 | Framework | Express 5 |
 | Package | npm |
-| DB | MySQL Community Server 26.7.0 (팀 전원 같은 버전) |
+| DB | MySQL Community Server 8.4.13 (팀 전원 같은 버전) |
 | DB 접근 | `mysql2/promise` 커넥션 풀, SQL 직접 작성 |
 | 인증 | JWT (`jsonwebtoken`) + `bcrypt`, Refresh 쿠키는 `cookie-parser` |
 | 실시간 | `socket.io` (알림) |
