@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Dev in_ - 질문하기</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#2563EB',
+              dark: '#111827',
+              gray: '#F3F4F6',
+              border: '#000000',
+            }
+          },
+          boxShadow: {
+            'brutal': '3px 3px 0px #000000',
+            'brutal-sm': '2px 2px 0px #000000',
+            'brutal-lg': '5px 5px 0px #000000',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Noto+Sans+KR:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<style data-purpose="base-styling">
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #FAFAFA;
+      color: #111827;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased" style="background-color: rgb(255, 253, 245); background-image: radial-gradient(rgb(217, 212, 195) 1px, transparent 1px); background-size: 18px 18px;">
+<!-- BEGIN: MainHeader -->
+<header class="border-b-[2.5px] border-[#111111] bg-white sticky top-0 z-50">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+<!-- Brand Logo -->
+<div class="flex items-center gap-6"><a href="#" class="flex items-center text-xl font-black tracking-tight text-[#111111]"><span>Dev</span><span class="bg-[#FFD43B] border-2 border-black px-1.5 py-0.5 rounded text-black font-mono font-bold text-sm ml-1">in_</span></a></div>
+<!-- Search Input Container -->
+<div class="flex-1 max-w-xl mx-2"><div class="relative flex items-center"><input class="w-full h-10 px-4 text-sm font-medium border-[2.5px] border-[#111111] rounded-[8px] placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-blue-600 transition-colors shadow-brutal-sm" placeholder="검색어를 입력하세요" type="text"></div></div>
+<!-- Navigation Actions -->
+<div class="flex items-center gap-3"><a class="hidden sm:inline-flex items-center justify-center px-3.5 py-1.5 text-sm font-bold text-white border-2 border-black rounded-[8px] bg-[#2563EB] shadow-[2px_2px_0_#111111] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all" href="#">질문하기</a><button class="h-10 px-3.5 text-sm font-bold text-black border-2 border-black rounded-[8px] bg-white shadow-[2px_2px_0_#111111] hover:bg-gray-50 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1" type="button"><span>알림</span><span class="bg-red-600 text-white rounded-full text-xs px-1.5 py-0.2 font-bold ml-1">3</span></button><button class="h-10 px-3.5 text-sm font-bold text-black border-[2.5px] border-[#111111] rounded-[10px] bg-[#FFD43B] shadow-[3px_3px_0_#111111] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1" type="button"><span>닉네임 ▾</span></button></div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
+<!-- Page Title -->
+<div class="mb-6 flex items-baseline justify-between border-b-2 border-black pb-3">
+<h1 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+<span>질문하기</span>
+<span class="text-xs font-mono font-normal px-2 py-0.5 bg-gray-200 border border-black rounded-none">MARKDOWN</span>
+</h1>
+<span class="text-xs text-gray-500 font-medium">* 표시는 필수 항목입니다.</span>
+</div>
+<!-- Question Form -->
+<form class="space-y-6" id="question-form" onsubmit="event.preventDefault();">
+<!-- Title Input Section -->
+<section data-purpose="title-field-group">
+<div class="border-[2.5px] border-[#111111] bg-white shadow-brutal flex flex-col sm:flex-row items-stretch rounded">
+<label class="bg-gray-100 border-b-2 sm:border-b-0 sm:border-r-2 border-black font-bold text-sm px-6 py-3.5 flex items-center shrink-0 w-28" for="title">
+            제목
+          </label>
+<div class="flex-1 flex items-center px-4 py-2 relative">
+<input class="w-full border-none focus:ring-0 text-sm font-medium p-0 text-gray-900 placeholder-gray-400" id="title" maxlength="50" placeholder="제목을 입력하세요 (5~50자)" type="text" value="Spring Boot Security Context 인증 정보 유실 문제">
+<span class="text-xs font-mono text-gray-400 ml-2 whitespace-nowrap" id="title-char-counter">36 / 50</span>
+</div>
+</div>
+<!-- Title Validation Hint -->
+<p class="mt-2 text-xs font-medium text-red-600 flex items-center gap-1">
+<svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" fill-rule="evenodd"></path>
+</svg>
+          제목은 5자 이상 입력해주세요
+        </p>
+</section>
+<!-- Template Checkbox -->
+<div class="flex items-center" data-purpose="template-toggle">
+<label class="inline-flex items-center gap-2 cursor-pointer select-none border-[2.5px] border-[#111111] bg-white px-3 py-1.5 rounded shadow-brutal-sm hover:bg-gray-50 transition-colors">
+<input checked="" class="w-4 h-4 rounded-none border-2 border-black text-blue-600 focus:ring-0 focus:ring-offset-0 cursor-pointer" id="template-checkbox" type="checkbox">
+<span class="text-xs font-bold text-gray-800">질문 템플릿 사용</span>
+</label>
+</div>
+<!-- Markdown Editor Container -->
+<section class="border-[2.5px] border-[#111111] bg-white shadow-brutal rounded" data-purpose="markdown-editor">
+<!-- Editor Toolbar -->
+<div class="border-b-[2.5px] border-[#111111] bg-gray-50 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+<!-- Formatting Buttons -->
+<div class="flex items-center flex-wrap gap-1.5 font-mono">
+<button class="w-8 h-8 flex items-center justify-center font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors" title="굵게" type="button">
+              B
+            </button>
+<button class="w-8 h-8 flex items-center justify-center italic font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors" title="기울임" type="button">
+              I
+            </button>
+<button class="px-2.5 h-8 flex items-center justify-center font-bold text-xs border border-black bg-white hover:bg-black hover:text-white transition-colors" title="코드 블록" type="button">
+              코드 블록 ```
+            </button>
+<button class="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors" title="링크 추가" type="button">
+              링크
+            </button>
+<button class="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors" title="이미지 첨부" type="button">
+              이미지
+            </button>
+</div>
+<!-- Write/Preview Toggle Tabs -->
+<div class="flex items-center border border-black">
+<button class="px-4 py-1 text-xs font-bold bg-black text-white" type="button">
+              작성
+            </button>
+<button class="px-4 py-1 text-xs font-bold bg-white text-gray-700 hover:bg-gray-100 transition-colors border-l border-black" type="button">
+              미리보기
+            </button>
+</div>
+</div>
+<!-- Editor Content Area -->
+<div class="p-4">
+<textarea class="w-full p-2 border-0 focus:ring-0 font-mono-code text-sm leading-relaxed text-gray-900 placeholder-gray-400 resize-y" id="editor-textarea" placeholder="질문 내용을 자세하게 작성해주세요..." rows="15">## 개발 환경
+(예: Java 17, Spring Boot 3.2, IntelliJ)
+
+## 에러 메시지</textarea></div></section><section data-purpose="tags-input-group"><div class="border-[2.5px] border-[#111111] bg-white shadow-brutal flex flex-col sm:flex-row items-stretch rounded"><label class="bg-gray-100 border-b-[2.5px] sm:border-b-0 sm:border-r-[2.5px] border-[#111111] font-bold text-sm px-6 py-3.5 flex items-center shrink-0 w-28" for="tags">태그</label><div class="flex-1 flex flex-wrap items-center gap-2 px-4 py-2"><span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold bg-[#FFD43B] border-2 border-black rounded shadow-[1.5px_1.5px_0_#111111]">#Spring-Boot <button type="button" class="hover:text-red-600 font-bold ml-1">×</button></span><span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold bg-[#FFD43B] border-2 border-black rounded shadow-[1.5px_1.5px_0_#111111]">#Security <button type="button" class="hover:text-red-600 font-bold ml-1">×</button></span><input class="flex-1 min-w-[140px] border-none focus:ring-0 text-sm font-medium p-1 text-gray-900 placeholder-gray-400" id="tags" placeholder="태그를 입력 후 Enter를 누르세요 (최대 5개)" type="text"></div></div><p class="mt-2 text-xs font-medium text-gray-500">질문과 관련된 기술 스택 태그를 1개 이상 추가해주세요.</p></section><div class="flex items-center justify-end gap-3 pt-2"><button type="button" class="px-5 py-2.5 text-sm font-bold text-black border-[2.5px] border-[#111111] bg-white rounded shadow-brutal-sm hover:bg-gray-100 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">취소</button><button type="submit" class="px-6 py-2.5 text-sm font-bold text-white border-[2.5px] border-[#111111] bg-[#2563EB] rounded shadow-brutal hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">질문 등록</button></div></form></main>
+
+
+
+
+
+
+
+
+
+</body></html>

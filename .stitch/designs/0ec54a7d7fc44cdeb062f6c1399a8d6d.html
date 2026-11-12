@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Dev in_ 회원가입</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FBF9F4',
+              surface: '#FFFFFF',
+              dark: '#121212',
+              accent: '#3B82F6',
+              border: '#1E1E1E',
+              grayBg: '#F3F4F6',
+              codeBg: '#1E2430'
+            }
+          },
+          boxShadow: {
+            'brutal': '4px 4px 0px #1E1E1E',
+            'brutal-sm': '2.5px 2.5px 0px #1E1E1E',
+            'brutal-hover': '1px 1px 0px #1E1E1E',
+          },
+          borderWidth: {
+            '2.5': '2.5px',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for Dot Pattern and Neo-brutalism elements -->
+<style data-purpose="background-pattern">
+    .dot-pattern {
+      background-color: #F8F6F0;
+      background-image: radial-gradient(#D5D0C5 1.2px, transparent 1.2px);
+      background-size: 20px 20px;
+    }
+  </style>
+<style data-purpose="interactive-elements">
+    .btn-brutal {
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-brutal:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 1.5px 1.5px 0px #1E1E1E;
+    }
+    .btn-brutal:active {
+      transform: translate(3.5px, 3.5px);
+      box-shadow: 0px 0px 0px #1E1E1E;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-[#1E1E1E] dot-pattern antialiased flex flex-col font-sans selection:bg-[#FACC15]">
+<!-- BEGIN: MainHeader -->
+<header class="w-full bg-white border-b-2.5 border-[#1E1E1E] sticky top-0 z-50" style="border-bottom: 2.5px solid rgb(17, 17, 17);">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<!-- Logo Container -->
+<a href="#" class="flex items-center gap-1.5 tracking-tight text-[#111111]"><span class="font-black text-xl text-[#111111]">Dev</span><span class="bg-[#FFD43B] text-[#111111] font-mono font-bold text-sm px-1.5 py-0.5 border-2 border-[#111111] rounded shadow-[2px_2px_0_#111111]">in_</span></a>
+<!-- Header Right CTA -->
+<div class="flex items-center gap-3">
+<span class="text-sm font-medium text-gray-600 hidden sm:inline">이미 계정이 있으신가요?</span>
+<a class="btn-brutal inline-flex items-center gap-1.5 bg-[#FAF9F5] hover:bg-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-lg border-2.5 border-[#1E1E1E] shadow-brutal-sm text-[#1E1E1E]" href="#" style="background-color: rgb(255, 255, 255); border: 2px solid rgb(17, 17, 17); box-shadow: rgb(17, 17, 17) 2px 2px 0px; border-radius: 8px;">
+          로그인 <span aria-hidden="true">→</span>
+</a>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex items-center justify-center">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
+<!-- BEGIN: LeftInfoPanel -->
+<section class="lg:col-span-5 bg-white border-2.5 border-[#1E1E1E] rounded-2xl p-6 sm:p-8 shadow-brutal flex flex-col justify-between h-full" data-purpose="service-introduction-panel" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 12px; box-shadow: rgb(17, 17, 17) 5px 5px 0px;">
+<div>
+<!-- Version Badge -->
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#F4F4F5] border-2 border-[#1E1E1E] font-mono text-xs font-bold text-gray-800 shadow-brutal-sm mb-6">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            dev-in.v2.4.register
+          </div>
+<!-- Headline and Description -->
+<h1 class="text-2xl sm:text-3xl lg:text-[2rem] font-black text-[#1E1E1E] tracking-tight leading-tight mb-4">
+            전 세계 개발자들과<br>
+<span class="bg-[#FDE047] px-1.5 rounded">실시간으로 연결되는 공간</span>
+</h1>
+<p class="text-gray-600 text-sm leading-relaxed mb-6 font-medium">
+            아키텍처 토론, 오픈소스 기여, 코드 리뷰 파트너까지.<br class="hidden sm:inline">
+            엔지니어링 표준을 함께 정의하는 Dev in_ 생태계에 합류하세요.
+          </p>
+<!-- Interactive Code Preview Frame -->
+<div class="rounded-xl border-2.5 border-[#1E1E1E] bg-[#1E2430] text-gray-200 overflow-hidden shadow-brutal-sm mb-8" data-purpose="code-preview">
+<!-- Window Title bar -->
+<div class="flex items-center justify-between px-4 py-2.5 bg-[#171B24] border-b-2 border-[#1E1E1E]">
+<div class="flex items-center space-x-1.5">
+<span class="w-3 h-3 rounded-full bg-[#EF4444] border border-[#1E1E1E]"></span>
+<span class="w-3 h-3 rounded-full bg-[#F59E0B] border border-[#1E1E1E]"></span>
+<span class="w-3 h-3 rounded-full bg-[#10B981] border border-[#1E1E1E]"></span>
+<span class="ml-2 text-xs font-mono font-medium text-gray-400">register.init.ts</span>
+</div>
+<span class="text-xs font-mono font-bold text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded border border-blue-800">TypeScript</span>
+</div>
+<!-- Code Content Body -->
+<div class="p-4 font-mono text-xs leading-relaxed overflow-x-auto text-gray-300">
+<div class="text-gray-500 italic mb-2">// 코드 예시 미리보기 (CreateDevProfile 연동 코드)</div>
+<div><span class="text-purple-400">import</span> { <span class="text-yellow-300">Developer</span>, <span class="text-yellow-300">Connect</span> } <span class="text-purple-400">from</span> <span class="text-emerald-400">'@dev-in/core'</span>;</div>
+<div class="mt-1"><span class="text-purple-400">export async function</span> <span class="text-blue-400">registerDeveloper</span>() {</div>
+<div class="ml-4 text-gray-300"><span class="text-purple-400">const</span> profile = <span class="text-purple-400">await</span> <span class="text-yellow-300">Developer</span>.<span class="text-blue-400">join</span>({</div>
+<div class="ml-8 text-emerald-300">region: <span class="text-emerald-400">'GLOBAL'</span>,</div>
+<div class="ml-8 text-emerald-300">stack: [<span class="text-emerald-400">'Next.js'</span>, <span class="text-emerald-400">'Rust'</span>, <span class="text-emerald-400">'AI'</span>]</div>
+<div class="ml-4">});</div>
+<div class="ml-4"><span class="text-purple-400">return</span> profile.<span class="text-blue-400">ready</span>();</div>
+<div>}</div>
+</div>
+</div>
+</div>
+<!-- Metric Counter Grid -->
+<div class="pt-6 border-t-2.5 border-dashed border-[#1E1E1E] grid grid-cols-3 gap-2 text-left">
+<div>
+<div class="text-xl sm:text-2xl font-black text-[#1E1E1E]">180K+</div>
+<div class="text-xs text-gray-600 font-semibold mt-0.5">글로벌 개발자</div>
+</div>
+<div>
+<div class="text-xl sm:text-2xl font-black text-[#1E1E1E]">94.8%</div>
+<div class="text-xs text-gray-600 font-semibold mt-0.5">기술 Q&amp;A 해결률</div>
+</div>
+<div>
+<div class="text-xl sm:text-2xl font-black text-[#1E1E1E]">3.2M</div>
+<div class="text-xs text-gray-600 font-semibold mt-0.5">코드 스니펫</div>
+</div>
+</div>
+</section>
+<!-- END: LeftInfoPanel -->
+<!-- BEGIN: RegistrationFormCard -->
+<section class="lg:col-span-7 bg-white border-2.5 border-[#1E1E1E] rounded-2xl p-6 sm:p-8 shadow-brutal" data-purpose="registration-card" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 12px; box-shadow: rgb(17, 17, 17) 5px 5px 0px;">
+<!-- Badge & Form Title -->
+<div class="mb-6">
+<span class="inline-block px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-wider bg-gray-100 border border-[#1E1E1E] text-gray-700 mb-2">DEV_REGISTER</span>
+<h2 class="text-2xl font-black text-[#1E1E1E] tracking-tight">회원가입</h2>
+</div>
+<!-- Registration Form -->
+<form class="space-y-4" data-purpose="signup-form">
+<!-- Name Field -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-name">닉네임 <span class="text-red-500">*</span></label>
+<input class="w-full h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-name" name="userName" placeholder="닉네임 입력" required="" type="text" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+</div>
+<!-- User ID Field with Check Button -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-id">
+              아이디 <span class="text-red-500">*</span>
+</label>
+<div class="flex gap-2">
+<input class="flex-1 h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-id" name="userId" placeholder="영문 소문자, 숫자 포함 8~12자" required="" type="text" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+<button class="btn-brutal h-11 px-4 text-xs font-bold bg-[#FAF9F5] border-2.5 border-[#1E1E1E] rounded-lg shadow-brutal-sm hover:bg-gray-100 whitespace-nowrap" type="button">
+                중복확인
+              </button>
+</div>
+<!-- Dynamic validation hint -->
+<p class="text-xs text-amber-700 font-semibold mt-1.5 flex items-center gap-1">
+<span>💡</span> 중복 확인을 눌러주세요
+            </p>
+</div>
+<!-- Passwords Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Password -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-password">
+                비밀번호 <span class="text-red-500">*</span>
+</label>
+<input class="w-full h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-password" name="userPassword" placeholder="••••••••" required="" type="password" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+<p class="text-[11px] text-gray-500 font-medium mt-1">ⓘ 8~12자, 특수문자 포함</p>
+</div>
+<!-- Password Confirm -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-password-confirm">
+                비밀번호 확인 <span class="text-red-500">*</span>
+</label>
+<input class="w-full h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-password-confirm" name="userPasswordConfirm" placeholder="••••••••" required="" type="password" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+<p class="text-[11px] text-rose-600 font-medium mt-1">⚠ 비밀번호가 일치하지 않습니다</p>
+</div>
+</div>
+<!-- Nickname & Email Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Nickname -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-nickname">이름 (선택)</label>
+<div class="flex gap-2">
+<input class="flex-1 h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-nickname" name="userNickname" placeholder="이름 입력" type="text" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+<button class="btn-brutal h-11 px-3 text-xs font-bold bg-[#FAF9F5] border-2.5 border-[#1E1E1E] rounded-lg shadow-brutal-sm hover:bg-gray-100 whitespace-nowrap" type="button">
+                  중복확인
+                </button>
+</div>
+</div>
+<!-- Email -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-email">
+                이메일 <span class="text-red-500">*</span>
+</label>
+<div class="flex gap-2">
+<input class="flex-1 h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-email" name="userEmail" placeholder="example@devin.io" required="" type="email" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+<button class="btn-brutal h-11 px-3 text-xs font-bold bg-[#FAF9F5] border-2.5 border-[#1E1E1E] rounded-lg shadow-brutal-sm hover:bg-gray-100 whitespace-nowrap" type="button">
+                  중복확인
+                </button>
+</div>
+</div>
+</div>
+<!-- Phone & Address Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Phone Number -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-phone">
+                휴대전화번호 <span class="text-red-500">*</span>
+</label>
+<input class="w-full h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-phone" name="userPhone" placeholder="010-0000-0000" required="" type="tel" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+</div>
+<!-- Address Search -->
+<div>
+<label class="block text-xs font-bold text-[#1E1E1E] uppercase tracking-wide mb-1.5" for="user-address">
+                주소 (동까지)
+              </label>
+<div class="flex gap-2">
+<input class="flex-1 h-11 px-3.5 text-sm bg-white border-2.5 border-[#1E1E1E] rounded-lg focus:outline-none focus:ring-0 focus:border-blue-600 focus:shadow-brutal-sm transition-all" id="user-address" name="userAddress" placeholder="주소 검색" type="text" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 10px;">
+<button class="btn-brutal h-11 px-4 text-xs font-bold bg-[#FAF9F5] border-2.5 border-[#1E1E1E] rounded-lg shadow-brutal-sm hover:bg-gray-100 whitespace-nowrap" type="button">
+                  검색
+                </button>
+</div>
+</div>
+</div>
+<!-- Terms & Agreement Section -->
+<div class="mt-4 p-3.5 bg-[#FAF9F5] rounded-xl border-2.5 border-[#1E1E1E] space-y-2.5" data-purpose="terms-agreements">
+<!-- Term 1 -->
+<div class="flex items-center justify-between text-xs font-semibold">
+<label class="inline-flex items-center gap-2 cursor-pointer text-gray-800">
+<input class="w-4 h-4 text-blue-600 rounded border-2 border-[#1E1E1E] focus:ring-0 focus:ring-offset-0" name="agreeTerms" required="" type="checkbox">
+<span>[필수] 서비스 이용약관 동의</span>
+</label>
+<button class="btn-brutal text-[11px] font-bold px-2 py-0.5 bg-white border-1.5 border-[#1E1E1E] rounded hover:bg-gray-100 shadow-brutal-sm" type="button">
+                보기
+              </button>
+</div>
+<!-- Term 2 -->
+<div class="flex items-center justify-between text-xs font-semibold">
+<label class="inline-flex items-center gap-2 cursor-pointer text-gray-800">
+<input class="w-4 h-4 text-blue-600 rounded border-2 border-[#1E1E1E] focus:ring-0 focus:ring-offset-0" name="agreePrivacy" required="" type="checkbox">
+<span>[필수] 개인정보 수집 및 이용 동의</span>
+</label>
+<button class="btn-brutal text-[11px] font-bold px-2 py-0.5 bg-white border-1.5 border-[#1E1E1E] rounded hover:bg-gray-100 shadow-brutal-sm" type="button">
+                보기
+              </button>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="pt-3">
+<button class="btn-brutal w-full h-12 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-base rounded-xl border-2.5 border-[#1E1E1E] shadow-brutal flex items-center justify-center gap-2 tracking-wide cursor-pointer transition-colors" type="submit" style="background-color: rgb(37, 99, 235); border: 2.5px solid rgb(17, 17, 17); box-shadow: rgb(17, 17, 17) 4px 4px 0px; border-radius: 10px;">
+              회원가입 완료 
+              <span aria-hidden="true" class="text-lg">→</span>
+</button>
+</div>
+</form>
+</section>
+<!-- END: RegistrationFormCard -->
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: Footer -->
+<footer class="w-full py-4 text-center text-xs text-gray-500 font-medium">
+    © 2025 Dev in_ Inc. All rights reserved.
+  </footer>
+<!-- END: Footer -->
+
+
+
+
+
+
+
+
+</body></html>

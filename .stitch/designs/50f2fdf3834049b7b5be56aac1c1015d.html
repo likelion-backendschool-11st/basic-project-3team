@@ -1,0 +1,358 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Dev in_ 관리자 | 신고 관리</title>
+<!-- Tailwind CSS v3 with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- BEGIN: Custom Font & Neo-Brutalism Baseline Config -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', '"Space Grotesk"', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              yellow: '#FFD43B',
+              primary: '#FF6B6B',
+              dark: '#121212',
+              lightGray: '#F4F4F0',
+            }
+          },
+          boxShadow: {
+            brutal: '3px 3px 0px #121212',
+            'brutal-lg': '5px 5px 0px #121212',
+            'brutal-sm': '2px 2px 0px #121212',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Styles for Neo-brutalism design patterns -->
+<style data-purpose="neo-brutalism-utilities">
+    .border-neo {
+      border: 2px solid #121212;
+    }
+    .shadow-neo {
+      box-shadow: 3px 3px 0px #121212;
+    }
+    .shadow-neo-sm {
+      box-shadow: 2px 2px 0px #121212;
+    }
+    .shadow-neo-lg {
+      box-shadow: 5px 5px 0px #121212;
+    }
+    .btn-neo {
+      transition: all 0.1s ease-in-out;
+    }
+    .btn-neo:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px #121212;
+    }
+    .btn-neo:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0px 0px 0px #121212;
+    }
+  </style>
+</head>
+<body class="text-[#121212] font-sans antialiased min-h-screen flex flex-col selection:bg-[#FFD43B] selection:text-black" style="background-color: rgb(255, 253, 245); background-image: radial-gradient(rgb(217, 212, 195) 1.2px, transparent 1.2px); background-size: 18px 18px;">
+<!-- BEGIN: MainHeader -->
+<header class="w-full bg-white border-b-2 border-black sticky top-0 z-50"><div class="max-w-[1180px] mx-auto px-6 h-[64px] flex items-center justify-between">
+  <!-- Brand Logo -->
+  <div class="flex items-center">
+    <a href="#" class="flex items-center gap-1.5 no-underline">
+      <span class="text-2xl font-black text-[#111111] tracking-tight font-sans">Dev</span>
+      <span class="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-mono font-bold text-[#111111] shadow-[2px_2px_0_#111111]" style="background-color: #FFD43B !important;">in_</span>
+    </a>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="flex-1 max-w-[460px] mx-6 relative">
+    <input type="text" placeholder="검색어를 입력하세요" class="w-full h-[40px] px-3.5 py-2 bg-white border-2 border-black rounded-[8px] text-[13.5px] font-medium outline-none focus:bg-[#FFFEF3] focus:shadow-[2px_2px_0_#111111] transition-all">
+  </div>
+
+  <!-- Header Navigation Actions -->
+  <div class="flex items-center gap-3">
+    <!-- 질문하기 Action Button (Blue #2563EB) -->
+    <button class="h-[40px] px-4 bg-[#2563EB] text-white border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] text-sm font-bold hover:bg-blue-600 transition-all" type="button">
+      질문하기
+    </button>
+    <!-- 알림 Button -->
+    <button class="h-[40px] px-3.5 bg-white border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] text-sm font-bold hover:bg-neutral-50 flex items-center gap-1.5 transition-all" type="button"><span>알림</span><span class="bg-red-500 text-white text-[11px] font-bold w-5 h-5 rounded-full inline-flex items-center justify-center leading-none">3</span></button>
+    <!-- 관리자 Dropdown -->
+    <div class="relative inline-block">
+      <button class="h-[40px] px-3.5 bg-[#FFD43B] border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] text-sm font-bold flex items-center gap-1.5 hover:bg-yellow-400 transition-all" style="background-color: #FFD43B !important;" type="button">
+        <span>관리자</span>
+        <span class="text-xs">▼</span>
+      </button>
+    </div>
+  </div>
+</div></header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContentLayout -->
+<div class="max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col md:flex-row gap-6">
+<!-- BEGIN: Sidebar -->
+<aside class="w-full md:w-56 shrink-0" data-purpose="admin-sidebar">
+<div class="mb-3">
+<h2 class="text-xs font-bold uppercase tracking-wider text-neutral-600 px-1">관리자 메뉴</h2>
+</div>
+<nav class="flex flex-col gap-2">
+<!-- 신고 관리 (활성화 상태) -->
+<a class="flex items-center justify-between px-3 py-2.5 bg-[#FFD43B] border-2 border-[#121212] shadow-neo text-sm font-black transition-all" href="#">
+<span class="tracking-tight">신고 관리</span>
+<span class="bg-[#121212] text-white text-xs px-2 py-0.5 font-mono font-bold">(17)</span>
+</a>
+<!-- 회원 관리 -->
+<a class="flex items-center justify-between px-3 py-2.5 bg-white border-2 border-[#121212] shadow-neo-sm text-sm font-bold hover:bg-neutral-100 transition-all" href="#">
+<span class="tracking-tight">회원 관리</span>
+</a>
+</nav>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: ManagementMainSection -->
+<main class="flex-1 flex flex-col min-w-0" data-purpose="report-management-content">
+<!-- Content Title -->
+<div class="mb-4">
+<h1 class="text-2xl font-black text-[#121212] tracking-tight flex items-center gap-2">
+          신고 관리
+        </h1>
+</div>
+<!-- Controls & Filter Toolbar -->
+<section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4" data-purpose="filter-toolbar">
+<!-- Category Segment Buttons -->
+<div class="inline-flex flex-wrap p-1 bg-white border-2 border-[#121212] shadow-neo-sm gap-1" role="tablist">
+<button aria-selected="true" class="px-3 py-1 bg-[#121212] text-white border-2 border-[#121212] text-xs font-bold" role="tab" type="button">
+            전체 17
+          </button>
+<button aria-selected="false" class="px-3 py-1 bg-white hover:bg-neutral-100 border border-transparent text-xs font-bold text-neutral-800" role="tab" type="button">
+            질문 8
+          </button>
+<button aria-selected="false" class="px-3 py-1 bg-white hover:bg-neutral-100 border border-transparent text-xs font-bold text-neutral-800" role="tab" type="button">
+            답변 5
+          </button>
+<button aria-selected="false" class="px-3 py-1 bg-white hover:bg-neutral-100 border border-transparent text-xs font-bold text-neutral-800" role="tab" type="button">
+            답글 4
+          </button>
+</div>
+<!-- Filter Dropdown Selectors -->
+<div class="flex items-center gap-2 self-end sm:self-auto">
+<!-- 처리 대기 드롭다운 -->
+<div class="relative">
+<select class="appearance-none bg-white border-2 border-[#121212] shadow-neo-sm pl-3 pr-8 py-1 text-xs font-bold focus:ring-0 focus:outline-none cursor-pointer">
+<option>처리 대기</option>
+<option>처리 완료</option>
+<option>전체 상태</option>
+</select>
+<span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none font-bold">▼</span>
+</div>
+<!-- 신고 많은순 드롭다운 -->
+<div class="relative">
+<select class="appearance-none bg-white border-2 border-[#121212] shadow-neo-sm pl-3 pr-8 py-1 text-xs font-bold focus:ring-0 focus:outline-none cursor-pointer">
+<option>신고 많은순</option>
+<option>최신순</option>
+<option>오래된순</option>
+</select>
+<span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none font-bold">▼</span>
+</div>
+</div>
+</section>
+<!-- BEGIN: ReportTableContainer -->
+<section class="overflow-x-auto bg-white border-2 border-[#121212] shadow-neo mb-4">
+<table class="w-full text-left border-collapse text-xs sm:text-sm">
+<thead>
+<tr class="bg-[#FFD43B] border-b-2 border-[#121212] text-[#121212] font-black uppercase">
+<th class="py-2.5 px-3 border-r-2 border-[#121212] text-center w-14" scope="col">유형</th>
+<th class="py-2.5 px-3 border-r-2 border-[#121212] min-w-[200px]" scope="col">신고 대상</th>
+<th class="py-2.5 px-3 border-r-2 border-[#121212] w-24" scope="col">작성자</th>
+<th class="py-2.5 px-3 border-r-2 border-[#121212] min-w-[160px]" scope="col">주요 신고 사유</th>
+<th class="py-2.5 px-3 border-r-2 border-[#121212] text-center w-16" scope="col">신고 수</th>
+<th class="py-2.5 px-3 border-r-2 border-[#121212] text-center w-24" scope="col">최근 신고일</th>
+<th class="py-2.5 px-3 border-r-2 border-[#121212] text-center w-20" scope="col">상태</th>
+<th class="py-2.5 px-3 text-center min-w-[130px]" scope="col">관리</th>
+</tr>
+</thead>
+<tbody class="divide-y-2 divide-[#121212] font-medium bg-white">
+<!-- Row 1 -->
+<tr class="hover:bg-yellow-50 transition-colors">
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold">질문</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] truncate max-w-xs font-semibold">
+                무료 강의 사이트 추천합니다 (링크 클릭)
+              </td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">홍보왕</td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">스팸 · 광고</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold text-red-600 font-mono">12</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center text-neutral-600 font-mono text-xs">2026.11.10</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center">
+<span class="inline-block px-1.5 py-0.5 bg-yellow-200 border border-[#121212] text-[11px] font-bold">처리 대기</span>
+</td>
+<td class="py-2 px-3 text-center">
+<div class="inline-flex items-center gap-1">
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs" type="button">[보기]</button>
+<button class="px-1.5 py-0.5 bg-red-100 border border-[#121212] hover:bg-red-200 font-bold text-xs text-red-700" type="button">[삭제]</button>
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs text-neutral-700" type="button">[반려]</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-yellow-50 transition-colors">
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold">답변</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] truncate max-w-xs font-semibold">
+                이것도 모르면서 개발자 하냐ㅋㅋ
+              </td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">코딩빌런</td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">욕설 · 비방</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold text-red-600 font-mono">7</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center text-neutral-600 font-mono text-xs">2026.11.10</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center">
+<span class="inline-block px-1.5 py-0.5 bg-yellow-200 border border-[#121212] text-[11px] font-bold">처리 대기</span>
+</td>
+<td class="py-2 px-3 text-center">
+<div class="inline-flex items-center gap-1">
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs" type="button">[보기]</button>
+<button class="px-1.5 py-0.5 bg-red-100 border border-[#121212] hover:bg-red-200 font-bold text-xs text-red-700" type="button">[삭제]</button>
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs text-neutral-700" type="button">[반려]</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-yellow-50 transition-colors">
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold">답글</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] truncate max-w-xs font-semibold">
+                제 블로그에 정답 있어요 → bit.ly/...
+              </td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">홍보왕</td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">스팸 · 광고</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold text-neutral-800 font-mono">4</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center text-neutral-600 font-mono text-xs">2026.11.09</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center">
+<span class="inline-block px-1.5 py-0.5 bg-yellow-200 border border-[#121212] text-[11px] font-bold">처리 대기</span>
+</td>
+<td class="py-2 px-3 text-center">
+<div class="inline-flex items-center gap-1">
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs" type="button">[보기]</button>
+<button class="px-1.5 py-0.5 bg-red-100 border border-[#121212] hover:bg-red-200 font-bold text-xs text-red-700" type="button">[삭제]</button>
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs text-neutral-700" type="button">[반려]</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-yellow-50 transition-colors">
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold">질문</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] truncate max-w-xs font-semibold">
+                과제 대신 해주실 분 구합니다
+              </td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">급해요</td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">질문과 무관한 내용 · 도배</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold text-neutral-800 font-mono">5</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center text-neutral-600 font-mono text-xs">2026.11.09</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center">
+<span class="inline-block px-1.5 py-0.5 bg-yellow-200 border border-[#121212] text-[11px] font-bold">처리 대기</span>
+</td>
+<td class="py-2 px-3 text-center">
+<div class="inline-flex items-center gap-1">
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs" type="button">[보기]</button>
+<button class="px-1.5 py-0.5 bg-red-100 border border-[#121212] hover:bg-red-200 font-bold text-xs text-red-700" type="button">[삭제]</button>
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs text-neutral-700" type="button">[반려]</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-yellow-50 transition-colors">
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold">답변</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] truncate max-w-xs text-neutral-400 font-medium">
+                (삭제된 답변입니다)
+              </td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">코딩빌런</td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">욕설 · 비방</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold text-neutral-800 font-mono">9</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center text-neutral-600 font-mono text-xs">2026.11.07</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center">
+<span class="inline-block px-1.5 py-0.5 bg-neutral-200 border border-[#121212] text-[11px] font-bold text-neutral-700">삭제됨</span>
+</td>
+<td class="py-2 px-3 text-center">
+<div class="inline-flex items-center">
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs" type="button">[보기]</button>
+</div>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-yellow-50 transition-colors">
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold">질문</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] truncate max-w-xs font-semibold">
+                React 질문입니다 (중복 게시)
+              </td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">리액트초보</td>
+<td class="py-2 px-3 border-r-2 border-[#121212]">질문과 무관한 내용 · 도배</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center font-bold text-neutral-800 font-mono">3</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center text-neutral-600 font-mono text-xs">2026.11.08</td>
+<td class="py-2 px-3 border-r-2 border-[#121212] text-center">
+<span class="inline-block px-1.5 py-0.5 bg-gray-100 border border-[#121212] text-[11px] font-bold text-neutral-700">반려</span>
+</td>
+<td class="py-2 px-3 text-center">
+<div class="inline-flex items-center">
+<button class="px-1.5 py-0.5 bg-white border border-[#121212] hover:bg-neutral-100 font-bold text-xs" type="button">[보기]</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- END: ReportTableContainer -->
+<!-- BEGIN: Pagination -->
+<nav aria-label="Pagination" class="flex justify-end mb-4">
+<ul class="inline-flex items-center gap-1">
+<li>
+<a aria-label="이전 페이지" class="w-8 h-8 flex items-center justify-center bg-white border-2 border-[#121212] shadow-neo-sm font-bold text-sm hover:bg-neutral-100" href="#">
+              &lt;
+            </a>
+</li>
+<li>
+<a aria-current="page" class="w-8 h-8 flex items-center justify-center bg-[#FFD43B] border-2 border-[#121212] shadow-neo-sm font-bold text-sm" href="#">
+              1
+            </a>
+</li>
+<li>
+<a class="w-8 h-8 flex items-center justify-center bg-white border-2 border-[#121212] shadow-neo-sm font-bold text-sm hover:bg-neutral-100" href="#">
+              2
+            </a>
+</li>
+<li>
+<a aria-label="다음 페이지" class="w-8 h-8 flex items-center justify-center bg-white border-2 border-[#121212] shadow-neo-sm font-bold text-sm hover:bg-neutral-100" href="#">
+              &gt;
+            </a>
+</li>
+</ul>
+</nav>
+<!-- END: Pagination -->
+<!-- BEGIN: InformationBox -->
+<section class="bg-[#FFF9DB] border-2 border-[#121212] shadow-neo p-3.5" data-purpose="notice-info">
+<h3 class="text-xs font-black text-[#121212] mb-1">
+          신고 사유 (QA-008과 동일)
+        </h3>
+<p class="text-xs font-semibold text-neutral-800 leading-relaxed">
+          스팸 · 광고 / 욕설 · 비방 / 음란 · 불쾌한 내용 / 개인정보 노출 / 질문과 무관한 내용 · 도배 / 저작권 침해 / 기타
+        </p>
+</section>
+<!-- END: InformationBox -->
+</main>
+<!-- END: ManagementMainSection -->
+</div>
+<!-- END: MainContentLayout -->
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

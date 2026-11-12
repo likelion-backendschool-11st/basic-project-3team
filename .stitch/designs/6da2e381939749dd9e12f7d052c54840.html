@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Dev in_ - 삭제 및 채택 확인 모달 쇼케이스</title>
+<!-- Tailwind CSS v3 CDN with Forms & Container-Queries Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FFFDF5',
+              dark: '#111827',
+              red: '#E11D48',
+              green: '#16A34A',
+              yellow: '#FBBF24',
+              gray: '#F3F4F6',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          boxShadow: {
+            'brutal-sm': '3px 3px 0 #111111',
+            'brutal': '5px 5px 0 #111111',
+            'brutal-lg': '8px 8px 0 #111111',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Fonts: Noto Sans KR & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&amp;family=Noto+Sans+KR:wght@500;700;800;900&amp;display=swap" rel="stylesheet">
+<!-- Custom Styles: Neo-brutalism Pattern & Component Specifics -->
+<style data-purpose="custom-layout">
+    body {
+      background-color: #F8F9FA;
+      color: #111827;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* Dot grid background pattern */
+    .dot-pattern-overlay {
+      background-image: radial-gradient(#CBD5E1 1.2px, transparent 1.2px);
+      background-size: 20px 20px;
+    }
+
+    /* Blurred modal backdrop showcase */
+    .modal-backdrop-layer {
+      background-color: rgba(255, 253, 245, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Custom neo-brutal borders */
+    .border-neo {
+      border: 2.5px solid #111111;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-yellow-300 selection:text-black bg-[#FFFDF5]">
+<!-- BEGIN: MainHeader -->
+<header class="w-full bg-[#FFFDF5] border-b-[2.5px] border-[#111111] sticky top-0 z-40">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+<!-- Brand Logo -->
+<a href="#" class="flex items-center gap-0.5 text-2xl font-black font-mono tracking-tight text-black hover:opacity-90 transition-opacity">Dev<span class="ml-1 bg-[#FFD43B] text-black font-mono font-bold px-1.5 py-0.5 rounded-[4px] border-2 border-black text-xl leading-none shadow-[2px_2px_0px_#111111]">in_</span></a>
+<!-- Search Input Container -->
+<div class="flex-1 max-w-xl mx-4">
+<div class="relative flex items-center">
+<input class="w-full h-10 px-4 py-2 bg-white border-neo rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-0 shadow-brutal-sm transition-all" placeholder="검색어를 입력하세요" type="text">
+
+</div>
+</div>
+<!-- Header Action Items -->
+<nav class="flex items-center gap-3"><button class="h-10 px-4 font-bold text-sm bg-[#2563EB] hover:bg-blue-600 text-white border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150" type="button">질문하기</button><button class="h-10 px-3.5 font-bold text-sm bg-white hover:bg-gray-50 border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150 relative" type="button">알림<span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#E11D48] text-white text-[10px] font-bold rounded-full border border-black flex items-center justify-center leading-none">3</span></button><button class="h-10 px-4 font-bold text-sm bg-[#FFD43B] hover:bg-yellow-400 border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150 flex items-center gap-1.5 text-[#111111]" type="button"><span>닉네임</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg></button></nav>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: ModalShowcaseEnvironment -->
+<!-- Main Viewport containing blurred backdrop effect representing active overlay state -->
+<main class="relative flex-1 w-full flex items-center justify-center p-6 md:p-12 overflow-hidden dot-pattern-overlay">
+<!-- Modal Backdrop Showcase Blur Shield -->
+<div aria-hidden="true" class="absolute inset-0 modal-backdrop-layer z-0"></div>
+<div class="relative z-10 w-full max-w-6xl flex flex-col items-center gap-12">
+<!-- Container for side-by-side Modal Cards -->
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start justify-center">
+<!-- BEGIN: LeftModal_DeleteConfirm -->
+<!-- Delete Confirmation Modal Component -->
+<div class="bg-white border-neo rounded-[14px] shadow-brutal-lg p-8 md:p-10 flex flex-col justify-between min-h-[290px] relative transition-transform hover:-translate-y-1 duration-200" data-purpose="modal-delete">
+<!-- Card Header Decor: Mini Badge -->
+<div class="absolute top-4 left-4 flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-[#E11D48] border-[1.5px] border-black"></span>
+<span class="text-xs font-mono font-bold tracking-tight text-gray-500 uppercase">Warning</span>
+</div>
+<!-- Message Body -->
+<div class="pt-6 text-center space-y-2">
+<h2 class="text-2xl font-black tracking-tight text-[#111111]">
+              정말 삭제하시겠습니까?
+            </h2>
+<p class="text-base font-bold text-[#E11D48]">
+              삭제한 질문은 복구할 수 없습니다.
+            </p>
+</div>
+<!-- Action Buttons Group -->
+<div class="pt-8 flex items-center justify-center gap-4">
+<!-- Cancel Button -->
+<button class="w-32 h-11 px-6 font-bold text-sm bg-white hover:bg-gray-100 text-[#111111] border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150 active:scale-95" type="button">
+              취소
+            </button>
+<!-- Delete Confirm Button -->
+<button class="w-32 h-11 px-6 font-bold text-sm bg-[#E11D48] hover:bg-[#BE123C] text-white border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150 active:scale-95" type="button">
+              삭제
+            </button>
+</div>
+</div>
+<!-- END: LeftModal_DeleteConfirm -->
+<!-- BEGIN: RightModal_AdoptConfirm -->
+<!-- Answer Adoption Confirmation Modal Component -->
+<div class="bg-white border-neo rounded-[14px] shadow-brutal-lg p-8 md:p-10 flex flex-col justify-between min-h-[290px] relative transition-transform hover:-translate-y-1 duration-200" data-purpose="modal-adopt">
+<!-- Card Header Decor: Mini Badge -->
+<div class="absolute top-4 left-4 flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-[#16A34A] border-[1.5px] border-black"></span>
+<span class="text-xs font-mono font-bold tracking-tight text-gray-500 uppercase">Accept</span>
+</div>
+<!-- Message Body -->
+<div class="pt-6 text-center space-y-2">
+<h2 class="text-2xl font-black tracking-tight text-[#111111]">
+              이 답변을 채택하시겠습니까?
+            </h2>
+<p class="text-base font-semibold text-gray-600">
+              채택 후에는 취소할 수 없습니다.
+            </p>
+</div>
+<!-- Action Buttons Group -->
+<div class="pt-8 flex items-center justify-center gap-4">
+<!-- Cancel Button -->
+<button class="w-32 h-11 px-6 font-bold text-sm bg-white hover:bg-gray-100 text-[#111111] border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150 active:scale-95" type="button">
+              취소
+            </button>
+<!-- Adopt Confirm Button -->
+<button class="w-32 h-11 px-6 font-bold text-sm bg-[#16A34A] hover:bg-[#15803D] text-white border-neo rounded-lg shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-150 active:scale-95" type="button">
+              채택
+            </button>
+</div>
+</div>
+<!-- END: RightModal_AdoptConfirm -->
+</div>
+<!-- BEGIN: BottomNoticeToast -->
+<!-- Neo-brutalist Toast Notification (Disabled state notification) -->
+<div class="w-full max-w-xl mx-auto">
+<aside class="bg-white border-neo rounded-[14px] shadow-brutal p-4.5 px-6 flex items-center justify-center gap-3 transition-transform hover:-translate-y-0.5 duration-150" data-purpose="toast-alert">
+<!-- Notice Warning Icon -->
+<span class="w-5 h-5 flex items-center justify-center bg-amber-400 border border-black rounded-full text-xs font-black text-black">!</span>
+<span class="text-sm md:text-base font-bold text-[#111111]">
+            채택된 답변이 있어 삭제할 수 없습니다
+          </span>
+</aside>
+</div>
+<!-- END: BottomNoticeToast -->
+</div>
+</main>
+<!-- END: ModalShowcaseEnvironment -->
+
+
+
+
+
+
+</body></html>

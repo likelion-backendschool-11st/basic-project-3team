@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Dev in_ - 회원 추방</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neoRed: '#EF4444',
+            neoDark: '#1E1E1E',
+            neoBg: '#F3F4F6',
+          },
+          boxShadow: {
+            'neo': '3px 3px 0px #000000',
+            'neo-lg': '5px 5px 0px #000000',
+            'neo-dark': '4px 4px 0px #000000',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Neo-brutalism styles -->
+<style data-purpose="custom-neo-brutalism">
+    .neo-border {
+      border: 2px solid #000000;
+    }
+    .neo-border-bold {
+      border: 2.5px solid #000000;
+    }
+    .neo-shadow {
+      box-shadow: 4px 4px 0px #000000;
+    }
+    .neo-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000000;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 font-sans text-gray-900 antialiased relative" style="background-color: rgb(255, 253, 245); background-image: radial-gradient(rgb(217, 212, 195) 1px, transparent 1px); background-size: 18px 18px;">
+<!-- BEGIN: MainHeader -->
+<header class="w-full bg-white border-b-2 border-black sticky top-0 z-20" data-purpose="global-header" style="border-bottom: 2.5px solid rgb(17, 17, 17);">
+<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+<!-- Brand Logo & Global Search -->
+<div class="flex items-center gap-6">
+<a href="#" data-purpose="logo" class="flex items-center gap-1.5 font-bold text-xl tracking-tight text-black select-none">
+  <span>Dev</span>
+  <span class="px-1.5 py-0.5 text-black text-base font-black" style="background-color: #FFD43B; border: 2px solid #000000; border-radius: 4px; box-shadow: 1.5px 1.5px 0px #000;">in_</span>
+</a>
+<!-- Search Bar -->
+<div class="relative w-80 sm:w-96 hidden md:block">
+<input class="w-full h-9 px-3 neo-border text-sm focus:outline-none focus:ring-0 focus:border-black rounded-none shadow-[2px_2px_0px_#000]" data-purpose="global-search-input" placeholder="검색어를 입력하세요" type="text">
+</div>
+</div>
+<!-- Action Nav Buttons -->
+<div class="flex items-center gap-3" data-purpose="header-navigation"><button type="button" class="px-4 py-1.5 text-sm font-bold text-white transition-all" style="background-color: rgb(37, 99, 235); border: 2.5px solid rgb(17, 17, 17); border-radius: 6px; box-shadow: rgb(17, 17, 17) 2px 2px 0px;">
+  질문하기
+</button>
+<div class="relative">
+  <button type="button" class="px-3 py-1.5 text-sm font-medium bg-white hover:bg-gray-100 transition-colors" style="border: 2px solid #111111; border-radius: 6px; box-shadow: 2px 2px 0px #111111;">
+    알림
+  </button>
+  <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-black">3</span>
+</div>
+<div class="relative">
+  <button type="button" class="px-3 py-1.5 text-sm font-medium bg-white hover:bg-gray-100 flex items-center gap-1.5 transition-colors" style="border: 2px solid #111111; border-radius: 6px; box-shadow: 2px 2px 0px #111111;">
+    <span>관리자</span>
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+</div></div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: BackgroundUnderlay -->
+<!-- Underlay dummy content simulating dashboard behind modal -->
+<main aria-hidden="true" class="max-w-7xl mx-auto p-6 opacity-30 select-none pointer-events-none">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<div class="p-6 bg-white neo-border-bold neo-shadow">
+<div class="text-sm font-bold text-gray-500 uppercase">전체 회원 수</div>
+<div class="text-3xl font-black mt-2">1,248명</div>
+</div>
+<div class="p-6 bg-white neo-border-bold neo-shadow">
+<div class="text-sm font-bold text-gray-500 uppercase">신고 접수 내역</div>
+<div class="text-3xl font-black mt-2 text-red-600">23건</div>
+</div>
+<div class="p-6 bg-white neo-border-bold neo-shadow">
+<div class="text-sm font-bold text-gray-500 uppercase">누적 제재 회원</div>
+<div class="text-3xl font-black mt-2">14명</div>
+</div>
+</div>
+<div class="w-full h-80 bg-white neo-border-bold neo-shadow p-6">
+<h3 class="font-bold text-lg mb-4">회원 관리 목록</h3>
+<div class="h-4 bg-gray-200 w-full mb-3"></div>
+<div class="h-4 bg-gray-200 w-3/4 mb-3"></div>
+<div class="h-4 bg-gray-200 w-5/6"></div>
+</div>
+</main>
+<!-- END: BackgroundUnderlay -->
+<!-- BEGIN: ModalOverlay -->
+<!-- Modal backdrop with blur effect -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" data-purpose="modal-overlay" role="dialog" style="background-color: rgba(255, 253, 245, 0.55); backdrop-filter: blur(8px);">
+<!-- Modal Card Box -->
+<div class="w-full max-w-lg bg-white neo-border-bold neo-shadow p-6 sm:p-7 relative transition-all" data-purpose="modal-content" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 14px; box-shadow: rgb(17, 17, 17) 8px 8px 0px;">
+<!-- Modal Header -->
+<div class="mb-4">
+<h2 class="text-xl font-bold text-black tracking-tight flex items-center gap-2" id="modal-title">
+          회원 추방
+        </h2>
+</div>
+<!-- Notice & Warning Banner -->
+<div class="mb-5 text-sm text-gray-800 leading-relaxed border-l-4 border-black pl-3 py-0.5 bg-gray-50" style="border-width: 1px 1px 1px 4px; border-style: solid; border-color: rgb(229, 231, 235) rgb(229, 231, 235) rgb(229, 231, 235) rgb(17, 17, 17); border-radius: 6px; padding: 10px 14px; background-color: rgb(249, 250, 251);">
+<p class="font-bold text-black">
+          코딩빌런 <span class="font-medium text-gray-600">(villain01)</span> 회원을 추방하시겠습니까?
+        </p>
+<p class="text-xs text-red-600 font-semibold mt-0.5">
+          추방된 회원은 로그인할 수 없습니다.
+        </p>
+</div>
+<!-- Form Section: Ban Reason -->
+<form data-purpose="ban-form" id="ban-member-form" onsubmit="event.preventDefault();">
+<div class="mb-4">
+<p class="text-sm font-bold text-gray-900 mb-2.5">
+            추방 사유를 선택해주세요
+          </p>
+<!-- Radio List -->
+<div class="space-y-2.5" data-purpose="radio-options">
+<label class="flex items-center gap-2.5 cursor-pointer text-sm select-none group">
+<input class="w-4 h-4 text-black border-2 border-black focus:ring-0 focus:ring-offset-0 cursor-pointer" name="ban_reason" type="radio" value="spam">
+<span class="group-hover:text-black text-gray-800">스팸 · 광고 반복</span>
+</label>
+<label class="flex items-center gap-2.5 cursor-pointer text-sm select-none group">
+<input checked="" class="w-4 h-4 text-black border-2 border-black focus:ring-0 focus:ring-offset-0 cursor-pointer" name="ban_reason" type="radio" value="abuse">
+<span class="font-bold text-black group-hover:text-black">욕설 · 비방 반복</span>
+</label>
+<label class="flex items-center gap-2.5 cursor-pointer text-sm select-none group">
+<input class="w-4 h-4 text-black border-2 border-black focus:ring-0 focus:ring-offset-0 cursor-pointer" name="ban_reason" type="radio" value="inappropriate">
+<span class="group-hover:text-black text-gray-800">음란 · 불쾌한 내용 게시</span>
+</label>
+<label class="flex items-center gap-2.5 cursor-pointer text-sm select-none group">
+<input class="w-4 h-4 text-black border-2 border-black focus:ring-0 focus:ring-offset-0 cursor-pointer" name="ban_reason" type="radio" value="privacy">
+<span class="group-hover:text-black text-gray-800">개인정보 노출</span>
+</label>
+<label class="flex items-center gap-2.5 cursor-pointer text-sm select-none group">
+<input class="w-4 h-4 text-black border-2 border-black focus:ring-0 focus:ring-offset-0 cursor-pointer" id="reason-custom-radio" name="ban_reason" type="radio" value="custom">
+<span class="group-hover:text-black text-gray-800">기타 (직접 입력)</span>
+</label>
+</div>
+</div>
+<!-- Custom Reason Input -->
+<div class="mb-6">
+<input class="w-full h-10 px-3 text-xs sm:text-sm neo-border bg-gray-100 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-black rounded-none shadow-[2px_2px_0px_#000] disabled:bg-gray-100 disabled:cursor-not-allowed" data-purpose="custom-reason-field" disabled="" id="custom-reason-input" placeholder="기타 사유를 입력하세요 (기타 선택 시 활성화)" type="text" style="border: 2px solid rgb(17, 17, 17); border-radius: 6px; box-shadow: rgb(17, 17, 17) 2px 2px 0px;">
+</div>
+<!-- Action Button Controls -->
+<div class="flex items-center justify-end gap-2.5 pt-2 border-t border-gray-200" data-purpose="modal-actions"><button type="button" class="px-5 py-2 text-sm font-bold bg-white text-gray-800 hover:bg-gray-100 neo-btn transition-transform" style="border: 2.5px solid rgb(17, 17, 17); border-radius: 8px; box-shadow: rgb(17, 17, 17) 3px 3px 0px;">
+  취소
+</button>
+<button type="submit" class="px-5 py-2 text-sm font-bold text-white neo-btn transition-transform hover:opacity-90" style="background-color: rgb(225, 29, 72); border: 2.5px solid rgb(17, 17, 17); border-radius: 8px; box-shadow: rgb(17, 17, 17) 3px 3px 0px;">
+  추방
+</button></div>
+</form>
+</div>
+</div>
+<!-- END: ModalOverlay -->
+<!-- JavaScript to toggle custom reason input -->
+<script data-purpose="radio-toggle-handler">
+    const customRadio = document.getElementById('reason-custom-radio');
+    const customInput = document.getElementById('custom-reason-input');
+    const radioGroup = document.querySelectorAll('input[name="ban_reason"]');
+
+    radioGroup.forEach((radio) => {
+      radio.addEventListener('change', () => {
+        if (customRadio.checked) {
+          customInput.disabled = false;
+          customInput.classList.remove('bg-gray-100', 'text-gray-500');
+          customInput.classList.add('bg-white', 'text-black');
+          customInput.focus();
+        } else {
+          customInput.disabled = true;
+          customInput.classList.add('bg-gray-100');
+          customInput.classList.remove('bg-white', 'text-black');
+          customInput.value = '';
+        }
+      });
+    });
+  </script>
+
+
+</body></html>
