@@ -36,8 +36,8 @@ API 명세는 `docs/api.md`를 따른다.
 ### 실행
 - Backend: `cd backEnd && npm install && npm run dev` (nodemon, 포트는 `.env`의 `PORT`, 기본 8080)
 - Frontend: `cd frontEnd && npm install && npm run dev` (기본 포트 5173)
-- DB: `backEnd/db/schema.sql`로 테이블을 만들고 `backEnd/db/seed.sql`로 팀 공통 테스트 데이터를 넣는다.
-- 설정: `backEnd/.env`에 `PORT`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `JWT_REFRESH_SECRET`를 둔다.
+- DB: `backEnd/.env`를 채운 뒤 `cd backEnd && npm run db:setup` (처음 한 번, MySQL root 비밀번호를 묻는다). DB `devinDB`·계정 `devin`을 만들고 `db/schema.sql`, `db/seed.sql`을 실행한다. 데이터를 처음 상태로 되돌릴 때는 `npm run db:reset`.
+- 설정: `backEnd/.env`에 `PORT`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `JWT_REFRESH_SECRET`를 둔다.
 - `.env`는 커밋하지 않고, 키 이름만 적은 `.env.example`을 커밋한다.
 - 개발 환경에서는 `frontEnd/vite.config.ts`의 프록시로 `/api` 요청을 `http://localhost:8080`에 넘긴다. CORS 설정은 배포 환경용이다.
 
