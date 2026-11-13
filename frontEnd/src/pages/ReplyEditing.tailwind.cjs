@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 답변/답글 수정 중 (26번)". Scoped to #page-reply-editing so it can't clash with other screens.
 module.exports = {
   important: "#page-reply-editing",
-  content: ["./src/pages/ReplyEditing.tsx"],
+  content: ["./src/pages/ReplyEditing.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
