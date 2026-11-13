@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { QUESTION_SORT, SEARCH_SCOPE } = require('./question.constants');
+const { escapeLike } = require('../utils/sql');
 
 // ORDER BY에는 플레이스홀더를 쓸 수 없으므로 허용 목록의 값만 넣는다. 값이 같으면 최신순.
 const ORDER_BY = Object.freeze({
@@ -23,11 +24,6 @@ const SCOPE_CONDITIONS = Object.freeze({
   [SEARCH_SCOPE.CONTENT]: [CONTENT_LIKE],
   [SEARCH_SCOPE.TAG]: [TAG_LIKE],
 });
-
-// LIKE의 와일드카드(%, _)와 이스케이프 문자(\)를 일반 문자로 바꾼다.
-function escapeLike(value) {
-  return value.replace(/[\\%_]/g, (ch) => `\\${ch}`);
-}
 
 // 조건 SQL은 위에 정해 둔 조각만 이어 붙이고, 사용자 입력은 모두 params(? 플레이스홀더)로 넘긴다.
 function buildWhere({ keyword, scope, categoryId, tags, startDate, endDate, accepted }) {

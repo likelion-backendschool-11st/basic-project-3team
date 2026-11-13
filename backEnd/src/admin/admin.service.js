@@ -1,4 +1,3 @@
-const pool = require('../config/db');
 const adminRepository = require('./admin.repository');
 const { removeQuestion } = require('../board/board.service');
 const { findWritableMember } = require('../member/mypage.service');
@@ -7,21 +6,7 @@ const { REPORT_STATUS, REPORT_ACTION, ACTION_RESULT_STATUS } = require('./admin.
 const { getOffset, toPage } = require('../utils/page');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
-
-async function withTransaction(work) {
-  const conn = await pool.getConnection();
-  try {
-    await conn.beginTransaction();
-    const result = await work(conn);
-    await conn.commit();
-    return result;
-  } catch (err) {
-    await conn.rollback();
-    throw err;
-  } finally {
-    conn.release();
-  }
-}
+const { withTransaction } = require('../utils/transaction');
 
 function toReportSummary(row) {
   return {
