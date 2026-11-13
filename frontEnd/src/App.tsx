@@ -2,6 +2,7 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import { routes } from './routes'
 import Login from './pages/Login'
 import AuthProvider from './components/AuthProvider'
+import MemberProfile from './pages/MemberProfile'
 
 function ScreenIndex() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/screens" element={<ScreenIndex />} />
+          <Route path="/members/:memberId" element={<MemberProfile />} />
           {routes.map(({ path, Component }) => (
             <Route key={path} path={path} element={<Component />} />
           ))}

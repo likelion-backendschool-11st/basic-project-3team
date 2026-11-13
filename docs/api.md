@@ -192,7 +192,7 @@
 | 아이디 중복 확인 | GET | /api/members/check-login-id?loginId= | 전체 |
 | 전화번호 중복 확인 | GET | /api/members/check-phone?phone= | 전체 |
 | 닉네임 중복 확인 | GET | /api/members/check-nickname?nickname= | 전체 |
-| 프로필 조회 (다른 회원 포함) | GET | /api/members/{memberId} | 전체 |
+| 프로필 조회 (다른 회원 포함) | GET | /api/members/{memberId} | 회원 |
 | 내 정보 조회 | GET | /api/members/me | 회원 |
 | 프로필 수정 | PATCH | /api/members/me/profile | 회원 |
 | 개인정보 수정 | PATCH | /api/members/me/private | 회원 |
@@ -224,7 +224,7 @@
 ```
 
 ### 프로필 조회 (REQ-MYPAGE-001)
-응답 (`data`) — 로그인하지 않아도 조회할 수 있고, 개인정보(아이디·전화번호)는 넣지 않는다.
+응답 (`data`) — 로그인한 회원만 조회할 수 있다(토큰이 없으면 401 `UNAUTHORIZED`). 다른 회원의 프로필도 볼 수 있지만 개인정보(아이디·전화번호)는 넣지 않는다.
 ```json
 {
   "memberId": 1,
