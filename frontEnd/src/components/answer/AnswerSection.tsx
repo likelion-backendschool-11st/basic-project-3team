@@ -15,6 +15,7 @@ import { getErrorMessage, getFieldErrors } from "../../api/client";
 import { charLength } from "../../hooks/useQuestionForm";
 import { useAuth } from "../../hooks/useAuth";
 import ConfirmModal from "../ConfirmModal";
+import LikeButton from "../LikeButton";
 import Markdown from "../markdown/Markdown";
 import FieldError from "../FieldError";
 import ReportDialog from "../report/ReportDialog";
@@ -80,7 +81,10 @@ export default function AnswerSection({
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 답변 목록 조회는 조회수를 올리지 않으므로 작성·수정·삭제·채택 뒤 목록만 다시 불러온다.
+  // 로그인 복구(reissue)가 끝난 뒤 불러오고, 로그인한 사람이 바뀌면 답변마다 liked를 다시 받는다.
+  const viewerId = user?.memberId ?? null;
   useEffect(() => {
+    if (initializing) return;
     let cancelled = false;
     getAnswers(questionId)
       .then(({ answers }) => {
@@ -92,7 +96,7 @@ export default function AnswerSection({
     return () => {
       cancelled = true;
     };
-  }, [questionId, reloadKey]);
+  }, [questionId, reloadKey, initializing, viewerId]);
   const reload = () => setReloadKey((key) => key + 1);
 
   // 메뉴 바깥을 누르면 닫는다.
@@ -344,21 +348,21 @@ export default function AnswerSection({
                 </div>
               )}
 
-              {/* 좋아요(#66)·답글(#72)은 연결 전이라 표시만 한다 */}
+              {/* 좋아요(#66)·신고·답글(#72) */}
               <div
                 className={`flex items-center justify-between pt-2 border-t ${
                   answer.accepted ? "border-emerald-200" : "border-gray-100"
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <button
-                    className="bg-white border-thick border-neoBlack px-3 py-1 rounded-md text-xs font-bold shadow-brutal-sm disabled:cursor-not-allowed"
-                    disabled
-                    title="준비 중인 기능입니다"
-                    type="button"
-                  >
-                    <span className="text-rose-500">{answer.liked ? "♥" : "♡"}</span> 좋아요 {answer.likeCount}
-                  </button>
+                  <LikeButton
+                    className="inline-flex items-center gap-1.5 bg-white hover:bg-pink-50 border-thick border-neoBlack px-3 py-1 rounded-md text-xs font-bold shadow-brutal-sm"
+                    isMine={isAnswerWriter}
+                    likeCount={answer.likeCount}
+                    liked={answer.liked}
+                    target="ANSWER"
+                    targetId={answer.answerId}
+                  />
                   {/* 본인 답변은 신고할 수 없어 숨긴다 (서버도 400). 비로그인이면 로그인 화면으로 */}
                   {!isAnswerWriter && (
                     <button
