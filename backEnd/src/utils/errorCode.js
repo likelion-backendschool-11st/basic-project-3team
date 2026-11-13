@@ -52,6 +52,7 @@ const ErrorCode = Object.freeze({
   DUPLICATE_NICKNAME: { status: 409, code: 'DUPLICATE_NICKNAME', message: '이미 사용 중인 닉네임입니다.' },
   ALREADY_LIKED: { status: 409, code: 'ALREADY_LIKED', message: '이미 좋아요를 눌렀습니다.' },
   ALREADY_REPORTED: { status: 409, code: 'ALREADY_REPORTED', message: '이미 신고한 대상입니다.' },
+  REPORT_ALREADY_PROCESSED: { status: 409, code: 'REPORT_ALREADY_PROCESSED', message: '이미 처리된 신고입니다.' },
   ALREADY_ACCEPTED: { status: 409, code: 'ALREADY_ACCEPTED', message: '이미 채택된 답변이 있습니다.' },
   QUESTION_HAS_ACCEPTED_ANSWER: {
     status: 409,
