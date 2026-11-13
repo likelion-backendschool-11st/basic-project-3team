@@ -3,15 +3,12 @@ import "./QuestionDetail.css";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
-import {
-  deleteQuestion,
-  getQuestion,
-  readQuestionId,
-  type Grade,
-  type QuestionDetail as Question,
-} from "../api/question";
+import { deleteQuestion, getQuestion, readQuestionId, type QuestionDetail as Question } from "../api/question";
+import AnswerSection from "../components/answer/AnswerSection";
+import ConfirmModal from "../components/ConfirmModal";
 import Header from "../components/Header";
 import { tagSearchPath } from "../components/questionList";
+import { GRADES, formatDate, writerSummary } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -20,94 +17,10 @@ const css =
 
 const LIST_PATH = "/questions";
 
-const GRADES: Record<Grade, { label: string; color: string }> = {
-  BRONZE: { label: "브론즈", color: "#CD7F32" },
-  SILVER: { label: "실버", color: "#9CA3AF" },
-  GOLD: { label: "골드", color: "#EAB308" },
-  PLATINUM: { label: "플래티넘", color: "#06B6D4" },
-};
-
-// "2026-11-12T10:00:00" → "2026.11.12"
-const formatDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll("-", ".");
-
-// 경력을 등록하지 않았으면 닉네임만 표시한다 (REQ-QNA-004, docs/api.md 작성자 정보).
-function writerSummary({ careerYears, techStacks, grade, acceptRate }: Question["writer"]) {
-  if (careerYears === null) return null;
-  const career = careerYears === 0 ? "신입" : `${careerYears}년차`;
-  return [
-    career,
-    ...(techStacks.length > 0 ? [techStacks.join(", ")] : []),
-    GRADES[grade].label,
-    `채택률 ${acceptRate}%`,
-  ].join(" · ");
-}
-
 function StatusBox({ children }: { children: ReactNode }) {
   return (
     <div className="bg-white border-thick border-neoBlack rounded-xl shadow-brutal p-10 text-center text-sm font-semibold text-gray-600">
       {children}
-    </div>
-  );
-}
-
-// REQ-QUESTION-007: 삭제 전 이중 확인 (DeleteAcceptModal 화면의 삭제 확인 카드 디자인)
-function DeleteConfirmModal({
-  deleting,
-  error,
-  onCancel,
-  onConfirm,
-}: {
-  deleting: boolean;
-  error: string | null;
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6"
-      style={{ backgroundColor: "rgba(255, 253, 245, 0.55)", backdropFilter: "blur(8px)" }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-modal-title"
-    >
-      <div className="relative w-full max-w-md bg-white border-thick border-neoBlack rounded-[14px] shadow-brutal p-8 md:p-10">
-        <div className="absolute top-4 left-4 flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-[#E11D48] border-[1.5px] border-black"></span>
-          <span className="text-xs font-mono font-bold tracking-tight text-gray-500 uppercase">Warning</span>
-        </div>
-        <div className="pt-6 text-center space-y-2">
-          <h2 className="text-2xl font-black tracking-tight text-[#111111]" id="delete-modal-title">
-            정말 삭제하시겠습니까?
-          </h2>
-          <p className="text-base font-bold text-[#E11D48]">삭제한 질문은 복구할 수 없습니다.</p>
-        </div>
-        {error && (
-          <p
-            className="mt-6 px-4 py-3 bg-white border-thick border-neoBlack rounded-xl text-sm font-bold text-center text-[#111111]"
-            role="alert"
-          >
-            {error}
-          </p>
-        )}
-        <div className="pt-8 flex items-center justify-center gap-4">
-          <button
-            autoFocus
-            className="w-32 h-11 px-6 font-bold text-sm bg-white hover:bg-gray-100 text-[#111111] border-thick border-neoBlack rounded-lg shadow-brutal-sm"
-            type="button"
-            onClick={onCancel}
-          >
-            취소
-          </button>
-          <button
-            className="w-32 h-11 px-6 font-bold text-sm bg-[#E11D48] hover:bg-[#BE123C] text-white border-thick border-neoBlack rounded-lg shadow-brutal-sm disabled:opacity-60 disabled:cursor-not-allowed"
-            type="button"
-            disabled={deleting || error !== null}
-            onClick={onConfirm}
-          >
-            {deleting ? "삭제 중..." : "삭제"}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
@@ -370,17 +283,22 @@ export default function QuestionDetail() {
                 </div>
               </article>
               {/* END: QuestionDetailCard */}
-              <div className="mt-8 text-center" data-purpose="bottom-indicator">
-                <div className="inline-flex items-center gap-2 text-sm font-extrabold text-neoBlack bg-white px-5 py-2.5 border-thick border-neoBlack rounded-xl shadow-brutal">
-                  <span className="text-xs">▼</span> <span>답변 {question.answerCount}개 · 답변 작성 · 유사 질문</span>
-                </div>
-              </div>
+              <AnswerSection
+                questionId={question.questionId}
+                questionWriterId={question.writer.memberId}
+                questionAccepted={question.accepted}
+                onAccepted={() => setState({ status: "done", question: { ...question, accepted: true } })}
+              />
             </>
           )}
         </main>
         {confirmOpen && (
-          <DeleteConfirmModal
-            deleting={deleting}
+          <ConfirmModal
+            tone="danger"
+            title="정말 삭제하시겠습니까?"
+            message="삭제한 질문은 복구할 수 없습니다. 답변도 함께 삭제됩니다."
+            confirmLabel="삭제"
+            busy={deleting}
             error={deleteError}
             onCancel={() => setConfirmOpen(false)}
             onConfirm={handleDelete}
