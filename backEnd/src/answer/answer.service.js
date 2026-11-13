@@ -43,10 +43,10 @@ async function createAnswer(memberId, questionId, content) {
 }
 
 // 답변 목록 (#42, REQ-ANSWER-002). 페이징하지 않는다.
-// shortcut: optionalAuth 미들웨어가 없어 조회자를 알 수 없으므로 liked는 항상 false. optionalAuth가 생기면 채운다.
-async function getAnswers(questionId) {
+// viewerId: 로그인한 조회자(optionalAuth), 비로그인은 null. liked는 조회자 기준이다.
+async function getAnswers(questionId, viewerId) {
   await assertQuestionExists(questionId);
-  const rows = await answerRepository.findAnswersByQuestionId(questionId);
+  const rows = await answerRepository.findAnswersByQuestionId(questionId, viewerId);
 
   const profiles = await findWriterProfiles(rows);
 
@@ -57,7 +57,7 @@ async function getAnswers(questionId) {
       content: row.content,
       writer: profiles.get(row.writerId),
       likeCount: row.likeCount,
-      liked: false,
+      liked: Boolean(row.liked),
       accepted: Boolean(row.accepted),
       acceptedAt: row.acceptedAt,
       replyCount: Number(row.replyCount),

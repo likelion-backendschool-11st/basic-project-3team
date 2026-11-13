@@ -71,13 +71,10 @@ async function updateQuestion(memberId, questionId, fields) {
 }
 
 // 상세 조회 (#39) + 조회수 1 증가 (#55). 응답에는 올린 뒤의 조회수가 담긴다.
-// shortcut: optionalAuth 미들웨어가 없어 조회자를 알 수 없다. liked는 항상 false이고 작성자 본인 조회도 조회수를 올린다.
-//           optionalAuth가 생기면 viewerId를 받아 둘 다 처리한다.
-async function getQuestion(questionId) {
-  if (!(await boardRepository.increaseViewCount(questionId))) {
-    throw new AppError(ErrorCode.QUESTION_NOT_FOUND);
-  }
-  const row = await boardRepository.findQuestionById(questionId);
+// viewerId: 로그인한 조회자(optionalAuth), 비로그인은 null. 작성자 본인 조회는 조회수를 올리지 않고, liked는 조회자 기준이다.
+async function getQuestion(questionId, viewerId) {
+  await boardRepository.increaseViewCount(questionId, viewerId);
+  const row = await boardRepository.findQuestionById(questionId, viewerId);
   if (row === null) {
     throw new AppError(ErrorCode.QUESTION_NOT_FOUND);
   }
@@ -101,7 +98,7 @@ async function getQuestion(questionId) {
     writer: { memberId, nickname, careerYears, techStacks, grade, acceptRate },
     viewCount: row.viewCount,
     likeCount: row.likeCount,
-    liked: false,
+    liked: Boolean(row.liked),
     answerCount: Number(row.answerCount),
     accepted: Boolean(row.accepted),
     createdAt: row.createdAt,
