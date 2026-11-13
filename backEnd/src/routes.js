@@ -5,6 +5,7 @@ const boardRouter = require('./board/board.routes');
 const memberRouter = require('./member/member.routes');
 const authRouter = require('./auth/auth.routes');
 const reportRouter = require('./report/report.routes');
+const adminRouter = require('./admin/admin.routes');
 const auth = require('./middlewares/auth');
 const admin = require('./middlewares/admin');
 
@@ -16,6 +17,8 @@ router.use('/auth', authRouter);
 
 // 관리자 API(/api/admin/**)는 모두 로그인 + ROLE_ADMIN이 필요하다. 관리자 라우터는 이 줄 아래에 연결한다.
 router.use('/admin', auth, admin);
+// 신고 목록·상세·처리 (/api/admin/reports/**)
+router.use('/admin', adminRouter);
 
 // 메인 화면 질문 목록 (GET /api/questions)
 router.use('/questions', mainRouter);
