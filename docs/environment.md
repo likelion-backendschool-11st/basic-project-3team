@@ -34,13 +34,15 @@
 ```
 backEnd/
  ├─ src/
- │   ├─ routes/          # URL → 미들웨어·컨트롤러 연결
- │   ├─ controllers/     # 요청/응답 변환
- │   ├─ services/        # 비즈니스 규칙, 트랜잭션
- │   ├─ repositories/    # SQL (mysql2)
- │   ├─ middlewares/     # auth(JWT), admin, errorHandler
- │   ├─ utils/           # 공통 응답, ErrorCode, AppError
+ │   ├─ {도메인}/         # 도메인 하나의 파일을 한 폴더에 모은다 (아래 목록)
+ │   │   ├─ {도메인}.routes.js       # URL → 미들웨어·컨트롤러 연결
+ │   │   ├─ {도메인}.controller.js   # 요청/응답 변환
+ │   │   ├─ {도메인}.service.js      # 비즈니스 규칙, 트랜잭션
+ │   │   └─ {도메인}.repository.js   # SQL (mysql2)
+ │   ├─ middlewares/     # 공통: auth(JWT), admin, errorHandler
+ │   ├─ utils/           # 공통: 응답, ErrorCode, AppError, 페이징
  │   ├─ config/db.js     # mysql2 커넥션 풀
+ │   ├─ routes.js        # 도메인 라우터를 /api 아래에 연결
  │   └─ app.js
  ├─ db/                  # schema.sql, seed.sql
  └─ .env.example
@@ -58,4 +60,6 @@ docs/
  ├─ api.md               # API 명세
  └─ retro/               # 스프린트 회고 (sprint1.md ...)
 ```
-- 백엔드 파일은 도메인별로 나눈다: auth, member, question, answer, reply, like, report, admin, notification (예: `question.routes.js`, `question.controller.js`, `question.service.js`, `question.repository.js`)
+- 백엔드 파일은 도메인 폴더로 나눈다: main, auth, member, question, answer, reply, like, report, admin, notification (예: `src/question/question.routes.js`, `question.controller.js`, `question.service.js`, `question.repository.js`)
+  - 여러 사람이 동시에 작업하므로 자기 도메인 폴더 안에서 작업하고, 공통 파일(`middlewares/`, `utils/`, `config/`, `routes.js`)은 필요한 만큼만 고친다.
+  - 한 도메인에서만 쓰는 상수는 그 도메인 폴더에 둔다 (`{도메인}.constants.js`).
