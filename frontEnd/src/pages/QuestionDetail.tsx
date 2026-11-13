@@ -11,6 +11,7 @@ import {
   type QuestionDetail as Question,
 } from "../api/question";
 import Header from "../components/Header";
+import { tagSearchPath } from "../components/questionList";
 import { useAuth } from "../hooks/useAuth";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -323,13 +324,15 @@ export default function QuestionDetail() {
 
                 {question.tags.length > 0 && (
                   <div className="py-4 flex flex-wrap items-center gap-2">
+                    {/* #61: 태그를 누르면 그 태그로 검색한다 (REQ-SEARCH-003) */}
                     {question.tags.map((tag) => (
-                      <span
+                      <Link
                         key={tag}
-                        className="inline-block px-3 py-1 bg-white border-thick border-neoBlack rounded-xl shadow-brutal-sm text-xs font-bold"
+                        to={tagSearchPath(tag)}
+                        className="inline-block px-3 py-1 bg-white border-thick border-neoBlack rounded-xl shadow-brutal-sm text-xs font-bold hover:bg-[#FFD43B]"
                       >
                         # {tag}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 )}

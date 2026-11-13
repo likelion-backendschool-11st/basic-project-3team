@@ -13,6 +13,7 @@ import {
 } from "../api/question";
 import FieldError from "../components/FieldError";
 import Header from "../components/Header";
+import RecommendedTags from "../components/tag/RecommendedTags";
 import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -44,6 +45,7 @@ export default function QuestionEdit() {
     change,
     handleTagKeyDown,
     removeTag,
+    toggleTag,
     submit,
   } = useQuestionForm();
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
@@ -317,6 +319,13 @@ export default function QuestionEdit() {
                   />
                 </div>
                 <FieldError message={errors.tags} />
+                {/* #61: 제목·내용 기반 추천 태그. 누르면 추가, 다시 누르면 제거 */}
+                <RecommendedTags
+                  title={values.title}
+                  content={values.content}
+                  selected={values.tags}
+                  onToggle={toggleTag}
+                />
               </div>
               <div className="flex items-center justify-end gap-3 pt-4 border-t-[2.5px] border-[#111111]">
                 <button
