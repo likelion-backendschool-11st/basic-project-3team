@@ -11,6 +11,25 @@ async function assertQuestionExists(questionId) {
   }
 }
 
+// 목록 행(writerId·writerNickname·writerBio·writerCareerYears)의 작성자 정보를 사람마다 한 번만 계산한다.
+// 답변 목록과 답글 목록(reply.service.js)이 함께 쓴다. 반환: Map<memberId, docs/api.md 작성자 정보>
+async function findWriterProfiles(rows) {
+  const writers = new Map(rows.map((row) => [row.writerId, row]));
+  return new Map(
+    await Promise.all(
+      [...writers.values()].map(async (row) => {
+        const { memberId, nickname, careerYears, techStacks, grade, acceptRate } = await buildProfile({
+          memberId: row.writerId,
+          nickname: row.writerNickname,
+          bio: row.writerBio,
+          careerYears: row.writerCareerYears,
+        });
+        return [memberId, { memberId, nickname, careerYears, techStacks, grade, acceptRate }];
+      }),
+    ),
+  );
+}
+
 // 답변 작성 (#42, REQ-ANSWER-001)
 // shortcut: 질문 작성자에게 보내는 답변 등록 알림(ANSWER_CREATED)은 알림 기능(#69)이 생기면 여기서 보낸다.
 async function createAnswer(memberId, questionId, content) {
@@ -26,21 +45,7 @@ async function getAnswers(questionId) {
   await assertQuestionExists(questionId);
   const rows = await answerRepository.findAnswersByQuestionId(questionId);
 
-  // 작성자 정보(등급·채택률 등)는 사람마다 한 번만 계산한다.
-  const writers = new Map(rows.map((row) => [row.writerId, row]));
-  const profiles = new Map(
-    await Promise.all(
-      [...writers.values()].map(async (row) => {
-        const { memberId, nickname, careerYears, techStacks, grade, acceptRate } = await buildProfile({
-          memberId: row.writerId,
-          nickname: row.writerNickname,
-          bio: row.writerBio,
-          careerYears: row.writerCareerYears,
-        });
-        return [memberId, { memberId, nickname, careerYears, techStacks, grade, acceptRate }];
-      }),
-    ),
-  );
+  const profiles = await findWriterProfiles(rows);
 
   return {
     answerCount: rows.length,
@@ -122,4 +127,4 @@ async function acceptAnswer(memberId, answerId) {
   });
 }
 
-module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer, acceptAnswer };
+module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer, acceptAnswer, findWriterProfiles };
