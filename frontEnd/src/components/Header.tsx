@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { ADMIN_REPORTS_PATH } from "./admin/adminLabels";
 import SearchBar from "./search/SearchBar";
 
 const MAIN_PATH = "/questions";
@@ -11,7 +12,7 @@ const buttonBase =
 // 닉네임을 누르면 뜨는 프로필 팝오버 (REQ-MAIN-002, 003)
 function ProfileMenu({ nickname }: { nickname: string }) {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -56,6 +57,12 @@ function ProfileMenu({ nickname }: { nickname: string }) {
           <Link className={itemClass} to="/profile-edit" role="menuitem" onClick={() => setOpen(false)}>
             프로필 수정
           </Link>
+          {/* #33: 관리자에게만 관리자 화면 메뉴를 보여 준다. */}
+          {user?.role === "ROLE_ADMIN" && (
+            <Link className={itemClass} to={ADMIN_REPORTS_PATH} role="menuitem" onClick={() => setOpen(false)}>
+              관리자 페이지
+            </Link>
+          )}
           <button className={`${itemClass} text-[#E11D48]`} type="button" role="menuitem" onClick={handleLogout}>
             로그아웃
           </button>
