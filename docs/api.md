@@ -648,13 +648,27 @@
   "createdAt": "2026-11-12T11:00:00"
 }
 ```
-- 다른 회원의 알림을 읽음 처리하면 403 `FORBIDDEN`.
+- 다른 회원의 알림을 읽음 처리하면 403 `FORBIDDEN`, 없는 알림이면 404 `NOTIFICATION_NOT_FOUND`. 이미 읽은 알림이어도 200.
 - 자기 질문에 자기가 답변하거나 자기 질문을 올린 경우에는 알림을 보내지 않는다.
+- 관심 카테고리 알림은 `notificationEnabled = true`이고 상태가 `ACTIVE`인 회원에게만 보낸다. 답변·채택 알림은 항상 보낸다.
+- 알림 문장(`message`)은 만들 때 저장한다. 나중에 질문 제목이 바뀌어도 그대로다.
+  - `ANSWER_CREATED`: `'{질문 제목}'에 새 답변이 달렸습니다.`
+  - `ANSWER_ACCEPTED`: `'{질문 제목}'에 단 내 답변이 채택되었습니다.`
+  - `CATEGORY_QUESTION`: `관심 카테고리 '{카테고리}'에 새 질문이 올라왔습니다: '{질문 제목}'`
+- 알림은 질문 작성·답변 작성·채택이 저장된 뒤 만든다. 알림 저장이 실패해도 원래 요청은 성공으로 응답한다.
+
+응답 (`data`)
+| API | 응답 |
+|---|---|
+| 안 읽은 알림 수 | `{ "unreadCount": 3 }` |
+| 알림 읽음 처리 | `{ "notificationId": 8, "read": true }` |
+| 전체 읽음 처리 | `{ "updatedCount": 2 }` (이번에 읽음으로 바뀐 수) |
 
 ### 실시간 전송 (socket.io)
-- 연결: 클라이언트가 `auth: { token: accessToken }`으로 접속하면 서버가 토큰을 검증하고 `member:{memberId}` 방에 넣는다. 토큰이 잘못되면 연결을 거부한다.
+- 연결: 클라이언트가 `auth: { token: accessToken }`으로 접속하면 서버가 토큰을 검증하고 `member:{memberId}` 방에 넣는다. 토큰이 잘못되면 연결을 거부한다 (`connect_error`의 `message`: `UNAUTHORIZED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`).
 - 이벤트: 서버 → 클라이언트 `notification`, 데이터는 알림 목록 항목과 같다.
 - Access Token을 재발급하면 새 토큰으로 다시 연결한다.
+- API 서버와 같은 포트(8080)를 쓴다. 개발 환경에서는 Vite 프록시에 `/socket.io`(WebSocket)를 추가해 같은 출처로 접속한다.
 
 ## 10. 태그·카테고리 (Tag, Category)
 | 기능 | Method | URL | 권한 |
