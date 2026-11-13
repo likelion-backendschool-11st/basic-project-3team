@@ -1,7 +1,6 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import { routes } from './routes'
 import Login from './pages/Login'
-import QuestionDetail from './pages/QuestionDetail'
 import AuthProvider from './components/AuthProvider'
 
 function ScreenIndex() {
@@ -29,8 +28,6 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/screens" element={<ScreenIndex />} />
-          {/* 질문 등록 후 이동하는 상세 페이지. 실제 내용 연결은 #26에서 한다. */}
-          <Route path="/questions/:questionId" element={<QuestionDetail />} />
           {routes.map(({ path, Component }) => (
             <Route key={path} path={path} element={<Component />} />
           ))}

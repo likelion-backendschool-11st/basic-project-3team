@@ -98,7 +98,7 @@ export default function Ask() {
     setFormError(null);
     try {
       const { questionId } = await createQuestion({ title: title.trim(), content, categoryId: Number(categoryId), tags });
-      navigate(`/questions/${questionId}`); // REQ-QUESTION-001: 등록 후 상세 페이지로 이동
+      navigate(`/question-detail?questionId=${questionId}`); // REQ-QUESTION-001: 등록 후 상세 페이지로 이동 (목록 화면과 같은 주소)
     } catch (err) {
       const fieldErrors = getFieldErrors(err);
       if (fieldErrors.length > 0) {
