@@ -1,10 +1,5 @@
 const pool = require('../config/db');
 
-async function findMemberStatus(memberId) {
-  const [rows] = await pool.query('SELECT status FROM member WHERE member_id = ?', [memberId]);
-  return rows[0]?.status ?? null;
-}
-
 async function existsCategory(categoryId) {
   const [rows] = await pool.query('SELECT 1 FROM category WHERE category_id = ?', [categoryId]);
   return rows.length > 0;
@@ -36,4 +31,4 @@ async function insertQuestionTags(conn, questionId, tagIds) {
   ]);
 }
 
-module.exports = { findMemberStatus, existsCategory, findTagIdsByNames, insertQuestion, insertQuestionTags };
+module.exports = { existsCategory, findTagIdsByNames, insertQuestion, insertQuestionTags };
