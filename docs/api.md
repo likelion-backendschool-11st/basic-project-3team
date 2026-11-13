@@ -476,6 +476,13 @@
 { "answerId": 31 }
 ```
 
+삭제 (REQ-ANSWER-004)
+- 작성자: 채택된 답변이면 409 `ACCEPTED_ANSWER_LOCKED`. 관리자: 채택된 답변도 삭제할 수 있다. 그 외 회원은 403 `FORBIDDEN`.
+- 정지·탈퇴 회원은 403, 없거나 이미 삭제된 답변은 404 `ANSWER_NOT_FOUND`.
+- 답변과 달린 답글을 같은 트랜잭션에서 `deleted = true`로 바꾼다. 이미 삭제된 답글의 삭제 시각은 바꾸지 않는다.
+
+삭제 응답 — 200, `data`는 `null`
+
 목록 응답 (`data`) — 페이징하지 않는다 (REQ-ANSWER-002).
 ```json
 {

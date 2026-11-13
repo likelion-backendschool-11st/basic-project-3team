@@ -3,6 +3,7 @@ const { findWritableMember, buildProfile } = require('../member/mypage.service')
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { withTransaction } = require('../utils/transaction');
+const { ROLE } = require('../utils/constants');
 
 async function assertQuestionExists(questionId) {
   if (!(await answerRepository.existsQuestion(questionId))) {
@@ -76,4 +77,26 @@ async function updateAnswer(memberId, answerId, content) {
   });
 }
 
-module.exports = { createAnswer, getAnswers, updateAnswer };
+// 답변 삭제 (#44, REQ-ANSWER-004). 작성자는 채택되지 않은 답변만, 관리자는 채택된 답변도 지울 수 있다.
+// 관리자가 채택된 답변을 지워도 question.accepted_answer_id는 그대로 둔다 (해결 표시 유지, 다시 채택 불가).
+async function deleteAnswer({ memberId, role }, answerId) {
+  await findWritableMember(memberId);
+  await withTransaction(async (conn) => {
+    const answer = await answerRepository.findAnswerForUpdate(conn, answerId);
+    if (answer === null) {
+      throw new AppError(ErrorCode.ANSWER_NOT_FOUND);
+    }
+    if (role !== ROLE.ADMIN) {
+      if (answer.memberId !== memberId) {
+        throw new AppError(ErrorCode.FORBIDDEN);
+      }
+      if (answer.accepted) {
+        throw new AppError(ErrorCode.ACCEPTED_ANSWER_LOCKED);
+      }
+    }
+    await answerRepository.softDeleteRepliesByAnswerId(conn, answerId);
+    await answerRepository.softDeleteAnswer(conn, answerId);
+  });
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer };
