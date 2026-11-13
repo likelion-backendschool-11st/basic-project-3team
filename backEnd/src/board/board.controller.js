@@ -125,4 +125,13 @@ async function updateQuestion(req, res, next) {
   }
 }
 
-module.exports = { createQuestion, getQuestion, updateQuestion };
+async function deleteQuestion(req, res, next) {
+  try {
+    await boardService.deleteQuestion(req.user, parseQuestionId(req.params.questionId));
+    return success(res);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createQuestion, getQuestion, updateQuestion, deleteQuestion };

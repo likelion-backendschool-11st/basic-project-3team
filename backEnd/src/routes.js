@@ -22,7 +22,7 @@ router.use('/questions', mainRouter);
 // 질문 검색 (GET /api/questions/search)
 // board의 /questions/{questionId}보다 먼저 연결해야 /search가 questionId로 잡히지 않는다.
 router.use('/questions', questionRouter);
-// 질문 작성·상세 조회 (POST /api/questions, GET /api/questions/:questionId)
+// 질문 작성·상세 조회·수정·삭제 (POST /api/questions, GET·PATCH·DELETE /api/questions/:questionId)
 router.use('/questions', boardRouter);
 
 // 회원가입, 중복 확인 (/api/members/**)

@@ -4,6 +4,7 @@ const { findWritableMember, buildProfile } = require('../member/mypage.service')
 const { findTagsByQuestionIds } = require('../main/main.repository');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
+const { ROLE } = require('../utils/constants');
 
 async function withTransaction(work) {
   const conn = await pool.getConnection();
@@ -117,4 +118,29 @@ async function getQuestion(questionId) {
   };
 }
 
-module.exports = { createQuestion, getQuestion, updateQuestion };
+// 질문 삭제 (#41). 관리자 신고 처리(#51)에서도 자기 트랜잭션 안에서 isAdmin: true로 호출할 수 있다.
+// 작성자는 채택된 답변이 있으면 지울 수 없고, 관리자는 채택 여부와 관계없이 지울 수 있다.
+async function removeQuestion(conn, questionId, { memberId, isAdmin }) {
+  const question = await boardRepository.findQuestionForUpdate(conn, questionId);
+  if (question === null) {
+    throw new AppError(ErrorCode.QUESTION_NOT_FOUND);
+  }
+  if (!isAdmin) {
+    if (question.memberId !== memberId) {
+      throw new AppError(ErrorCode.FORBIDDEN);
+    }
+    if (question.accepted) {
+      throw new AppError(ErrorCode.QUESTION_HAS_ACCEPTED_ANSWER);
+    }
+  }
+  await boardRepository.softDeleteRepliesByQuestionId(conn, questionId);
+  await boardRepository.softDeleteAnswersByQuestionId(conn, questionId);
+  await boardRepository.softDeleteQuestion(conn, questionId);
+}
+
+async function deleteQuestion({ memberId, role }, questionId) {
+  await findWritableMember(memberId);
+  await withTransaction((conn) => removeQuestion(conn, questionId, { memberId, isAdmin: role === ROLE.ADMIN }));
+}
+
+module.exports = { createQuestion, getQuestion, updateQuestion, deleteQuestion, removeQuestion };

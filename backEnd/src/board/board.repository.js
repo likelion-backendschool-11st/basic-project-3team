@@ -93,6 +93,39 @@ async function deleteQuestionTags(conn, questionId) {
   await conn.query('DELETE FROM question_tag WHERE question_id = ?', [questionId]);
 }
 
+// 삭제 트랜잭션 안에서 행을 잠가, 확인과 삭제 사이에 답변이 채택되지 않게 한다.
+async function findQuestionForUpdate(conn, questionId) {
+  const [rows] = await conn.query(
+    `SELECT member_id AS memberId, accepted_answer_id IS NOT NULL AS accepted
+       FROM question
+      WHERE question_id = ? AND deleted = FALSE
+        FOR UPDATE`,
+    [questionId],
+  );
+  return rows[0] ?? null;
+}
+
+// 이미 삭제된 답변·답글은 건드리지 않아 원래 삭제 시각을 유지한다.
+async function softDeleteRepliesByQuestionId(conn, questionId) {
+  await conn.query(
+    `UPDATE reply r
+       JOIN answer a ON a.answer_id = r.answer_id
+        SET r.deleted = TRUE, r.deleted_at = NOW()
+      WHERE a.question_id = ? AND r.deleted = FALSE`,
+    [questionId],
+  );
+}
+
+async function softDeleteAnswersByQuestionId(conn, questionId) {
+  await conn.query('UPDATE answer SET deleted = TRUE, deleted_at = NOW() WHERE question_id = ? AND deleted = FALSE', [
+    questionId,
+  ]);
+}
+
+async function softDeleteQuestion(conn, questionId) {
+  await conn.query('UPDATE question SET deleted = TRUE, deleted_at = NOW() WHERE question_id = ?', [questionId]);
+}
+
 module.exports = {
   existsCategory,
   findTagIdsByNames,
@@ -103,4 +136,8 @@ module.exports = {
   findWriterId,
   updateQuestion,
   deleteQuestionTags,
+  findQuestionForUpdate,
+  softDeleteRepliesByQuestionId,
+  softDeleteAnswersByQuestionId,
+  softDeleteQuestion,
 };
