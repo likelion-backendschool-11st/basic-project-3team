@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import AuthProvider from './components/AuthProvider'
 import ErrorBoundary from './components/ErrorBoundary'
 import NotFound from './pages/NotFound'
+import MemberProfile from './pages/MemberProfile'
 
 function ScreenIndex() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/screens" element={<ScreenIndex />} />
+            <Route path="/members/:memberId" element={<MemberProfile />} />
             {routes.map(({ path, Component }) => (
               <Route key={path} path={path} element={<Component />} />
             ))}

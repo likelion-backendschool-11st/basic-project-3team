@@ -187,8 +187,9 @@ async function findQuestionsByMember(memberId, { limit, offset }) {
             title,
             DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt,
             accepted_answer_id IS NOT NULL AS accepted,
-            like_count AS likeCount
-       FROM question
+            like_count AS likeCount,
+            (SELECT COUNT(*) FROM answer a WHERE a.question_id = q.question_id AND a.deleted = FALSE) AS answerCount
+       FROM question q
       WHERE member_id = ? AND deleted = FALSE
       ORDER BY created_at DESC, question_id DESC
       LIMIT ? OFFSET ?`,

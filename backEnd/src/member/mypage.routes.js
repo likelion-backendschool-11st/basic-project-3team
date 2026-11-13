@@ -16,6 +16,7 @@ router.get('/me/accepted-answers', auth, mypageController.getAcceptedAnswers);
 router.get('/me/questions', auth, mypageController.getMyQuestions);
 router.get('/me/answers', auth, mypageController.getMyAnswers);
 
-router.get('/:memberId', mypageController.getProfile);
+// 다른 회원 프로필도 로그인한 회원만 볼 수 있다.
+router.get('/:memberId', auth, mypageController.getProfile);
 
 module.exports = router;
