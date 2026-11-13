@@ -9,6 +9,7 @@ const reportRouter = require('./report/report.routes');
 const adminRouter = require('./admin/admin.routes');
 const tagRouter = require('./tag/tag.routes');
 const categoryRouter = require('./tag/category.routes');
+const notificationRouter = require('./notification/notification.routes');
 const auth = require('./middlewares/auth');
 const admin = require('./middlewares/admin');
 
@@ -44,5 +45,8 @@ router.use('/reports', reportRouter);
 // 태그 목록·인기 태그·추천 태그 (/api/tags/**), 카테고리 목록 (GET /api/categories)
 router.use('/tags', tagRouter);
 router.use('/categories', categoryRouter);
+
+// 알림 목록·안 읽은 수·읽음 처리 (/api/notifications/**). 실시간 전송은 app.js에서 socket.io로 연결한다.
+router.use('/notifications', notificationRouter);
 
 module.exports = router;
