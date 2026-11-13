@@ -57,10 +57,23 @@ async function updateAnswerContent(conn, answerId, content) {
   await conn.query('UPDATE answer SET content = ? WHERE answer_id = ?', [content, answerId]);
 }
 
+// 이미 삭제된 답글은 건드리지 않아 원래 삭제 시각을 유지한다.
+async function softDeleteRepliesByAnswerId(conn, answerId) {
+  await conn.query('UPDATE reply SET deleted = TRUE, deleted_at = NOW() WHERE answer_id = ? AND deleted = FALSE', [
+    answerId,
+  ]);
+}
+
+async function softDeleteAnswer(conn, answerId) {
+  await conn.query('UPDATE answer SET deleted = TRUE, deleted_at = NOW() WHERE answer_id = ?', [answerId]);
+}
+
 module.exports = {
   existsQuestion,
   insertAnswer,
   findAnswersByQuestionId,
   findAnswerForUpdate,
   updateAnswerContent,
+  softDeleteRepliesByAnswerId,
+  softDeleteAnswer,
 };

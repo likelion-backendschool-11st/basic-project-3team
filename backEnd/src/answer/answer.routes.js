@@ -12,5 +12,6 @@ questionAnswerRouter.post('/', auth, answerController.createAnswer);
 const answerRouter = express.Router();
 
 answerRouter.patch('/:answerId', auth, answerController.updateAnswer);
+answerRouter.delete('/:answerId', auth, answerController.deleteAnswer);
 
 module.exports = { questionAnswerRouter, answerRouter };

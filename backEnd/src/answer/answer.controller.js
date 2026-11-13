@@ -52,4 +52,13 @@ async function updateAnswer(req, res, next) {
   }
 }
 
-module.exports = { createAnswer, getAnswers, updateAnswer };
+async function deleteAnswer(req, res, next) {
+  try {
+    await answerService.deleteAnswer(req.user, parsePathId(req.params.answerId, 'answerId'));
+    return success(res);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer };
