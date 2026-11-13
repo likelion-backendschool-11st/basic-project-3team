@@ -218,6 +218,8 @@ async function getMyAnswers(memberId, { page, size }) {
 }
 
 module.exports = {
+  findWritableMember,
+  buildProfile,
   getProfile,
   getMe,
   updateProfile,

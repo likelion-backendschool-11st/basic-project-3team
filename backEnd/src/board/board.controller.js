@@ -54,4 +54,25 @@ async function createQuestion(req, res, next) {
   }
 }
 
-module.exports = { createQuestion };
+const DIGITS = /^\d+$/;
+
+function parseQuestionId(value) {
+  const questionId = DIGITS.test(value) ? Number(value) : 0;
+  if (!Number.isSafeInteger(questionId) || questionId < 1) {
+    throw new AppError(ErrorCode.INVALID_INPUT, {
+      errors: [{ field: 'questionId', reason: 'questionId는 1 이상의 정수여야 합니다.' }],
+    });
+  }
+  return questionId;
+}
+
+async function getQuestion(req, res, next) {
+  try {
+    const data = await boardService.getQuestion(parseQuestionId(req.params.questionId));
+    return success(res, data);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createQuestion, getQuestion };
