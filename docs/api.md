@@ -240,8 +240,9 @@
 ### 내 정보 조회
 응답 (`data`) — 프로필 조회 응답에 아래 값을 더한다.
 ```json
-{ "loginId": "devin_user", "phone": "01012345678", "role": "ROLE_USER" }
+{ "loginId": "devin_user", "phone": "01012345678", "role": "ROLE_USER", "createdAt": "2026-11-01T10:00:00" }
 ```
+- `createdAt`은 가입일이다 (개인정보 수정 화면에 표시, REQ-MYPAGE-003).
 
 ### 프로필 수정 (REQ-MYPAGE-002)
 요청 — 보낸 필드만 바꾼다.

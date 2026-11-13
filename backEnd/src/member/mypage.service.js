@@ -93,7 +93,7 @@ async function getProfile(memberId) {
 async function getMe(memberId) {
   const member = await findMyMember(memberId);
   const profile = await buildProfile(member);
-  return { ...profile, loginId: member.loginId, phone: member.phone, role: member.role };
+  return { ...profile, loginId: member.loginId, phone: member.phone, role: member.role, createdAt: member.createdAt };
 }
 
 // input에는 요청에 들어 있던 필드만 있다. techStacks는 소문자·중복 제거된 이름 목록.
