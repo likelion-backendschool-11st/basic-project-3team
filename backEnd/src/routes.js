@@ -32,7 +32,7 @@ router.use('/questions', questionRouter);
 router.use('/questions', boardRouter);
 // 답변 작성·목록 (POST·GET /api/questions/:questionId/answers)
 router.use('/questions/:questionId/answers', questionAnswerRouter);
-// 답변 수정·삭제 (PATCH·DELETE /api/answers/:answerId)
+// 답변 수정·삭제·채택 (PATCH·DELETE /api/answers/:answerId, POST /api/answers/:answerId/accept)
 router.use('/answers', answerRouter);
 
 // 회원가입, 중복 확인 (/api/members/**)

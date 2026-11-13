@@ -99,4 +99,27 @@ async function deleteAnswer({ memberId, role }, answerId) {
   });
 }
 
-module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer };
+// 답변 채택 (#45, REQ-ANSWER-005, 006). 질문 작성자만(관리자 포함 다른 회원은 403), 본인 답변 불가, 질문당 1개·취소 불가.
+// 채택 여부·해결 여부·채택률·등급은 모두 question.accepted_answer_id로 계산하므로 이 UPDATE 하나로 함께 반영된다.
+// shortcut: 답변 작성자에게 보내는 채택 알림(ANSWER_ACCEPTED)은 알림 기능(#69)이 생기면 여기서 보낸다.
+async function acceptAnswer(memberId, answerId) {
+  await findWritableMember(memberId);
+  await withTransaction(async (conn) => {
+    const answer = await answerRepository.findAnswerForUpdate(conn, answerId);
+    if (answer === null) {
+      throw new AppError(ErrorCode.ANSWER_NOT_FOUND);
+    }
+    if (answer.questionWriterId !== memberId) {
+      throw new AppError(ErrorCode.FORBIDDEN);
+    }
+    if (answer.memberId === memberId) {
+      throw new AppError(ErrorCode.CANNOT_ACCEPT_OWN_ANSWER);
+    }
+    // 관리자가 채택된 답변을 지운 질문도 accepted_answer_id가 남아 있어 다시 채택할 수 없다.
+    if (answer.questionAccepted || !(await answerRepository.acceptAnswer(conn, answer.questionId, answerId))) {
+      throw new AppError(ErrorCode.ALREADY_ACCEPTED);
+    }
+  });
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer, acceptAnswer };
