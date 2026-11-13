@@ -2,6 +2,7 @@ const boardService = require('./board.service');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { success } = require('../utils/response');
+const { parsePathId } = require('../utils/params');
 const { TITLE_MIN, TITLE_MAX, CONTENT_MIN, CONTENT_MAX, MAX_TAGS } = require('./board.constants');
 
 // [...str].length: 이모지 등도 1자로 센다 (MySQL VARCHAR 글자 수와 같게)
@@ -94,17 +95,7 @@ async function createQuestion(req, res, next) {
   }
 }
 
-const DIGITS = /^\d+$/;
-
-function parseQuestionId(value) {
-  const questionId = DIGITS.test(value) ? Number(value) : 0;
-  if (!Number.isSafeInteger(questionId) || questionId < 1) {
-    throw new AppError(ErrorCode.INVALID_INPUT, {
-      errors: [{ field: 'questionId', reason: 'questionId는 1 이상의 정수여야 합니다.' }],
-    });
-  }
-  return questionId;
-}
+const parseQuestionId = (value) => parsePathId(value, 'questionId');
 
 async function getQuestion(req, res, next) {
   try {
