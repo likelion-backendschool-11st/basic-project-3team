@@ -5,6 +5,7 @@ const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { ROLE } = require('../utils/constants');
 const { withTransaction } = require('../utils/transaction');
+const { notifyCategoryQuestion } = require('../notification/notification.service');
 
 async function assertCategoryExists(categoryId) {
   if (!(await boardRepository.existsCategory(categoryId))) {
@@ -29,11 +30,14 @@ async function createQuestion(memberId, { title, content, categoryId, tagNames }
   await assertCategoryExists(categoryId);
   const tagIds = await findTagIds(tagNames);
 
-  return withTransaction(async (conn) => {
-    const questionId = await boardRepository.insertQuestion(conn, { memberId, categoryId, title, content });
-    await boardRepository.insertQuestionTags(conn, questionId, tagIds);
-    return questionId;
+  const questionId = await withTransaction(async (conn) => {
+    const id = await boardRepository.insertQuestion(conn, { memberId, categoryId, title, content });
+    await boardRepository.insertQuestionTags(conn, id, tagIds);
+    return id;
   });
+  // #69: commit된 뒤 관심 카테고리 회원에게 알림. 기다리지 않으며, 실패해도 질문 작성은 성공으로 둔다.
+  void notifyCategoryQuestion({ questionId });
+  return questionId;
 }
 
 // 질문 수정 (#40). fields에는 보낸 필드만 있다. tagNames가 있으면 태그 전체를 교체한다.
