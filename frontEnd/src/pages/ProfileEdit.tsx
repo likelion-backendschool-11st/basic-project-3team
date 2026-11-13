@@ -314,7 +314,7 @@ export default function ProfileEdit() {
       >
         {/* BEGIN: MainContainer */}
         <Header />
-        <main className="max-w-4xl mx-auto space-y-6 px-4" data-purpose="profile-edit-container">
+        <main className="max-w-4xl mx-auto space-y-6 px-4 pt-8" data-purpose="profile-edit-container">
           {/* BEGIN: HeaderSection */}
           <header className="flex items-center justify-between pb-2" data-purpose="page-header">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">프로필 수정</h1>
