@@ -1,4 +1,5 @@
 const mypageService = require('./mypage.service');
+const { setRefreshCookie } = require('../auth/auth.controller');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { success } = require('../utils/response');
@@ -197,7 +198,11 @@ async function updateProfile(req, res, next) {
 
 async function updatePrivate(req, res, next) {
   try {
-    await mypageService.updatePrivate(req.user.memberId, parsePrivateBody(toBody(req.body)));
+    const { refreshToken } = await mypageService.updatePrivate(req.user.memberId, parsePrivateBody(toBody(req.body)));
+    // 비밀번호를 바꿨으면 새 Refresh 쿠키를 내려줘 이 기기의 로그인을 유지한다.
+    if (refreshToken) {
+      setRefreshCookie(res, refreshToken);
+    }
     return success(res);
   } catch (err) {
     return next(err);

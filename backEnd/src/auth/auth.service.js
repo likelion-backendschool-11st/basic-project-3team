@@ -111,6 +111,14 @@ async function logout(memberId) {
   await authRepository.deleteRefreshToken(memberId);
 }
 
+// 새 Refresh Token을 발급해 저장된 토큰을 교체한다. 회원당 1개라서 다른 기기의 토큰은 더 이상 재발급에 쓸 수 없다.
+// 마이페이지 비밀번호 변경(REQ-FIND-005와 같은 취지)에서 같은 트랜잭션으로 호출한다.
+async function issueRefreshToken(memberId, conn) {
+  const { refreshToken, tokenHash, expiresAt } = createRefreshToken(memberId);
+  await authRepository.saveRefreshToken({ memberId, tokenHash, expiresAt }, conn);
+  return refreshToken;
+}
+
 // 앞 3자만 보이고 나머지는 같은 길이의 *로 가린다 (devin_user1 → dev********).
 function maskLoginId(loginId) {
   return loginId.slice(0, LOGIN_ID_VISIBLE_LENGTH) + '*'.repeat(Math.max(loginId.length - LOGIN_ID_VISIBLE_LENGTH, 0));
@@ -163,4 +171,4 @@ async function resetPassword({ loginId, phone, newPassword }) {
   }
 }
 
-module.exports = { login, reissue, logout, findLoginId, verifyPasswordReset, resetPassword };
+module.exports = { login, reissue, logout, issueRefreshToken, findLoginId, verifyPasswordReset, resetPassword };

@@ -2,6 +2,8 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import { routes } from './routes'
 import Login from './pages/Login'
 import AuthProvider from './components/AuthProvider'
+import ErrorBoundary from './components/ErrorBoundary'
+import NotFound from './pages/NotFound'
 import MemberProfile from './pages/MemberProfile'
 
 function ScreenIndex() {
@@ -26,14 +28,18 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/screens" element={<ScreenIndex />} />
-          <Route path="/members/:memberId" element={<MemberProfile />} />
-          {routes.map(({ path, Component }) => (
-            <Route key={path} path={path} element={<Component />} />
-          ))}
-        </Routes>
+        {/* #24: 화면 오류는 오류 화면으로, 없는 주소는 404 화면으로 보낸다 */}
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/screens" element={<ScreenIndex />} />
+            <Route path="/members/:memberId" element={<MemberProfile />} />
+            {routes.map(({ path, Component }) => (
+              <Route key={path} path={path} element={<Component />} />
+            ))}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   )
