@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 태그 검색 결과 (10번)". Scoped to #page-tag-search-results so it can't clash with other screens.
 module.exports = {
   important: "#page-tag-search-results",
-  content: ["./src/pages/TagSearchResults.tsx"],
+  content: ["./src/pages/TagSearchResults.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{

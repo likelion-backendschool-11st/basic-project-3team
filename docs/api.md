@@ -488,6 +488,24 @@
 { "answerId": 31 }
 ```
 
+삭제 (REQ-ANSWER-004)
+- 작성자: 채택된 답변이면 409 `ACCEPTED_ANSWER_LOCKED`. 관리자: 채택된 답변도 삭제할 수 있다. 그 외 회원은 403 `FORBIDDEN`.
+- 정지·탈퇴 회원은 403, 없거나 이미 삭제된 답변은 404 `ANSWER_NOT_FOUND`.
+- 답변과 달린 답글을 같은 트랜잭션에서 `deleted = true`로 바꾼다. 이미 삭제된 답글의 삭제 시각은 바꾸지 않는다.
+
+삭제 응답 — 200, `data`는 `null`
+
+채택 (REQ-ANSWER-005, 006) — 요청 본문 없음
+- 질문 작성자만 채택할 수 있다. 다른 회원(관리자 포함)이면 403 `FORBIDDEN`, 정지·탈퇴 회원은 403.
+- 없거나 삭제된 답변은 404 `ANSWER_NOT_FOUND`, 본인 답변은 400 `CANNOT_ACCEPT_OWN_ANSWER`.
+- 이미 채택된 답변이 있는 질문(관리자가 채택된 답변을 지운 질문 포함)은 409 `ALREADY_ACCEPTED`. 동시에 요청해도 하나만 채택된다.
+- 채택 여부·해결 여부·채택률·등급은 모두 `question.accepted_answer_id`로 계산하므로 한 번의 갱신으로 함께 반영된다.
+
+채택 응답 (`data`) — 200
+```json
+{ "answerId": 31 }
+```
+
 목록 응답 (`data`) — 페이징하지 않는다 (REQ-ANSWER-002).
 ```json
 {

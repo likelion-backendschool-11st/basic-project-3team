@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 시스템 상태 및 예외 화면 (29번)". Scoped to #page-system-status so it can't clash with other screens.
 module.exports = {
   important: "#page-system-status",
-  content: ["./src/pages/SystemStatus.tsx"],
+  content: ["./src/pages/SystemStatus.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{

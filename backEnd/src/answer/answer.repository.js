@@ -43,7 +43,9 @@ async function findAnswersByQuestionId(questionId) {
 async function findAnswerForUpdate(conn, answerId) {
   const [rows] = await conn.query(
     `SELECT a.member_id AS memberId, a.question_id AS questionId,
-            COALESCE(q.accepted_answer_id = a.answer_id, FALSE) AS accepted
+            COALESCE(q.accepted_answer_id = a.answer_id, FALSE) AS accepted,
+            q.member_id AS questionWriterId,
+            q.accepted_answer_id IS NOT NULL AS questionAccepted
        FROM answer a
        JOIN question q ON q.question_id = a.question_id
       WHERE a.answer_id = ? AND a.deleted = FALSE
@@ -57,10 +59,34 @@ async function updateAnswerContent(conn, answerId, content) {
   await conn.query('UPDATE answer SET content = ? WHERE answer_id = ?', [content, answerId]);
 }
 
+// 이미 삭제된 답글은 건드리지 않아 원래 삭제 시각을 유지한다.
+async function softDeleteRepliesByAnswerId(conn, answerId) {
+  await conn.query('UPDATE reply SET deleted = TRUE, deleted_at = NOW() WHERE answer_id = ? AND deleted = FALSE', [
+    answerId,
+  ]);
+}
+
+async function softDeleteAnswer(conn, answerId) {
+  await conn.query('UPDATE answer SET deleted = TRUE, deleted_at = NOW() WHERE answer_id = ?', [answerId]);
+}
+
+// docs/04-db.md 채택 규칙: 조건부 UPDATE. 바뀐 행이 0개면 이미 채택된 질문이다.
+async function acceptAnswer(conn, questionId, answerId) {
+  const [result] = await conn.query(
+    `UPDATE question SET accepted_answer_id = ?, accepted_at = NOW()
+      WHERE question_id = ? AND accepted_answer_id IS NULL AND deleted = FALSE`,
+    [answerId, questionId],
+  );
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   existsQuestion,
   insertAnswer,
   findAnswersByQuestionId,
   findAnswerForUpdate,
   updateAnswerContent,
+  softDeleteRepliesByAnswerId,
+  softDeleteAnswer,
+  acceptAnswer,
 };

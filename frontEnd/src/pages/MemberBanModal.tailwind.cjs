@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 회원 추방 모달 (13번)". Scoped to #page-member-ban-modal so it can't clash with other screens.
 module.exports = {
   important: "#page-member-ban-modal",
-  content: ["./src/pages/MemberBanModal.tsx"],
+  content: ["./src/pages/MemberBanModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
