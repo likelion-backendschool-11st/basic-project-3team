@@ -8,6 +8,9 @@ export const GRADES: Record<Grade, { label: string; color: string }> = {
   PLATINUM: { label: "플래티넘", color: "#06B6D4" },
 };
 
+// 닉네임을 누르면 그 회원의 프로필로 이동한다 (REQ-QNA-004, REQ-ANSWER-010). 화면은 App.tsx의 /members/:memberId
+export const profilePath = (memberId: number) => `/members/${memberId}`;
+
 // "2026-11-12T10:00:00" → "2026.11.12"
 export const formatDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll("-", ".");
 

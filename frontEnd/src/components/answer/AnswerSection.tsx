@@ -17,7 +17,8 @@ import { useAuth } from "../../hooks/useAuth";
 import ConfirmModal from "../ConfirmModal";
 import FieldError from "../FieldError";
 import ReportDialog from "../report/ReportDialog";
-import { GRADES, formatDate, writerSummary } from "../writer";
+import { GRADES, formatDate, profilePath, writerSummary } from "../writer";
+import ReplyThread from "./ReplyThread";
 
 // 서버(answer.controller.js)와 같은 규칙. 통과하면 null
 function validateContent(content: string) {
@@ -73,6 +74,8 @@ export default function AnswerSection({
   const [editing, setEditing] = useState<Editing | null>(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [reportAnswerId, setReportAnswerId] = useState<number | null>(null);
+  // 답글을 펼친 답변들 (#72). 답변마다 따로 펼치고 접는다.
+  const [openReplies, setOpenReplies] = useState<ReadonlySet<number>>(new Set());
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 답변 목록 조회는 조회수를 올리지 않으므로 작성·수정·삭제·채택 뒤 목록만 다시 불러온다.
@@ -154,6 +157,15 @@ export default function AnswerSection({
     }
   }
 
+  function toggleReplies(answerId: number) {
+    setOpenReplies((prev) => {
+      const next = new Set(prev);
+      if (next.has(answerId)) next.delete(answerId);
+      else next.add(answerId);
+      return next;
+    });
+  }
+
   const answers = state.status === "done" ? state.answers : [];
   const isQuestionWriter = user?.memberId === questionWriterId;
 
@@ -204,7 +216,9 @@ export default function AnswerSection({
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-base">{answer.writer.nickname}</span>
+                    <Link className="font-extrabold text-base hover:underline" to={profilePath(answer.writer.memberId)}>
+                      {answer.writer.nickname}
+                    </Link>
                     <span
                       className="text-sm"
                       style={{ color: GRADES[answer.writer.grade].color }}
@@ -355,10 +369,25 @@ export default function AnswerSection({
                     </button>
                   )}
                 </div>
-                <span className="text-xs font-bold text-gray-500">
-                  {answer.replyCount > 0 ? `답글 ${answer.replyCount}` : "답글 달기"}
-                </span>
+                {/* 답글이 있으면 "답글 n", 없으면 "답글 달기". 누르면 펼치기/접기 (REQ-ANSWER-009) */}
+                <button
+                  aria-expanded={openReplies.has(answer.answerId)}
+                  className="flex items-center gap-1.5 px-3 py-1 bg-[#FFDE59] hover:bg-yellow-300 border-thick border-neoBlack rounded-lg shadow-brutal-sm text-xs font-extrabold text-black"
+                  type="button"
+                  onClick={() => toggleReplies(answer.answerId)}
+                >
+                  {answer.replyCount > 0 ? (
+                    <>
+                      <span>답글</span>
+                      <span className="bg-black text-white rounded-full px-1.5 text-[10px]">{answer.replyCount}</span>
+                    </>
+                  ) : (
+                    <span>답글 달기</span>
+                  )}
+                  <span aria-hidden="true">{openReplies.has(answer.answerId) ? "▲" : "▼"}</span>
+                </button>
               </div>
+              {openReplies.has(answer.answerId) && <ReplyThread answerId={answer.answerId} onChanged={reload} />}
             </article>
           );
         })}
