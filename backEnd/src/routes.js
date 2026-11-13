@@ -17,7 +17,7 @@ router.use('/auth', authRouter);
 
 // 관리자 API(/api/admin/**)는 모두 로그인 + ROLE_ADMIN이 필요하다. 관리자 라우터는 이 줄 아래에 연결한다.
 router.use('/admin', auth, admin);
-// 신고 목록·상세·처리 (/api/admin/reports/**)
+// 신고 목록·상세·처리 (/api/admin/reports/**), 회원 목록·정지 (/api/admin/members/**)
 router.use('/admin', adminRouter);
 
 // 메인 화면 질문 목록 (GET /api/questions)
