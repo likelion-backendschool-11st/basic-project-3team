@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/', auth, boardController.createQuestion);
 router.get('/:questionId', boardController.getQuestion);
+router.get('/:questionId/similar', boardController.getSimilarQuestions);
 router.patch('/:questionId', auth, boardController.updateQuestion);
 router.delete('/:questionId', auth, boardController.deleteQuestion);
 
