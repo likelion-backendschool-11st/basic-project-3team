@@ -17,7 +17,7 @@ router.use('/admin', auth, admin);
 
 // 메인 화면 질문 목록 (GET /api/questions)
 router.use('/questions', mainRouter);
-// 질문 작성 (POST /api/questions)
+// 질문 작성·상세 조회 (POST /api/questions, GET /api/questions/:questionId)
 router.use('/questions', boardRouter);
 
 // 회원가입, 중복 확인 (/api/members/**)

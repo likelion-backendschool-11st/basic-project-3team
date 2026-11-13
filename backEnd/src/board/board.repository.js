@@ -31,4 +31,48 @@ async function insertQuestionTags(conn, questionId, tagIds) {
   ]);
 }
 
-module.exports = { existsCategory, findTagIdsByNames, insertQuestion, insertQuestionTags };
+// updated_at을 자기 값으로 지정해 ON UPDATE CURRENT_TIMESTAMP로 수정일이 바뀌지 않게 한다.
+async function increaseViewCount(questionId) {
+  const [result] = await pool.query(
+    `UPDATE question
+        SET view_count = view_count + 1, updated_at = updated_at
+      WHERE question_id = ? AND deleted = FALSE`,
+    [questionId],
+  );
+  return result.affectedRows > 0;
+}
+
+async function findQuestionById(questionId) {
+  const [rows] = await pool.query(
+    `SELECT q.question_id AS questionId,
+            q.title,
+            q.content,
+            c.category_id AS categoryId,
+            c.name AS categoryName,
+            m.member_id AS writerId,
+            m.nickname AS writerNickname,
+            m.bio AS writerBio,
+            m.career_years AS writerCareerYears,
+            q.view_count AS viewCount,
+            q.like_count AS likeCount,
+            (SELECT COUNT(*) FROM answer a WHERE a.question_id = q.question_id AND a.deleted = FALSE) AS answerCount,
+            q.accepted_answer_id IS NOT NULL AS accepted,
+            DATE_FORMAT(q.created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt,
+            DATE_FORMAT(q.updated_at, '%Y-%m-%dT%H:%i:%s') AS updatedAt
+       FROM question q
+       JOIN member m ON m.member_id = q.member_id
+       JOIN category c ON c.category_id = q.category_id
+      WHERE q.question_id = ? AND q.deleted = FALSE`,
+    [questionId],
+  );
+  return rows[0] ?? null;
+}
+
+module.exports = {
+  existsCategory,
+  findTagIdsByNames,
+  insertQuestion,
+  insertQuestionTags,
+  increaseViewCount,
+  findQuestionById,
+};
