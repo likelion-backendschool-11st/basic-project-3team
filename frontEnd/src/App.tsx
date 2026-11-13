@@ -3,6 +3,7 @@ import { routes } from './routes'
 import Login from './pages/Login'
 import AuthProvider from './components/AuthProvider'
 import ErrorBoundary from './components/ErrorBoundary'
+import NotificationProvider from './components/notification/NotificationProvider'
 import NotFound from './pages/NotFound'
 import MemberProfile from './pages/MemberProfile'
 
@@ -28,18 +29,21 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        {/* #24: 화면 오류는 오류 화면으로, 없는 주소는 404 화면으로 보낸다 */}
-        <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/screens" element={<ScreenIndex />} />
-            <Route path="/members/:memberId" element={<MemberProfile />} />
-            {routes.map(({ path, Component }) => (
-              <Route key={path} path={path} element={<Component />} />
-            ))}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </ErrorBoundary>
+        {/* #70: 알림 상태·실시간 연결을 화면 이동과 상관없이 하나로 유지한다 */}
+        <NotificationProvider>
+          {/* #24: 화면 오류는 오류 화면으로, 없는 주소는 404 화면으로 보낸다 */}
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/screens" element={<ScreenIndex />} />
+              <Route path="/members/:memberId" element={<MemberProfile />} />
+              {routes.map(({ path, Component }) => (
+                <Route key={path} path={path} element={<Component />} />
+              ))}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   )

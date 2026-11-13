@@ -22,6 +22,11 @@ export function setAccessToken(token: string | null) {
   accessToken = token;
 }
 
+// #70: 실시간 알림(socket.io)이 접속할 때마다 지금 토큰을 읽는다.
+export function getAccessToken() {
+  return accessToken;
+}
+
 export const api = axios.create({
   baseURL: "/api",
   withCredentials: true,

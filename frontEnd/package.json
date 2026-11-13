@@ -14,7 +14,8 @@
     "axios": "^1.21.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router-dom": "^7.18.5"
+    "react-router-dom": "^7.18.5",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
