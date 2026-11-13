@@ -26,7 +26,13 @@ function StatusBox({ children }: { children: ReactNode }) {
   );
 }
 
-type LoadState = { status: "loading" } | { status: "error"; message: string } | { status: "done"; question: Question };
+type LoadState =
+  | { status: "loading" }
+  | { status: "error"; message: string; notFound: boolean }
+  | { status: "done"; question: Question };
+
+// 없는·삭제된 질문은 안내를 보여 준 뒤 목록으로 이동한다 (REQ-QUESTION-005)
+const NOT_FOUND_REDIRECT_MS = 3000;
 
 export default function QuestionDetail() {
   const navigate = useNavigate();
@@ -46,7 +52,7 @@ export default function QuestionDetail() {
   const requestedId = useRef<number | null>(null);
   useEffect(() => {
     if (questionId === null) {
-      setState({ status: "error", message: "존재하지 않는 질문입니다." });
+      setState({ status: "error", message: "존재하지 않는 질문입니다.", notFound: true });
       return;
     }
     if (requestedId.current === questionId) return;
@@ -62,9 +68,17 @@ export default function QuestionDetail() {
         setState({
           status: "error",
           message: notFound ? "삭제되었거나 존재하지 않는 질문입니다." : getErrorMessage(error),
+          notFound,
         });
       });
   }, [questionId]);
+
+  const notFound = state.status === "error" && state.notFound;
+  useEffect(() => {
+    if (!notFound) return;
+    const timer = setTimeout(() => navigate(LIST_PATH, { replace: true }), NOT_FOUND_REDIRECT_MS);
+    return () => clearTimeout(timer);
+  }, [notFound, navigate]);
 
   // 메뉴 바깥을 누르면 닫는다.
   useEffect(() => {
@@ -77,9 +91,10 @@ export default function QuestionDetail() {
   }, [menuOpen]);
 
   const question = state.status === "done" ? state.question : null;
-  // 수정은 작성자만, 삭제는 작성자와 관리자 (REQ-QNA-001). 서버에서도 다시 검사한다.
+  // 수정은 작성자만, 삭제는 작성자(채택된 답변이 없을 때)와 관리자 (REQ-QNA-001, REQ-QUESTION-007). 서버에서도 다시 검사한다.
   const isWriter = question !== null && user?.memberId === question.writer.memberId;
-  const canDelete = isWriter || user?.role === "ROLE_ADMIN";
+  const isAdmin = user?.role === "ROLE_ADMIN";
+  const canDelete = isAdmin || (isWriter && !question.accepted);
 
   function openDeleteConfirm() {
     setMenuOpen(false);
@@ -120,6 +135,7 @@ export default function QuestionDetail() {
           {state.status === "error" && (
             <StatusBox>
               <p role="alert">{state.message}</p>
+              {state.notFound && <p className="mt-2 text-xs text-gray-500">잠시 후 질문 목록으로 이동합니다.</p>}
               <Link
                 className="neo-btn inline-block mt-5 px-4 py-2 bg-white border-thick border-neoBlack rounded-xl shadow-brutal-sm text-sm font-bold text-neoBlack"
                 to={LIST_PATH}
@@ -158,7 +174,7 @@ export default function QuestionDetail() {
 
                   {/* Author/Admin Dropdown Actions — 작성자·관리자에게만 보인다 */}
 
-                  {canDelete && (
+                  {(isWriter || isAdmin) && (
                     <div className="relative self-end md:self-auto" ref={menuRef}>
                       <button
                         aria-expanded={menuOpen}
@@ -188,14 +204,16 @@ export default function QuestionDetail() {
                               수정
                             </Link>
                           )}
-                          <button
-                            className="w-full text-center px-4 py-2 hover:bg-red-50 text-neoRed"
-                            role="menuitem"
-                            type="button"
-                            onClick={openDeleteConfirm}
-                          >
-                            삭제
-                          </button>
+                          {canDelete && (
+                            <button
+                              className="w-full text-center px-4 py-2 hover:bg-red-50 text-neoRed"
+                              role="menuitem"
+                              type="button"
+                              onClick={openDeleteConfirm}
+                            >
+                              삭제
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
