@@ -150,8 +150,13 @@
 ```
 
 - 아이디가 없거나 비밀번호가 틀리면 둘 다 401 `LOGIN_FAILED`로 응답한다. 어느 쪽이 틀렸는지 구분하지 않는다 (REQ-LOGIN-005, 006).
+- 아이디·비밀번호가 비어 있으면 400 `INVALID_INPUT`. 형식 규칙(8~12자 등)은 로그인에서 검사하지 않고 `LOGIN_FAILED`로 처리한다.
+- 정지 회원은 403 `MEMBER_BANNED`, 탈퇴 회원은 403 `MEMBER_WITHDRAWN` (비밀번호가 맞을 때만 알려준다).
 - 토큰 재발급: 요청 본문 없이 쿠키의 Refresh Token으로 새 Access Token을 발급하고, Refresh Token도 새로 교체한다. 응답 형식은 로그인 응답과 같다.
-- 로그아웃: DB의 Refresh Token을 삭제하고 쿠키를 만료시킨다. 프론트는 메모리의 Access Token을 지운다.
+  - 쿠키가 없거나, 만료·위조됐거나, 이미 교체된 이전 토큰이면 401 `INVALID_REFRESH_TOKEN` (쿠키도 지운다). 프론트는 로그인 화면으로 보낸다.
+  - 정지·탈퇴 회원이면 403 `MEMBER_BANNED` / `MEMBER_WITHDRAWN`, 저장된 Refresh Token을 삭제한다.
+- 로그아웃: `Authorization` 헤더 필요. DB의 Refresh Token을 삭제하고 쿠키를 만료시킨다. 응답 `data`는 `null`. 프론트는 메모리의 Access Token을 지운다.
+- 쿠키: 이름 `refreshToken`, `HttpOnly`, `SameSite=Strict`, `Path=/api/auth`, 14일. `NODE_ENV=production`이면 `Secure`.
 
 ## 3. 회원 (Member)
 | 기능 | Method | URL | 권한 |
