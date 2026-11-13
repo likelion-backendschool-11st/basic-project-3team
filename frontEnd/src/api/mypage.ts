@@ -64,6 +64,21 @@ export interface MyPost {
   likeCount: number;
 }
 
+// GET·PUT /api/members/me/categories — 관심 카테고리·알림 설정 (변경은 목록 전체 교체)
+export interface CategorySetting {
+  categoryIds: number[];
+  notificationEnabled: boolean;
+}
+
+export async function getMyCategories(): Promise<CategorySetting> {
+  const { data } = await api.get<ApiResponse<CategorySetting>>("/members/me/categories");
+  return data.data;
+}
+
+export async function updateMyCategories(setting: CategorySetting): Promise<void> {
+  await api.put<ApiResponse<null>>("/members/me/categories", setting);
+}
+
 export async function getMyInfo(): Promise<MyInfo> {
   const { data } = await api.get<ApiResponse<MyInfo>>("/members/me");
   return data.data;
