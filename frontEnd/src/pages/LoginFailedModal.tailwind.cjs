@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 로그인 실패 모달". Scoped to #page-login-failed-modal so it can't clash with other screens.
 module.exports = {
   important: "#page-login-failed-modal",
-  content: ["./src/pages/LoginFailedModal.tsx"],
+  content: ["./src/pages/LoginFailedModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
