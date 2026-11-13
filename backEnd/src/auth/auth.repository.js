@@ -53,8 +53,8 @@ async function findRefreshToken(memberId) {
 }
 
 // 회원당 1개만 두므로 이미 있으면 새 값으로 바꾼다.
-async function saveRefreshToken({ memberId, tokenHash, expiresAt }) {
-  await pool.query(
+async function saveRefreshToken({ memberId, tokenHash, expiresAt }, conn = pool) {
+  await conn.query(
     `INSERT INTO refresh_token (member_id, token_hash, expires_at) VALUES (?, ?, ?)
      ON DUPLICATE KEY UPDATE token_hash = VALUES(token_hash), expires_at = VALUES(expires_at)`,
     [memberId, tokenHash, expiresAt],

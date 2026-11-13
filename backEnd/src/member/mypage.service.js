@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const pool = require('../config/db');
 const mypageRepository = require('./mypage.repository');
+const authService = require('../auth/auth.service');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { toPage } = require('../utils/page');
@@ -134,14 +135,19 @@ async function updatePrivate(memberId, { currentPassword, newPassword, phone }) 
   }
 
   const newPasswordHash = newPassword === undefined ? null : await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
+  let refreshToken = null;
   await withTransaction(async (conn) => {
     if (newPasswordHash !== null) {
       await mypageRepository.updatePasswordHash(conn, memberId, newPasswordHash);
+      // 비밀번호를 바꾸면 다른 기기의 로그인을 끊는다 (REQ-FIND-005와 같은 취지).
+      // 회원당 1개인 Refresh Token을 새로 발급해 교체하므로 지금 기기는 로그인이 유지된다.
+      refreshToken = await authService.issueRefreshToken(memberId, conn);
     }
     if (phone !== undefined) {
       await mypageRepository.updatePhone(conn, memberId, phone);
     }
   });
+  return { refreshToken };
 }
 
 async function getCategories(memberId) {
