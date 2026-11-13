@@ -1,25 +1,10 @@
-const pool = require('../config/db');
 const boardRepository = require('./board.repository');
 const { findWritableMember, buildProfile } = require('../member/mypage.service');
 const { findTagsByQuestionIds } = require('../main/main.repository');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { ROLE } = require('../utils/constants');
-
-async function withTransaction(work) {
-  const conn = await pool.getConnection();
-  try {
-    await conn.beginTransaction();
-    const result = await work(conn);
-    await conn.commit();
-    return result;
-  } catch (err) {
-    await conn.rollback();
-    throw err;
-  } finally {
-    conn.release();
-  }
-}
+const { withTransaction } = require('../utils/transaction');
 
 async function assertCategoryExists(categoryId) {
   if (!(await boardRepository.existsCategory(categoryId))) {

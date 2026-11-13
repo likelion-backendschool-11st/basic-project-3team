@@ -42,4 +42,14 @@ async function getAnswers(req, res, next) {
   }
 }
 
-module.exports = { createAnswer, getAnswers };
+async function updateAnswer(req, res, next) {
+  try {
+    const answerId = parsePathId(req.params.answerId, 'answerId');
+    await answerService.updateAnswer(req.user.memberId, answerId, parseContent(req.body));
+    return success(res, { answerId });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer };

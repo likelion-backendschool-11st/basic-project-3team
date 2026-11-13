@@ -39,4 +39,28 @@ async function findAnswersByQuestionId(questionId) {
   return rows;
 }
 
-module.exports = { existsQuestion, insertAnswer, findAnswersByQuestionId };
+// 수정·삭제 트랜잭션 안에서 답변과 질문 행을 잠가, 확인과 변경 사이에 채택이 끼어들지 않게 한다.
+async function findAnswerForUpdate(conn, answerId) {
+  const [rows] = await conn.query(
+    `SELECT a.member_id AS memberId, a.question_id AS questionId,
+            COALESCE(q.accepted_answer_id = a.answer_id, FALSE) AS accepted
+       FROM answer a
+       JOIN question q ON q.question_id = a.question_id
+      WHERE a.answer_id = ? AND a.deleted = FALSE
+        FOR UPDATE`,
+    [answerId],
+  );
+  return rows[0] ?? null;
+}
+
+async function updateAnswerContent(conn, answerId, content) {
+  await conn.query('UPDATE answer SET content = ? WHERE answer_id = ?', [content, answerId]);
+}
+
+module.exports = {
+  existsQuestion,
+  insertAnswer,
+  findAnswersByQuestionId,
+  findAnswerForUpdate,
+  updateAnswerContent,
+};
