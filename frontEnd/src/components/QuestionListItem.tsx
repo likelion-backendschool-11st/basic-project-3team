@@ -36,11 +36,11 @@ export default function QuestionListItem({ question, highlightTitle, highlightTa
           <div className="flex items-center gap-2 flex-wrap">
             {question.accepted ? (
               <span className="px-1.5 py-0.5 bg-[#C7F9CC] text-[#0B5D1E] border border-[#111111] text-xs font-bold">
-                해결됨
+                채택
               </span>
             ) : (
               <span className="px-1.5 py-0.5 bg-gray-200 border border-gray-800 text-gray-800 text-xs font-bold">
-                미해결
+                미채택
               </span>
             )}
             <Link

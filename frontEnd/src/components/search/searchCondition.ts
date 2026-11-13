@@ -16,7 +16,7 @@ export type AcceptedFilter = "all" | "true" | "false";
 
 export const ACCEPTED_OPTIONS: { value: AcceptedFilter; label: string }[] = [
   { value: "all", label: "전체" },
-  { value: "true", label: "채택됨" },
+  { value: "true", label: "채택" },
   { value: "false", label: "미채택" },
 ];
 
