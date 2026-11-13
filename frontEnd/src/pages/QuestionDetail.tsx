@@ -8,6 +8,7 @@ import AnswerSection from "../components/answer/AnswerSection";
 import SimilarQuestions from "../components/SimilarQuestions";
 import ConfirmModal from "../components/ConfirmModal";
 import Header from "../components/Header";
+import LikeButton from "../components/LikeButton";
 import Markdown from "../components/markdown/Markdown";
 import ReportDialog from "../components/report/ReportDialog";
 import { tagSearchPath } from "../components/questionList";
@@ -285,22 +286,18 @@ export default function QuestionDetail() {
                   <Markdown content={question.content} />
                 </div>
 
-                {/* Card Footer Actions: Like & Report — 좋아요(#65·#66)는 연결 전이라 비활성 */}
+                {/* Card Footer Actions: Like & Report */}
 
                 <div className="mt-8 pt-6 border-t-thick border-neoBlack flex items-center gap-3">
-                  <button
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border-thick border-neoBlack rounded-xl shadow-brutal text-sm font-bold disabled:cursor-not-allowed"
-                    disabled
-                    id="like-button"
-                    title="준비 중인 기능입니다"
-                    type="button"
-                  >
-                    <span className="text-red-500 text-base">{question.liked ? "♥" : "♡"}</span>
-                    <span>
-                      {"좋아요 "}
-                      <span id="like-counter">{question.likeCount}</span>
-                    </span>
-                  </button>
+                  <LikeButton
+                    key={question.questionId}
+                    className="neo-btn inline-flex items-center gap-2 px-4 py-2 bg-white border-thick border-neoBlack rounded-xl shadow-brutal text-sm font-bold hover:bg-pink-50"
+                    isMine={isWriter}
+                    likeCount={question.likeCount}
+                    liked={question.liked}
+                    target="QUESTION"
+                    targetId={question.questionId}
+                  />
                   {/* 본인 글은 신고할 수 없어 숨긴다 (서버도 400). 비로그인이면 로그인 화면으로 */}
                   {!isWriter && (
                     <button
