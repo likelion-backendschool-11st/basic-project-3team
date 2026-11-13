@@ -289,32 +289,48 @@
 ## 4. 질문 (Question)
 | 기능 | Method | URL | 권한 |
 |---|---|---|---|
-| 목록 조회 (페이징·검색·정렬) | GET | /api/questions | 전체 |
+| 목록 조회 (메인 화면, 페이징·정렬) | GET | /api/questions | 전체 |
+| 검색 (검색 결과 화면, 페이징·검색·정렬) | GET | /api/questions/search | 전체 |
 | 상세 조회 | GET | /api/questions/{questionId} | 전체 |
 | 유사 질문 | GET | /api/questions/{questionId}/similar | 전체 |
 | 작성 | POST | /api/questions | 회원 |
 | 수정 | PATCH | /api/questions/{questionId} | 작성자 |
 | 삭제 | DELETE | /api/questions/{questionId} | 작성자·관리자 |
 
-### 목록 조회 (REQ-MAIN-006, 007, REQ-SEARCH-001~005)
+### 목록 조회 — 메인 화면 (REQ-MAIN-006, 007, REQ-SEARCH-005)
 쿼리 파라미터 — 모두 선택이며 함께 쓸 수 있다.
 
 | 파라미터 | 설명 |
 |---|---|
 | `page`, `size` | 페이징 (기본 0, 10). `page`는 0 이상, `size`는 1~50 정수 |
-| `keyword` | 제목·내용에 포함된 질문. 공백만 있으면 검색하지 않는다 |
-| `categoryId` | 카테고리. 없으면 전체 |
-| `tags` | 태그 이름, 여러 개는 쉼표로 구분 (`tags=spring,jpa`). 선택한 태그가 **모두** 달린 질문 (태그를 고를수록 결과가 좁아진다) |
-| `startDate`, `endDate` | 작성일 기간 (`2026-11-01`) |
-| `accepted` | `true`(채택됨), `false`(미채택). 없으면 전체 |
 | `sort` | `latest`(최신순, 기본), `views`(조회수 많은 순), `answers`(답변 많은 순), `likes`(좋아요순). `latest` 외에는 값이 같으면 최신순 |
 
 - 메인 화면의 인기순(REQ-MAIN-007)은 `sort=likes`를 쓴다.
 - `sort`는 위 4개 값만 받는다. 그 외 값이거나 `page`, `size`가 범위를 벗어나면 400 `INVALID_INPUT` (`errors`에 해당 필드).
 - `answers`의 답변 수는 삭제된 답변을 세지 않는다 (응답의 `answerCount`와 같은 값).
+- 검색 조건은 받지 않는다. 검색은 아래 검색 API를 쓴다.
 - 목록·상세 조회는 비로그인도 가능하며, 토큰이 있으면 `liked` 값을 채워 응답한다.
 
-응답 `content` 항목
+### 검색 — 검색 결과 화면 (REQ-SEARCH-001~005)
+메인 화면 검색창 → 검색 드롭다운 → 검색 결과 화면에서 쓴다. 쿼리 파라미터는 모두 선택이며 함께 쓸 수 있다 (조건을 모두 만족하는 질문).
+
+| 파라미터 | 설명 |
+|---|---|
+| `page`, `size`, `sort` | 목록 조회와 같다 |
+| `keyword` | 검색어, 최대 100자. 앞뒤 공백은 지우고, 공백만 있으면 검색어 조건을 쓰지 않는다. 대소문자를 구분하지 않는다 |
+| `scope` | 검색어를 찾을 범위: `all`(제목·내용·태그 이름, 기본), `title`(제목), `content`(내용), `tag`(태그 이름). `keyword`가 없으면 무시한다 |
+| `categoryId` | 카테고리 ID (1 이상 정수). 없으면 전체 |
+| `tags` | 태그 이름, 여러 개는 쉼표로 구분 (`tags=spring,jpa`), 최대 8개. 선택한 태그가 **모두** 달린 질문 (태그를 고를수록 결과가 좁아진다) |
+| `startDate`, `endDate` | 작성일 기간 (`2026-11-01`, 양 끝 날짜 포함). 하나만 보내도 된다 |
+| `accepted` | `true`(채택됨), `false`(미채택). 없으면 전체 |
+
+- 검색어는 부분 일치로 찾는다 (`LIKE`). `%`, `_`는 일반 문자로 취급한다.
+- `tags`는 소문자로 바꾸고 중복을 지운다. 태그 목록에 없는 이름이 있으면 결과가 비어 있다.
+- 없는 `categoryId`면 결과가 비어 있다.
+- 형식이 틀리면 400 `INVALID_INPUT` (`errors`에 해당 필드): `scope`·`accepted`가 허용 값이 아님, `categoryId`가 1 이상 정수가 아님, 태그가 8개 초과, 날짜가 `YYYY-MM-DD`가 아니거나 없는 날짜, `startDate`가 `endDate`보다 늦음, `keyword`가 100자 초과
+- 응답 형식은 목록 조회와 같다. 결과가 없으면 `content`가 빈 배열이고, 프론트가 "검색 결과가 없습니다"를 표시한다.
+
+목록·검색 응답 `content` 항목
 ```json
 {
   "questionId": 12,

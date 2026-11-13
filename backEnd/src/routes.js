@@ -1,5 +1,6 @@
 const express = require('express');
 const mainRouter = require('./main/main.routes');
+const questionRouter = require('./question/question.routes');
 const boardRouter = require('./board/board.routes');
 const memberRouter = require('./member/member.routes');
 
@@ -8,6 +9,9 @@ const router = express.Router();
 
 // 메인 화면 질문 목록 (GET /api/questions)
 router.use('/questions', mainRouter);
+// 질문 검색 (GET /api/questions/search)
+// board의 /questions/{questionId}보다 먼저 연결해야 /search가 questionId로 잡히지 않는다.
+router.use('/questions', questionRouter);
 // 질문 작성 (POST /api/questions)
 router.use('/questions', boardRouter);
 
