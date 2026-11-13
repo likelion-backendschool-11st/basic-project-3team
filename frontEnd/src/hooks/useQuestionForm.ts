@@ -19,8 +19,15 @@ const EMPTY: QuestionValues = { title: "", content: "", categoryId: "", tags: []
 // 서버와 같게 이모지 등도 1자로 센다.
 export const charLength = (value: string) => [...value].length;
 
+export interface QuestionFormOptions {
+  // 처음 내용칸 값 (질문하기의 템플릿, #59)
+  initialContent?: string;
+  // true면 "채워지지 않은 내용"으로 보고 등록을 막는다 (템플릿을 고치지 않은 경우, #59)
+  isBlankContent?: (content: string) => boolean;
+}
+
 // 서버(board.controller.js)와 같은 규칙으로 먼저 검사한다 (REQ-QUESTION-004).
-function validate({ title, content, categoryId, tags }: QuestionValues) {
+function validate({ title, content, categoryId, tags }: QuestionValues, { isBlankContent }: QuestionFormOptions) {
   const errors: Partial<Record<QuestionField, string>> = {};
   const titleLength = charLength(title.trim());
   if (titleLength < RULES.titleMin) errors.title = `제목은 ${RULES.titleMin}자 이상 입력해주세요.`;
@@ -28,6 +35,7 @@ function validate({ title, content, categoryId, tags }: QuestionValues) {
   if (charLength(content.trim()) < RULES.contentMin) errors.content = `내용은 ${RULES.contentMin}자 이상 입력해주세요.`;
   else if (charLength(content) > RULES.contentMax)
     errors.content = `내용은 ${RULES.contentMax.toLocaleString()}자 이하로 입력해주세요.`;
+  else if (isBlankContent?.(content)) errors.content = "템플릿의 각 항목을 채워주세요.";
   if (categoryId === "") errors.categoryId = "카테고리를 1개 선택해주세요.";
   if (tags.length > RULES.maxTags) errors.tags = `태그는 최대 ${RULES.maxTags}개까지 선택할 수 있습니다.`;
   return errors;
@@ -35,10 +43,10 @@ function validate({ title, content, categoryId, tags }: QuestionValues) {
 
 // 질문하기·질문 수정 화면이 함께 쓰는 입력 상태, 검사, 태그 입력, 서버 에러 처리.
 // 둘 다 회원만 쓸 수 있으므로 로그인하지 않았으면 로그인 화면으로 보낸다.
-export function useQuestionForm() {
+export function useQuestionForm(options: QuestionFormOptions = {}) {
   const navigate = useNavigate();
   const { user, initializing } = useAuth();
-  const [values, setValues] = useState<QuestionValues>(EMPTY);
+  const [values, setValues] = useState<QuestionValues>({ ...EMPTY, content: options.initialContent ?? "" });
   const [tagInput, setTagInput] = useState("");
   const [errors, setErrors] = useState<Partial<Record<QuestionField, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -94,7 +102,7 @@ export function useQuestionForm() {
   // 검사를 통과하면 send를 부른다. 실패하면 400은 입력칸별로, 그 외는 폼 위 문구로 보여 준다.
   async function submit(send: (request: QuestionRequest) => Promise<void>) {
     if (submitting) return;
-    const found = validate(values);
+    const found = validate(values, options);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
