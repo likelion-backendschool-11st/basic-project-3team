@@ -52,4 +52,23 @@ async function updateAnswer(req, res, next) {
   }
 }
 
-module.exports = { createAnswer, getAnswers, updateAnswer };
+async function deleteAnswer(req, res, next) {
+  try {
+    await answerService.deleteAnswer(req.user, parsePathId(req.params.answerId, 'answerId'));
+    return success(res);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function acceptAnswer(req, res, next) {
+  try {
+    const answerId = parsePathId(req.params.answerId, 'answerId');
+    await answerService.acceptAnswer(req.user.memberId, answerId);
+    return success(res, { answerId });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer, acceptAnswer };
