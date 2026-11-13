@@ -54,14 +54,23 @@ export interface AcceptedAnswer {
   acceptedAt: string;
 }
 
-// GET /api/members/me/questions, /me/answers — 작성일 최신순 (답변은 answerId가 더 있다)
-export interface MyPost {
+// GET /api/members/me/questions, /me/answers — 작성일 최신순 (docs/api.md 3장 내가 쓴 질문·답변 목록)
+interface MyPostBase {
   questionId: number;
-  answerId?: number;
   title: string;
   createdAt: string;
   accepted: boolean;
   likeCount: number;
+}
+
+// 내 질문: accepted = 채택된 답변 있음, answerCount = 달린 답변 수
+export interface MyQuestion extends MyPostBase {
+  answerCount: number;
+}
+
+// 내 답변: title = 답변이 달린 질문 제목, accepted = 내 답변의 채택 여부
+export interface MyAnswer extends MyPostBase {
+  answerId: number;
 }
 
 export type BadgeCode = "FIRST_QUESTION" | "FIRST_ANSWER" | "FIRST_ACCEPTED" | "CURIOUS" | "SOLVER" | "POPULAR_ANSWER";
@@ -130,12 +139,12 @@ export async function getAcceptedAnswers(page = 0, size = 10): Promise<Page<Acce
   return data.data;
 }
 
-export async function getMyQuestions(page = 0, size = 10): Promise<Page<MyPost>> {
-  const { data } = await api.get<ApiResponse<Page<MyPost>>>("/members/me/questions", { params: { page, size } });
+export async function getMyQuestions(page = 0, size = 10): Promise<Page<MyQuestion>> {
+  const { data } = await api.get<ApiResponse<Page<MyQuestion>>>("/members/me/questions", { params: { page, size } });
   return data.data;
 }
 
-export async function getMyAnswers(page = 0, size = 10): Promise<Page<MyPost>> {
-  const { data } = await api.get<ApiResponse<Page<MyPost>>>("/members/me/answers", { params: { page, size } });
+export async function getMyAnswers(page = 0, size = 10): Promise<Page<MyAnswer>> {
+  const { data } = await api.get<ApiResponse<Page<MyAnswer>>>("/members/me/answers", { params: { page, size } });
   return data.data;
 }
