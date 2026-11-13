@@ -39,7 +39,7 @@ const NOT_FOUND_REDIRECT_MS = 3000;
 
 export default function QuestionDetail() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, initializing } = useAuth();
   const [searchParams] = useSearchParams();
   const questionId = readQuestionId(searchParams.get("questionId"));
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -58,7 +58,8 @@ export default function QuestionDetail() {
       setState({ status: "error", message: "존재하지 않는 질문입니다.", notFound: true });
       return;
     }
-    if (requestedId.current === questionId) return;
+    // 새로고침 직후에는 로그인 복구(reissue)가 끝난 뒤 불러온다. 먼저 불러오면 토큰 없이 요청해 liked가 false로 온다.
+    if (initializing || requestedId.current === questionId) return;
     requestedId.current = questionId;
     // 유사 질문을 눌러 같은 화면에서 다른 질문으로 바뀌면 열려 있던 메뉴·창을 닫고 맨 위로 올린다.
     setMenuOpen(false);
@@ -79,7 +80,7 @@ export default function QuestionDetail() {
           notFound,
         });
       });
-  }, [questionId]);
+  }, [questionId, initializing]);
 
   const notFound = state.status === "error" && state.notFound;
   useEffect(() => {

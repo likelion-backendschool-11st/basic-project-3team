@@ -81,7 +81,10 @@ export default function AnswerSection({
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 답변 목록 조회는 조회수를 올리지 않으므로 작성·수정·삭제·채택 뒤 목록만 다시 불러온다.
+  // 로그인 복구(reissue)가 끝난 뒤 불러오고, 로그인한 사람이 바뀌면 답변마다 liked를 다시 받는다.
+  const viewerId = user?.memberId ?? null;
   useEffect(() => {
+    if (initializing) return;
     let cancelled = false;
     getAnswers(questionId)
       .then(({ answers }) => {
@@ -93,7 +96,7 @@ export default function AnswerSection({
     return () => {
       cancelled = true;
     };
-  }, [questionId, reloadKey]);
+  }, [questionId, reloadKey, initializing, viewerId]);
   const reload = () => setReloadKey((key) => key + 1);
 
   // 메뉴 바깥을 누르면 닫는다.
