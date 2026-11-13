@@ -294,15 +294,17 @@
 
 | 파라미터 | 설명 |
 |---|---|
-| `page`, `size` | 페이징 (기본 0, 10) |
+| `page`, `size` | 페이징 (기본 0, 10). `page`는 0 이상, `size`는 1~50 정수 |
 | `keyword` | 제목·내용에 포함된 질문. 공백만 있으면 검색하지 않는다 |
 | `categoryId` | 카테고리. 없으면 전체 |
 | `tags` | 태그 이름, 여러 개는 쉼표로 구분 (`tags=spring,jpa`). 선택한 태그가 **모두** 달린 질문 (태그를 고를수록 결과가 좁아진다) |
 | `startDate`, `endDate` | 작성일 기간 (`2026-11-01`) |
 | `accepted` | `true`(채택됨), `false`(미채택). 없으면 전체 |
-| `sort` | `latest`(최신순, 기본), `likes`(좋아요순, 같으면 최신순) |
+| `sort` | `latest`(최신순, 기본), `views`(조회수 많은 순), `answers`(답변 많은 순), `likes`(좋아요순). `latest` 외에는 값이 같으면 최신순 |
 
 - 메인 화면의 인기순(REQ-MAIN-007)은 `sort=likes`를 쓴다.
+- `sort`는 위 4개 값만 받는다. 그 외 값이거나 `page`, `size`가 범위를 벗어나면 400 `INVALID_INPUT` (`errors`에 해당 필드).
+- `answers`의 답변 수는 삭제된 답변을 세지 않는다 (응답의 `answerCount`와 같은 값).
 - 목록·상세 조회는 비로그인도 가능하며, 토큰이 있으면 `liked` 값을 채워 응답한다.
 
 응답 `content` 항목
