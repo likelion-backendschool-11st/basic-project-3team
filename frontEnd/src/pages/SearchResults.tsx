@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getErrorMessage, getFieldErrors } from "../api/client";
-import { searchQuestions, type Page, type QuestionListItem as Question } from "../api/question";
+import { CATEGORIES, searchQuestions, type Page, type QuestionListItem as Question } from "../api/question";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ListStatus from "../components/ListStatus";
@@ -12,7 +12,6 @@ import QuestionListItem from "../components/QuestionListItem";
 import SortTabs from "../components/SortTabs";
 import {
   ACCEPTED_OPTIONS,
-  CATEGORIES,
   MAX_TAGS,
   normalizeTag,
   readCondition,

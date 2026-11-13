@@ -1,4 +1,4 @@
-import type { QuestionSearchParams, QuestionSort, SearchScope } from "../../api/question";
+import { CATEGORIES, type QuestionSearchParams, type QuestionSort, type SearchScope } from "../../api/question";
 import { PAGE_SIZE, parsePage, parseSort } from "../questionList";
 
 export const SEARCH_PATH = "/search-results";
@@ -10,17 +10,6 @@ export const SCOPES: { value: SearchScope; label: string }[] = [
   { value: "title", label: "제목" },
   { value: "content", label: "내용" },
   { value: "tag", label: "태그" },
-];
-
-// docs/api.md 10장: 카테고리는 seed.sql로 고정이다. 카테고리 목록 API(#60)가 생기면 그 응답으로 바꾼다.
-export const CATEGORIES: { categoryId: number; name: string }[] = [
-  { categoryId: 1, name: "백엔드" },
-  { categoryId: 2, name: "프론트엔드" },
-  { categoryId: 3, name: "모바일" },
-  { categoryId: 4, name: "데이터베이스" },
-  { categoryId: 5, name: "DevOps·인프라" },
-  { categoryId: 6, name: "AI·데이터" },
-  { categoryId: 7, name: "기타" },
 ];
 
 export type AcceptedFilter = "all" | "true" | "false";
