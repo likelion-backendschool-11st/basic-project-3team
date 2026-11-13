@@ -95,3 +95,16 @@ export function getErrorCode(error: unknown): string | null {
   }
   return null;
 }
+
+export interface FieldError {
+  field: string;
+  reason: string;
+}
+
+// 400 INVALID_INPUT의 필드별 에러 목록 (docs/api.md 1장)
+export function getFieldErrors(error: unknown): FieldError[] {
+  if (axios.isAxiosError<ApiResponse<{ errors?: FieldError[] } | null>>(error)) {
+    return error.response?.data?.data?.errors ?? [];
+  }
+  return [];
+}
