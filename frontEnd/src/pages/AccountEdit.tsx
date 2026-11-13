@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage, getFieldErrors } from "../api/client";
 import { getMyInfo, updatePrivate, type MyInfo, type PrivateUpdateRequest } from "../api/mypage";
+import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
 import "./AccountEdit.css";
 
@@ -274,51 +275,7 @@ export default function AccountEdit() {
       <style>{css}</style>
       <div className="min-h-screen font-sans text-neo-black flex flex-col">
         {/* BEGIN: MainContent */}
-        <header className="w-full bg-[#FFFFFF] border-b-[2.5px] border-[#111111] px-6 py-3.5">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <div className="flex items-center gap-8">
-              <a
-                href="#"
-                className="flex items-center text-[22px] font-[900] tracking-tight font-sans text-neo-black select-none"
-              >
-                <span>{"Dev "}</span>
-                <span className="bg-[#FFD43B] text-black border-2 border-black rounded-[4px] font-mono px-1.5 py-0.5 text-base font-bold">
-                  in_
-                </span>
-              </a>
-              <div className="hidden md:block">
-                <input
-                  type="text"
-                  placeholder="검색어를 입력하세요"
-                  className="w-[420px] h-[40px] px-3.5 text-sm font-medium border-[2.5px] border-[#111111] rounded-[8px] bg-white focus:outline-none focus:bg-amber-50/20 placeholder:text-gray-400"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <a
-                href="#question"
-                className="neo-btn h-[40px] px-4 inline-flex items-center justify-center bg-[#2563EB] text-white font-bold text-sm rounded-[10px] cursor-pointer hover:bg-blue-700"
-              >
-                질문하기
-              </a>
-              <button
-                type="button"
-                className="neo-btn relative h-[40px] px-3.5 inline-flex items-center justify-center bg-white text-neo-black font-bold text-sm rounded-[10px] cursor-pointer hover:bg-gray-50"
-              >
-                <span>알림</span>
-                <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full text-xs font-bold w-5 h-5 flex items-center justify-center shadow-sm">
-                  3
-                </span>
-              </button>
-              <button
-                type="button"
-                className="neo-btn h-[40px] px-4 inline-flex items-center justify-center bg-[#FFD43B] text-neo-black font-bold text-sm rounded-[10px] cursor-pointer hover:bg-yellow-400"
-              >
-                <span>{user?.nickname ?? "닉네임"} ▾</span>
-              </button>
-            </div>
-          </div>
-        </header>
+        <Header />
         <main className="w-full max-w-4xl mx-auto px-4 py-8 md:py-10" data-purpose="profile-edit-container">
           {/* BEGIN: TopBar */}
           <header className="flex items-center justify-between mb-6 pb-2" data-purpose="header-section">
