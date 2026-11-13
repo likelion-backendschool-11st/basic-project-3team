@@ -96,6 +96,7 @@
 | 403 Forbidden | 권한 없음(다른 사람의 글), 정지된 회원 |
 | 404 Not Found | 대상 없음 (삭제된 글 포함) |
 | 409 Conflict | 중복(아이디·전화번호·닉네임, 중복 좋아요·신고), 채택 상태와 충돌 |
+| 500 Internal Server Error | 서버 오류 |
 
 ### 에러 코드
 | code | 상태 | 설명 |
@@ -112,6 +113,7 @@
 | FORBIDDEN | 403 | 권한 없음 |
 | MEMBER_BANNED | 403 | 정지된 회원 |
 | MEMBER_WITHDRAWN | 403 | 탈퇴한 회원 |
+| API_NOT_FOUND | 404 | 존재하지 않는 URL |
 | MEMBER_NOT_FOUND | 404 | 회원 없음 |
 | QUESTION_NOT_FOUND | 404 | 질문 없음 |
 | ANSWER_NOT_FOUND | 404 | 답변 없음 |
@@ -128,6 +130,7 @@
 | ALREADY_ACCEPTED | 409 | 이미 채택된 답변이 있음 |
 | QUESTION_HAS_ACCEPTED_ANSWER | 409 | 채택된 답변이 있는 질문은 삭제할 수 없음 |
 | ACCEPTED_ANSWER_LOCKED | 409 | 채택된 답변은 수정·삭제할 수 없음 |
+| INTERNAL_SERVER_ERROR | 500 | 처리하지 못한 서버 오류 |
 
 ## 2. 인증 (Auth)
 | 기능 | Method | URL | 권한 |
