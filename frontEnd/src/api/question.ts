@@ -69,3 +69,39 @@ export async function createQuestion(request: QuestionRequest): Promise<{ questi
   const { data } = await api.post<ApiResponse<{ questionId: number }>>("/questions", request);
   return data.data;
 }
+
+export type Grade = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
+
+export interface QuestionDetail {
+  questionId: number;
+  title: string;
+  content: string;
+  category: { categoryId: number; name: string };
+  tags: string[];
+  writer: {
+    memberId: number;
+    nickname: string;
+    careerYears: number | null;
+    techStacks: string[];
+    grade: Grade;
+    acceptRate: number;
+  };
+  viewCount: number;
+  likeCount: number;
+  liked: boolean;
+  answerCount: number;
+  accepted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// GET /api/questions/{questionId} — 비로그인 가능, 조회할 때마다 조회수 +1
+export async function getQuestion(questionId: number): Promise<QuestionDetail> {
+  const { data } = await api.get<ApiResponse<QuestionDetail>>(`/questions/${questionId}`);
+  return data.data;
+}
+
+// DELETE /api/questions/{questionId} — 작성자(채택된 답변 없을 때) 또는 관리자
+export async function deleteQuestion(questionId: number): Promise<void> {
+  await api.delete(`/questions/${questionId}`);
+}
