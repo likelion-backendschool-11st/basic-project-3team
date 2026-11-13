@@ -203,6 +203,9 @@
 | 내가 쓴 질문 목록 | GET | /api/members/me/questions?page=0 | 회원 |
 | 내가 쓴 답변 목록 | GET | /api/members/me/answers?page=0 | 회원 |
 
+- 마이페이지 수정 API(PATCH `/me/profile`, `/me/private`, PUT `/me/categories`)는 성공하면 `data: null`을 돌려준다. 프론트는 저장 후 필요한 값을 다시 조회한다.
+- 정지(`BANNED`) 회원은 조회 API는 쓸 수 있고, 수정 API는 403 `MEMBER_BANNED`. 탈퇴(`WITHDRAWN`) 회원은 `/me/**` 전체가 403 `MEMBER_WITHDRAWN`.
+
 ### 회원가입 (REQ-SIGNUP-001~005)
 요청
 ```json
@@ -231,11 +234,12 @@
   "nickname": "개발자",
   "bio": "백엔드 3년 차입니다.",
   "careerYears": 3,
-  "techStacks": ["Java", "Spring"],
+  "techStacks": ["java", "spring"],
   "grade": "BRONZE",
   "acceptRate": 42.5
 }
 ```
+- 탈퇴한 회원의 프로필은 404 `MEMBER_NOT_FOUND`로 응답한다.
 
 ### 내 정보 조회
 응답 (`data`) — 프로필 조회 응답에 아래 값을 더한다.
@@ -247,11 +251,13 @@
 ### 프로필 수정 (REQ-MYPAGE-002)
 요청 — 보낸 필드만 바꾼다.
 ```json
-{ "nickname": "새닉네임", "bio": "소개글", "careerYears": 3, "techStacks": ["Java", "Spring"] }
+{ "nickname": "새닉네임", "bio": "소개글", "careerYears": 3, "techStacks": ["java", "spring"] }
 ```
-- 닉네임을 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_NICKNAME`.
+- 닉네임을 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_NICKNAME`. 본인의 현재 닉네임은 중복으로 보지 않는다.
 - `techStacks`는 태그 목록(`GET /api/tags`)에서 최대 5개까지 고른 값만 받는다. 목록에 없는 이름이 있으면 400 `INVALID_INPUT`.
+- `techStacks`는 소문자로 바꾸고 중복을 지운 뒤 저장한다.
 - `careerYears`는 연차를 정수로 받는다 (0은 신입). `null`을 보내면 경력을 지운다.
+- `bio`에 빈 문자열이나 `null`을 보내면 소개글을 지운다.
 
 ### 개인정보 수정 (REQ-MYPAGE-003)
 요청 — `currentPassword`는 필수, `newPassword`와 `phone` 중 바꿀 값만 보낸다.
@@ -262,6 +268,7 @@
 - 현재 비밀번호가 틀리면 400 `PASSWORD_MISMATCH`.
 - 새 비밀번호 확인 값 비교는 프론트에서 한다.
 - 전화번호를 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_PHONE`.
+- `newPassword`를 바꾸면 Refresh Token을 새로 발급해 교체하고 `Set-Cookie`로 내려준다. 지금 기기는 로그인이 유지되고, 다른 기기는 Access Token이 만료된 뒤(최대 30분) 로그아웃된다 (REQ-FIND-005와 같은 취지).
 
 ### 관심 카테고리·알림 설정 (REQ-MYPAGE-004)
 조회 응답 (`data`) / 변경 요청 본문
@@ -464,6 +471,23 @@
 ```json
 { "content": "답변 내용 (마크다운)" }
 ```
+- `content`는 10자 이상(공백 제외), 최대 10,000자. 어기면 400 `INVALID_INPUT`.
+- 없거나 삭제된 질문이면 404 `QUESTION_NOT_FOUND`, 정지·탈퇴 회원은 403.
+
+작성 응답 (`data`) — 201
+```json
+{ "answerId": 31 }
+```
+
+수정 (REQ-ANSWER-003)
+- 작성자만 수정할 수 있다. 다른 회원(관리자 포함)이면 403 `FORBIDDEN`, 정지·탈퇴 회원은 403.
+- 없거나 삭제된 답변은 404 `ANSWER_NOT_FOUND`, 채택된 답변은 409 `ACCEPTED_ANSWER_LOCKED`.
+- `content` 규칙은 작성과 같다.
+
+수정 응답 (`data`) — 200
+```json
+{ "answerId": 31 }
+```
 
 목록 응답 (`data`) — 페이징하지 않는다 (REQ-ANSWER-002).
 ```json
@@ -616,6 +640,7 @@
 | 기능 | Method | URL | 권한 |
 |---|---|---|---|
 | 태그 목록 | GET | /api/tags?keyword= | 전체 |
+| 인기 태그 | GET | /api/tags/popular?limit= | 전체 |
 | 추천 태그 | POST | /api/tags/recommend | 회원 |
 | 카테고리 목록 | GET | /api/categories | 전체 |
 
@@ -623,6 +648,14 @@
 ```json
 [ { "tagId": 1, "name": "spring" }, { "tagId": 2, "name": "jpa" } ]
 ```
+- `keyword`(선택, 최대 30자)가 있으면 이름에 그 글자가 들어간 태그만, 없으면 전체를 이름순으로 준다. `%`, `_`는 일반 문자로 취급한다.
+
+인기 태그 응답 (`data`) — 검색 드롭다운·검색 결과 없음 화면에서 쓴다.
+```json
+[ { "tagId": 2, "name": "spring", "questionCount": 12 }, { "tagId": 7, "name": "react", "questionCount": 9 } ]
+```
+- 삭제되지 않은 질문에 많이 달린 순(같으면 이름순)이다. 달린 질문이 없는 태그는 빠진다.
+- `limit`: 1~20 정수, 기본 10. 범위를 벗어나면 400 `INVALID_INPUT`.
 
 추천 태그 요청 / 응답 (`data`) (REQ-QUESTION-008)
 ```json
@@ -632,6 +665,9 @@
 { "tags": ["spring", "jpa"] }
 ```
 - 제목·내용에 태그 이름(대소문자 무시)이 들어 있으면 추천한다.
+  - 단어로 들어 있을 때만 추천한다. 앞뒤가 영문자·숫자면 다른 단어의 일부로 본다 (`javascript`에서 `java`, `mysql`에서 `sql`을 추천하지 않는다). 한글 조사가 붙은 `react를`은 추천한다.
+  - 제목·내용에 먼저 나온 순서로 최대 8개.
+- `title`(최대 100자), `content`(최대 10,000자)는 작성 중인 값이라 비어 있거나 빠져도 된다 (빈 배열 응답). 문자열이 아니거나 너무 길면 400 `INVALID_INPUT`.
 - 태그는 `seed.sql`로 미리 넣은 목록에서만 고른다. 사용자가 새 태그를 만들 수 없다 (오타·중복 태그 방지). 태그를 추가할 때는 `seed.sql`을 고친다.
 - 태그 이름은 소문자로 저장한다 (`spring`, `react`, `mysql` 등).
 
@@ -724,18 +760,37 @@
 ```
 - `processedCount`: 이번에 함께 처리된 신고 수 (요청한 신고 포함)
 
-회원 목록 조회 (REQ-MANAGE-001)
-- `keyword`는 아이디·닉네임으로 찾는다.
+회원 목록 조회 (REQ-MANAGE-001) — 쿼리 파라미터는 모두 선택이다.
+
+| 파라미터 | 설명 |
+|---|---|
+| `page`, `size` | 페이징 (기본 0, 10) |
+| `status` | `ACTIVE`, `BANNED`, `WITHDRAWN`. 없으면 전체 |
+| `keyword` | 아이디·닉네임 부분 일치, 최대 20자. 앞뒤 공백은 지우고, `%`, `_`는 일반 문자로 취급한다 |
+
+- 최근 가입순으로 정렬한다.
+- 허용 값이 아니면 400 `INVALID_INPUT` (`errors`에 해당 필드).
 - `content` 항목
 ```json
-{ "memberId": 1, "loginId": "devin_user", "nickname": "개발자", "status": "ACTIVE", "reportedCount": 2, "createdAt": "2026-11-01T09:00:00" }
+{ "memberId": 1, "loginId": "devin_user", "nickname": "개발자", "role": "ROLE_USER", "status": "ACTIVE", "reportedCount": 2, "createdAt": "2026-11-01T09:00:00" }
 ```
-- `reportedCount`는 그 회원의 글이 신고된 횟수(`RESOLVED` 기준)로, 정지 판단에 참고한다.
+- `reportedCount`는 그 회원의 글(질문·답변)이 신고된 횟수(`RESOLVED` 기준)로, 정지 판단에 참고한다.
+- `role`은 화면에서 관리자 계정의 정지 버튼을 숨기는 데 쓴다.
 - 신고가 쌓여도 자동으로 정지하지 않는다. 정지는 관리자가 직접 한다.
 
 회원 상태 변경 요청 (REQ-ADMIN-003)
 ```json
 { "status": "BANNED" }
 ```
-- `status`: `ACTIVE`, `BANNED`
+- `status`: `ACTIVE`(해제), `BANNED`(정지). `WITHDRAWN`은 회원 탈퇴로만 바뀐다.
 - 정지 시 해당 회원의 Refresh Token을 삭제한다. 남아 있는 Access Token(최대 30분)으로 쓰기 요청을 하면 403 `MEMBER_BANNED`를 반환한다.
+- 이미 같은 상태면 그대로 200을 응답한다.
+- 400 `INVALID_INPUT`: `status`가 허용 값이 아니거나 `memberId`가 1 이상 정수가 아님
+- 403 `FORBIDDEN`: 대상이 관리자 계정(자기 자신 포함)
+- 403 `MEMBER_WITHDRAWN`: 대상이 탈퇴한 회원
+- 404 `MEMBER_NOT_FOUND`: 없는 회원
+
+회원 상태 변경 응답 (`data`)
+```json
+{ "memberId": 4, "status": "BANNED" }
+```

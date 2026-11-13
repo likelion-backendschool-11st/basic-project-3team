@@ -60,6 +60,6 @@ docs/
  ├─ api.md               # API 명세
  └─ retro/               # 스프린트 회고 (sprint1.md ...)
 ```
-- 백엔드 파일은 도메인 폴더로 나눈다: main, auth, member, question, board(질문 작성·수정·삭제), answer, reply, like, report, admin, notification (예: `src/question/question.routes.js`, `question.controller.js`, `question.service.js`, `question.repository.js`)
+- 백엔드 파일은 도메인 폴더로 나눈다: main, auth, member, question, board(질문 작성·수정·삭제), answer, reply, like, report, admin, notification, tag(태그·카테고리) (예: `src/question/question.routes.js`, `question.controller.js`, `question.service.js`, `question.repository.js`)
   - 여러 사람이 동시에 작업하므로 자기 도메인 폴더 안에서 작업하고, 공통 파일(`middlewares/`, `utils/`, `config/`, `routes.js`)은 필요한 만큼만 고친다.
   - 한 도메인에서만 쓰는 상수는 그 도메인 폴더에 둔다 (`{도메인}.constants.js`).
