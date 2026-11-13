@@ -4,6 +4,7 @@ const questionRouter = require('./question/question.routes');
 const boardRouter = require('./board/board.routes');
 const { questionAnswerRouter, answerRouter } = require('./answer/answer.routes');
 const likeRouter = require('./like/like.routes');
+const replyRouter = require('./reply/reply.routes');
 const memberRouter = require('./member/member.routes');
 const authRouter = require('./auth/auth.routes');
 const reportRouter = require('./report/report.routes');
@@ -37,6 +38,8 @@ router.use('/questions/:questionId/answers', questionAnswerRouter);
 router.use('/answers', answerRouter);
 // 질문·답변 좋아요·취소 (POST·DELETE /api/questions/:questionId/likes, /api/answers/:answerId/likes)
 router.use(likeRouter);
+// 답글 목록·작성·수정·삭제 (GET·POST /api/answers/:answerId/replies, PATCH·DELETE /api/replies/:replyId)
+router.use(replyRouter);
 
 // 회원가입, 중복 확인 (/api/members/**)
 router.use('/members', memberRouter);
