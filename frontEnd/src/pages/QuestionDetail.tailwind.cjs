@@ -1,7 +1,8 @@
 // Generated from Stitch screen "Dev in_ 질문 상세 (23번)". Scoped to #page-question-detail so it can't clash with other screens.
 module.exports = {
   important: "#page-question-detail",
-  content: ["./src/pages/QuestionDetail.tsx"],
+  // Header는 공통 컴포넌트라 이 화면에서 쓰는 클래스도 함께 만든다.
+  content: ["./src/pages/QuestionDetail.tsx", "./src/components/Header.tsx"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
