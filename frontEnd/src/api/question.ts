@@ -138,3 +138,9 @@ export function readQuestionId(value: string | null) {
   const id = Number(value);
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
+
+// GET /api/questions/{questionId}/similar — 비로그인 가능, 최대 3개(해결된 질문 우선), 없으면 빈 배열. 조회수는 오르지 않는다.
+export async function getSimilarQuestions(questionId: number): Promise<QuestionListItem[]> {
+  const { data } = await api.get<ApiResponse<QuestionListItem[]>>(`/questions/${questionId}/similar`);
+  return data.data;
+}

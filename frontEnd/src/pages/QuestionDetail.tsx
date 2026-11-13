@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { deleteQuestion, getQuestion, readQuestionId, type QuestionDetail as Question } from "../api/question";
 import AnswerSection from "../components/answer/AnswerSection";
+import SimilarQuestions from "../components/SimilarQuestions";
 import ConfirmModal from "../components/ConfirmModal";
 import Header from "../components/Header";
 import ReportDialog from "../components/report/ReportDialog";
@@ -57,6 +58,11 @@ export default function QuestionDetail() {
     }
     if (requestedId.current === questionId) return;
     requestedId.current = questionId;
+    // 유사 질문을 눌러 같은 화면에서 다른 질문으로 바뀌면 열려 있던 메뉴·창을 닫고 맨 위로 올린다.
+    setMenuOpen(false);
+    setConfirmOpen(false);
+    setReportOpen(false);
+    window.scrollTo({ top: 0 });
     setState({ status: "loading" });
     getQuestion(questionId)
       .then((question) => {
@@ -307,12 +313,15 @@ export default function QuestionDetail() {
                 </div>
               </article>
               {/* END: QuestionDetailCard */}
+              {/* key: 다른 질문으로 바뀌면 펼친 답글·작성 중이던 내용을 새로 시작한다 */}
               <AnswerSection
+                key={question.questionId}
                 questionId={question.questionId}
                 questionWriterId={question.writer.memberId}
                 questionAccepted={question.accepted}
                 onAccepted={() => setState({ status: "done", question: { ...question, accepted: true } })}
               />
+              <SimilarQuestions questionId={question.questionId} />
             </>
           )}
         </main>
