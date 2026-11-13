@@ -125,4 +125,13 @@ async function deleteQuestion(req, res, next) {
   }
 }
 
-module.exports = { createQuestion, getQuestion, updateQuestion, deleteQuestion };
+async function getSimilarQuestions(req, res, next) {
+  try {
+    const data = await boardService.getSimilarQuestions(parseQuestionId(req.params.questionId));
+    return success(res, data);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createQuestion, getQuestion, updateQuestion, deleteQuestion, getSimilarQuestions };

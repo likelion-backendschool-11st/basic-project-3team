@@ -1,6 +1,8 @@
 const boardRepository = require('./board.repository');
 const { findWritableMember, buildProfile } = require('../member/mypage.service');
 const { findTagsByQuestionIds } = require('../main/main.repository');
+const { toListItem, groupTagsByQuestion } = require('../main/main.service');
+const { SIMILAR_LIMIT, SIMILAR_WORD_MIN_LENGTH, SIMILAR_WORD_COUNT } = require('./board.constants');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { ROLE } = require('../utils/constants');
@@ -132,4 +134,32 @@ async function deleteQuestion({ memberId, role }, questionId) {
   await withTransaction((conn) => removeQuestion(conn, questionId, { memberId, isAdmin: role === ROLE.ADMIN }));
 }
 
-module.exports = { createQuestion, getQuestion, updateQuestion, deleteQuestion, removeQuestion };
+// 제목을 공백으로 나눠 2자 이상인 단어를 앞에서부터 최대 3개 (docs/api.md 4장)
+function titleWords(title) {
+  return title
+    .split(/\s+/)
+    .filter((word) => [...word].length >= SIMILAR_WORD_MIN_LENGTH)
+    .slice(0, SIMILAR_WORD_COUNT);
+}
+
+// 유사 질문 (#57, REQ-QUESTION-009). 최대 3개, 후보가 없으면 빈 배열. 조회수는 올리지 않는다.
+async function getSimilarQuestions(questionId) {
+  const base = await boardRepository.findTitleAndTagIds(questionId);
+  if (base === null) {
+    throw new AppError(ErrorCode.QUESTION_NOT_FOUND);
+  }
+  const words = titleWords(base.title);
+  if (base.tagIds.length === 0 && words.length === 0) {
+    return [];
+  }
+  const rows = await boardRepository.findSimilarQuestions({
+    questionId,
+    tagIds: base.tagIds,
+    words,
+    limit: SIMILAR_LIMIT,
+  });
+  const tagsByQuestion = groupTagsByQuestion(await findTagsByQuestionIds(rows.map((row) => row.questionId)));
+  return rows.map((row) => toListItem(row, tagsByQuestion.get(row.questionId) ?? []));
+}
+
+module.exports = { createQuestion, getQuestion, updateQuestion, deleteQuestion, removeQuestion, getSimilarQuestions };

@@ -40,4 +40,4 @@ async function getQuestions({ page, size, sort }) {
   return toPage(content, page, size, Number(totalElements));
 }
 
-module.exports = { getQuestions };
+module.exports = { getQuestions, toListItem, groupTagsByQuestion };
