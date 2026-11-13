@@ -65,19 +65,30 @@ export function useQuestionForm() {
     e.preventDefault();
     const tag = tagInput.trim().replace(/^#/, "").toLowerCase();
     if (tag === "") return;
+    if (addTag(tag)) setTagInput("");
+  }
+
+  // 최대 개수를 넘으면 추가하지 않고 false
+  function addTag(tag: string) {
     const { tags } = values;
     if (tags.length >= RULES.maxTags && !tags.includes(tag)) {
       setErrors((prev) => ({ ...prev, tags: `태그는 최대 ${RULES.maxTags}개까지 선택할 수 있습니다.` }));
-      return;
+      return false;
     }
     if (!tags.includes(tag)) setValues((prev) => ({ ...prev, tags: [...prev.tags, tag] }));
-    setTagInput("");
     clearError("tags");
+    return true;
   }
 
   function removeTag(tag: string) {
     setValues((prev) => ({ ...prev, tags: prev.tags.filter((t) => t !== tag) }));
     clearError("tags");
+  }
+
+  // #61: 추천 태그를 누르면 추가, 다시 누르면 제거 (REQ-QUESTION-008)
+  function toggleTag(tag: string) {
+    if (values.tags.includes(tag)) removeTag(tag);
+    else addTag(tag);
   }
 
   // 검사를 통과하면 send를 부른다. 실패하면 400은 입력칸별로, 그 외는 폼 위 문구로 보여 준다.
@@ -120,6 +131,7 @@ export function useQuestionForm() {
     change,
     handleTagKeyDown,
     removeTag,
+    toggleTag,
     submit,
   };
 }
