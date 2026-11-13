@@ -21,6 +21,7 @@
 | Style | Tailwind CSS |
 | HTTP | axios (인터셉터로 토큰 첨부·재발급 처리) |
 | Routing | React Router |
+| Markdown | react-markdown + remark-gfm (표시, HTML 태그는 실행하지 않음), rehype-highlight + highlight.js (코드 블록 색상) |
 
 ## 실행
 - Backend: `cd backEnd && npm install && npm run dev` (nodemon, 포트는 `.env`의 `PORT`, 기본 8080)

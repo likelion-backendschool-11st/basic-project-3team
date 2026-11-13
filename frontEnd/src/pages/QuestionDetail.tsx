@@ -8,6 +8,7 @@ import AnswerSection from "../components/answer/AnswerSection";
 import SimilarQuestions from "../components/SimilarQuestions";
 import ConfirmModal from "../components/ConfirmModal";
 import Header from "../components/Header";
+import Markdown from "../components/markdown/Markdown";
 import ReportDialog from "../components/report/ReportDialog";
 import { tagSearchPath } from "../components/questionList";
 import { GRADES, formatDate, profilePath, writerSummary } from "../components/writer";
@@ -278,10 +279,10 @@ export default function QuestionDetail() {
                   </div>
                 )}
 
-                {/* Post Main Body Content — 마크다운 렌더링·코드 하이라이팅은 #62. 지금은 원문을 그대로 보여 준다 (React가 HTML을 이스케이프). */}
+                {/* Post Main Body Content — 마크다운으로 보여 준다 (#62). HTML 태그는 실행하지 않는다 (REQ-QNA-003). */}
 
-                <div className="mt-4 text-gray-900 leading-relaxed font-normal whitespace-pre-wrap break-words">
-                  {question.content}
+                <div className="mt-4 text-gray-900 leading-relaxed font-normal">
+                  <Markdown content={question.content} />
                 </div>
 
                 {/* Card Footer Actions: Like & Report — 좋아요(#65·#66)는 연결 전이라 비활성 */}
