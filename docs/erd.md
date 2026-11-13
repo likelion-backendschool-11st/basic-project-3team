@@ -188,3 +188,4 @@ erDiagram
 - **신고 대상:** `report.target_type` + `target_id`로 질문 또는 답변을 가리킨다. 대상이 두 테이블이라 FK를 두지 않고, 대상이 있는지는 Service에서 확인한다.
 - **좋아요 수:** `question.like_count`, `answer.like_count`는 목록 정렬용 집계 컬럼이다. 좋아요 행을 추가·삭제할 때 함께 바꾼다.
 - **답변 수:** 따로 저장하지 않고 삭제되지 않은 `answer`를 세서 구한다.
+- **등급·뱃지·채택률:** 따로 저장하지 않는다(점수 컬럼 없음). 조회할 때 `answer`와 `question.accepted_answer_id`로 계산한다.

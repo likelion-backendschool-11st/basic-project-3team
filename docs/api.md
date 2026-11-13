@@ -203,6 +203,9 @@
 | 내가 쓴 질문 목록 | GET | /api/members/me/questions?page=0 | 회원 |
 | 내가 쓴 답변 목록 | GET | /api/members/me/answers?page=0 | 회원 |
 
+- 마이페이지 수정 API(PATCH `/me/profile`, `/me/private`, PUT `/me/categories`)는 성공하면 `data: null`을 돌려준다. 프론트는 저장 후 필요한 값을 다시 조회한다.
+- 정지(`BANNED`) 회원은 조회 API는 쓸 수 있고, 수정 API는 403 `MEMBER_BANNED`. 탈퇴(`WITHDRAWN`) 회원은 `/me/**` 전체가 403 `MEMBER_WITHDRAWN`.
+
 ### 회원가입 (REQ-SIGNUP-001~005)
 요청
 ```json
@@ -231,26 +234,30 @@
   "nickname": "개발자",
   "bio": "백엔드 3년 차입니다.",
   "careerYears": 3,
-  "techStacks": ["Java", "Spring"],
+  "techStacks": ["java", "spring"],
   "grade": "BRONZE",
   "acceptRate": 42.5
 }
 ```
+- 탈퇴한 회원의 프로필은 404 `MEMBER_NOT_FOUND`로 응답한다.
 
 ### 내 정보 조회
 응답 (`data`) — 프로필 조회 응답에 아래 값을 더한다.
 ```json
-{ "loginId": "devin_user", "phone": "01012345678", "role": "ROLE_USER" }
+{ "loginId": "devin_user", "phone": "01012345678", "role": "ROLE_USER", "createdAt": "2026-11-01T10:00:00" }
 ```
+- `createdAt`은 가입일이다 (개인정보 수정 화면에 표시, REQ-MYPAGE-003).
 
 ### 프로필 수정 (REQ-MYPAGE-002)
 요청 — 보낸 필드만 바꾼다.
 ```json
-{ "nickname": "새닉네임", "bio": "소개글", "careerYears": 3, "techStacks": ["Java", "Spring"] }
+{ "nickname": "새닉네임", "bio": "소개글", "careerYears": 3, "techStacks": ["java", "spring"] }
 ```
-- 닉네임을 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_NICKNAME`.
+- 닉네임을 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_NICKNAME`. 본인의 현재 닉네임은 중복으로 보지 않는다.
 - `techStacks`는 태그 목록(`GET /api/tags`)에서 최대 5개까지 고른 값만 받는다. 목록에 없는 이름이 있으면 400 `INVALID_INPUT`.
+- `techStacks`는 소문자로 바꾸고 중복을 지운 뒤 저장한다.
 - `careerYears`는 연차를 정수로 받는다 (0은 신입). `null`을 보내면 경력을 지운다.
+- `bio`에 빈 문자열이나 `null`을 보내면 소개글을 지운다.
 
 ### 개인정보 수정 (REQ-MYPAGE-003)
 요청 — `currentPassword`는 필수, `newPassword`와 `phone` 중 바꿀 값만 보낸다.
@@ -261,6 +268,7 @@
 - 현재 비밀번호가 틀리면 400 `PASSWORD_MISMATCH`.
 - 새 비밀번호 확인 값 비교는 프론트에서 한다.
 - 전화번호를 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_PHONE`.
+- `newPassword`를 바꾸면 Refresh Token을 새로 발급해 교체하고 `Set-Cookie`로 내려준다. 지금 기기는 로그인이 유지되고, 다른 기기는 Access Token이 만료된 뒤(최대 30분) 로그아웃된다 (REQ-FIND-005와 같은 취지).
 
 ### 관심 카테고리·알림 설정 (REQ-MYPAGE-004)
 조회 응답 (`data`) / 변경 요청 본문

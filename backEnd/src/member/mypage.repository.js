@@ -18,7 +18,8 @@ async function findMemberById(memberId) {
             career_years AS careerYears,
             role,
             status,
-            notification_enabled AS notificationEnabled
+            notification_enabled AS notificationEnabled,
+            DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt
        FROM member
       WHERE member_id = ?`,
     [memberId],
