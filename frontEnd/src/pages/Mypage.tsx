@@ -22,6 +22,7 @@ import {
 import { getCategories } from "../api/tag";
 import { BADGE_ICON, GRADE_NAME } from "../components/gradeBadge";
 import Header from "../components/Header";
+import Pagination from "../components/Pagination";
 import ProfileDetails, { GRADE_LABEL, formatRate } from "../components/ProfileDetails";
 import { detailPath } from "../components/questionList";
 import { useAuth } from "../hooks/useAuth";
@@ -79,7 +80,6 @@ const css =
 
 type ActivityTab = "questions" | "answers";
 const PAGE_SIZE = 10;
-const PAGE_WINDOW = 5;
 
 // 2026-11-11T10:00:00 → "2일 전 (2026.11.11)"
 function formatRelative(value: string) {
@@ -103,12 +103,6 @@ function QuestionStatus({ item }: { item: MyQuestion }) {
   if (item.accepted) return <span className={STATUS_CLASS.accepted}>채택완료</span>;
   if (item.answerCount === 0) return <span className={STATUS_CLASS.waiting}>답변 대기중</span>;
   return <span className={STATUS_CLASS.pending}>미채택</span>;
-}
-
-// 페이지 번호는 현재 페이지 주변으로 최대 PAGE_WINDOW개 보여준다 (page는 0부터).
-function pageNumbers(page: number, totalPages: number) {
-  const start = Math.max(0, Math.min(page - Math.floor(PAGE_WINDOW / 2), totalPages - PAGE_WINDOW));
-  return Array.from({ length: Math.min(PAGE_WINDOW, totalPages) }, (_, i) => start + i);
 }
 
 // 내 질문·답변 목록 (REQ-MYPAGE-008, #32): 탭, 최신순, 페이징, 클릭 시 질문 상세로 이동.
@@ -210,7 +204,7 @@ function MyActivityList({ questionCount, answerCount }: { questionCount?: number
                   className="block p-4 bg-white hover:bg-amber-50/50 neo-border-thin transition-colors group"
                   data-item={answer ? `answer-${answer.answerId}` : `question-${item.questionId}`}
                   key={answer ? `a${answer.answerId}` : `q${item.questionId}`}
-                  to={`/question-detail?questionId=${item.questionId}`}
+                  to={detailPath(item.questionId)}
                 >
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2" data-field="itemStatus">
@@ -255,53 +249,8 @@ function MyActivityList({ questionCount, answerCount }: { questionCount?: number
           </div>
         )}
 
-        {/* BEGIN: Pagination */}
-        {data && data.totalPages > 1 && (
-          <nav
-            aria-label={`${tab === "questions" ? "질문" : "답변"} 목록 페이지네이션`}
-            className="mt-8 flex justify-center items-center gap-1.5"
-          >
-            <button
-              aria-label="이전 페이지"
-              className="neo-border w-8 h-8 flex items-center justify-center font-bold text-sm bg-white hover:bg-neutral-100 disabled:opacity-40 disabled:bg-neutral-100"
-              disabled={page === 0}
-              onClick={() => setPage(page - 1)}
-              type="button"
-            >
-              {"<"}
-            </button>
-            {pageNumbers(page, data.totalPages).map((n) =>
-              n === page ? (
-                <span
-                  aria-current="page"
-                  className="neo-border w-8 h-8 flex items-center justify-center font-extrabold text-sm bg-yellow-300 text-black neo-box-shadow-sm"
-                  key={n}
-                >
-                  {n + 1}
-                </span>
-              ) : (
-                <button
-                  className="neo-border w-8 h-8 flex items-center justify-center font-bold text-sm bg-white hover:bg-neutral-100 text-neutral-800"
-                  key={n}
-                  onClick={() => setPage(n)}
-                  type="button"
-                >
-                  {n + 1}
-                </button>
-              ),
-            )}
-            <button
-              aria-label="다음 페이지"
-              className="neo-border w-8 h-8 flex items-center justify-center font-bold text-sm bg-white hover:bg-neutral-100 disabled:opacity-40 disabled:bg-neutral-100"
-              disabled={data.last}
-              onClick={() => setPage(page + 1)}
-              type="button"
-            >
-              {">"}
-            </button>
-          </nav>
-        )}
-        {/* END: Pagination */}
+        {/* 공통 페이지 번호 (page는 1부터 센다. 한 페이지뿐이면 표시하지 않는다) */}
+        {data && <Pagination page={page + 1} totalPages={data.totalPages} onChange={(next) => setPage(next - 1)} />}
       </div>
     </section>
   );
