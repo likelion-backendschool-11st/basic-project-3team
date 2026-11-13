@@ -178,7 +178,8 @@ for (const s of screens) {
 `// Generated from Stitch screen "${s.title}". Scoped to #page-${slug} so it can't clash with other screens.
 module.exports = {
   important: '#page-${slug}',
-  content: ['./src/pages/${Name}.tsx'],
+  // 공통 컴포넌트도 같은 빌드에서 만들어야 화면 클래스와 우선순위·반응형 순서가 맞는다.
+  content: ['./src/pages/${Name}.tsx', './src/components/**/*.{ts,tsx}'],
   corePlugins: { preflight: false },
   plugins: [require('@tailwindcss/container-queries')],
   ...${JSON.stringify(cfg, null, 2).replace(/\n/g, '\n  ')},
