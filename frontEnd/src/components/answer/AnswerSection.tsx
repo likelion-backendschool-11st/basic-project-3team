@@ -1,7 +1,7 @@
 // 질문 상세 화면의 답변 영역 (#26): 목록·작성·수정·삭제·채택. 디자인은 Answers(24번) 화면을 따른다.
 // QuestionDetail.tailwind.cjs의 테마(border-thick, neoBlack 등)로 스타일이 만들어진다.
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ANSWER_RULES as RULES,
   acceptAnswer,
@@ -16,6 +16,7 @@ import { charLength } from "../../hooks/useQuestionForm";
 import { useAuth } from "../../hooks/useAuth";
 import ConfirmModal from "../ConfirmModal";
 import FieldError from "../FieldError";
+import ReportDialog from "../report/ReportDialog";
 import { GRADES, formatDate, writerSummary } from "../writer";
 
 // 서버(answer.controller.js)와 같은 규칙. 통과하면 null
@@ -61,6 +62,7 @@ export default function AnswerSection({
   questionAccepted: boolean;
   onAccepted: () => void;
 }) {
+  const navigate = useNavigate();
   const { user, initializing } = useAuth();
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [reloadKey, setReloadKey] = useState(0);
@@ -70,6 +72,7 @@ export default function AnswerSection({
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
   const [editing, setEditing] = useState<Editing | null>(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
+  const [reportAnswerId, setReportAnswerId] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 답변 목록 조회는 조회수를 올리지 않으므로 작성·수정·삭제·채택 뒤 목록만 다시 불러온다.
@@ -326,20 +329,32 @@ export default function AnswerSection({
                 </div>
               )}
 
-              {/* 좋아요(#66)·신고·답글(#72)은 연결 전이라 표시만 한다 */}
+              {/* 좋아요(#66)·답글(#72)은 연결 전이라 표시만 한다 */}
               <div
                 className={`flex items-center justify-between pt-2 border-t ${
                   answer.accepted ? "border-emerald-200" : "border-gray-100"
                 }`}
               >
-                <button
-                  className="bg-white border-thick border-neoBlack px-3 py-1 rounded-md text-xs font-bold shadow-brutal-sm disabled:cursor-not-allowed"
-                  disabled
-                  title="준비 중인 기능입니다"
-                  type="button"
-                >
-                  <span className="text-rose-500">{answer.liked ? "♥" : "♡"}</span> 좋아요 {answer.likeCount}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="bg-white border-thick border-neoBlack px-3 py-1 rounded-md text-xs font-bold shadow-brutal-sm disabled:cursor-not-allowed"
+                    disabled
+                    title="준비 중인 기능입니다"
+                    type="button"
+                  >
+                    <span className="text-rose-500">{answer.liked ? "♥" : "♡"}</span> 좋아요 {answer.likeCount}
+                  </button>
+                  {/* 본인 답변은 신고할 수 없어 숨긴다 (서버도 400). 비로그인이면 로그인 화면으로 */}
+                  {!isAnswerWriter && (
+                    <button
+                      className="bg-white hover:bg-gray-100 border-thick border-neoBlack px-2.5 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-brutal-sm"
+                      type="button"
+                      onClick={() => (user ? setReportAnswerId(answer.answerId) : navigate("/login"))}
+                    >
+                      신고
+                    </button>
+                  )}
+                </div>
                 <span className="text-xs font-bold text-gray-500">
                   {answer.replyCount > 0 ? `답글 ${answer.replyCount}` : "답글 달기"}
                 </span>
@@ -399,6 +414,9 @@ export default function AnswerSection({
         )}
       </section>
 
+      {reportAnswerId !== null && (
+        <ReportDialog targetType="ANSWER" targetId={reportAnswerId} onClose={() => setReportAnswerId(null)} />
+      )}
       {confirm && (
         <ConfirmModal
           {...CONFIRM[confirm.kind]}
