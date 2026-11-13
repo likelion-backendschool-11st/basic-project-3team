@@ -2,27 +2,23 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage, getFieldErrors } from "../api/client";
-import { checkAvailable, signup, type DuplicateField } from "../api/member";
+import {
+  INPUT_PATTERNS,
+  INPUT_RULES,
+  checkAvailable,
+  filterPhoneInput,
+  signup,
+  toPhoneDigits,
+  type DuplicateField,
+} from "../api/member";
 import "./Signup.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
   ".dot-pattern {\n      background-color: #F8F6F0;\n      background-image: radial-gradient(#D5D0C5 1.2px, transparent 1.2px);\n      background-size: 20px 20px;\n    }\n  \n\n    .btn-brutal {\n      transition: all 0.15s ease-in-out;\n    }\n    .btn-brutal:hover {\n      transform: translate(2px, 2px);\n      box-shadow: 1.5px 1.5px 0px #1E1E1E;\n    }\n    .btn-brutal:active {\n      transform: translate(3.5px, 3.5px);\n      box-shadow: 0px 0px 0px #1E1E1E;\n    }";
 
-// 서버(member.constants.js)와 같은 입력값 규칙 (docs/api.md 입력값 규칙)
-const PATTERNS: Record<DuplicateField | "password", RegExp> = {
-  loginId: /^[A-Za-z0-9_.-]{8,12}$/,
-  password: /^[A-Za-z0-9_.-]{8,12}$/,
-  phone: /^01[0-9]{8,9}$/,
-  nickname: /^[가-힣A-Za-z0-9]{2,10}$/,
-};
-
-const RULE_TEXT: Record<DuplicateField | "password", string> = {
-  loginId: "8~12자, 영문·숫자와 특수기호 _ . - 만 사용할 수 있어요.",
-  password: "8~12자, 영문·숫자와 특수기호 _ . - 만 사용할 수 있어요.",
-  phone: "01로 시작하는 10~11자리 숫자 (하이픈은 있어도 돼요)",
-  nickname: "2~10자, 한글·영문·숫자만 사용할 수 있어요 (공백·특수기호 불가)",
-};
+const PATTERNS = INPUT_PATTERNS;
+const RULE_TEXT = INPUT_RULES;
 
 const FIELD_LABELS: Record<DuplicateField, string> = { loginId: "아이디", phone: "전화번호", nickname: "닉네임" };
 
@@ -34,9 +30,8 @@ const DUPLICATE_CODES: Record<string, DuplicateField> = {
 
 type Field = DuplicateField | "password" | "passwordConfirm";
 
-// 전화번호는 하이픈을 지우고 검사·전송한다 (docs/api.md).
 function toRequestValue(field: Field, value: string) {
-  return field === "phone" ? value.replace(/-/g, "") : value;
+  return field === "phone" ? toPhoneDigits(value) : value;
 }
 
 // 중복 확인 결과. value가 지금 입력값과 다르면(확인 후 수정) 다시 확인해야 한다 (REQ-SIGNUP-003~005).
@@ -553,7 +548,7 @@ export default function Signup() {
                       inputMode="numeric"
                       maxLength={13}
                       name="phone"
-                      onChange={(e) => change("phone", e.target.value.replace(/[^\d-]/g, ""))}
+                      onChange={(e) => change("phone", filterPhoneInput(e.target.value))}
                       placeholder="010-0000-0000"
                       style={INPUT_STYLE}
                       type="tel"
