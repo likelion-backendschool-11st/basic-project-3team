@@ -165,6 +165,7 @@ async function updateCategories(memberId, { categoryIds, notificationEnabled }) 
 }
 
 // 등급·뱃지는 저장하지 않고 활동 수로 계산한다 (docs/api.md 3장 내 등급·뱃지 조회).
+// 진행도 게이지용으로 등급은 acceptedCount / nextGradeMin, 뱃지는 current / target을 함께 내려준다.
 async function getGrade(memberId) {
   await findMyMember(memberId);
   const stats = await mypageRepository.findActivityStats(memberId);
@@ -176,11 +177,15 @@ async function getGrade(memberId) {
     grade: GRADES[gradeIndex].grade,
     nextGrade: next?.grade ?? null,
     nextGradeCondition: next ? `채택된 답변 ${next.minAccepted}개 (현재 ${stats.acceptedCount}개)` : null,
+    acceptedCount: stats.acceptedCount,
+    nextGradeMin: next?.minAccepted ?? null,
     badges: BADGES.map(({ code, name, condition, stat, min }) => ({
       code,
       name,
       condition,
       acquired: stats[stat] >= min,
+      current: stats[stat],
+      target: min,
     })),
   };
 }

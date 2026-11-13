@@ -278,14 +278,18 @@
   "grade": "BRONZE",
   "nextGrade": "SILVER",
   "nextGradeCondition": "채택된 답변 5개 (현재 4개)",
+  "acceptedCount": 4,
+  "nextGradeMin": 5,
   "badges": [
-    { "code": "FIRST_ANSWER", "name": "첫 답변", "condition": "답변 1개 작성", "acquired": true },
-    { "code": "SOLVER", "name": "해결사", "condition": "채택된 답변 10개", "acquired": false }
+    { "code": "FIRST_ANSWER", "name": "첫 답변", "condition": "답변 1개 작성", "acquired": true, "current": 3, "target": 1 },
+    { "code": "SOLVER", "name": "해결사", "condition": "채택된 답변 10개", "acquired": false, "current": 4, "target": 10 }
   ]
 }
 ```
 - 미획득 뱃지도 함께 내려준다. 프론트는 `acquired`가 `false`이면 흐리게 표시하고, 클릭하면 `condition`을 보여준다.
-- 최고 등급이면 `nextGrade`, `nextGradeCondition`은 `null`이다.
+- 최고 등급이면 `nextGrade`, `nextGradeCondition`, `nextGradeMin`은 `null`이다.
+- 진행도 게이지: 등급은 `acceptedCount / nextGradeMin`, 뱃지는 `current / target`으로 그린다. `current`는 목표를 넘을 수 있으므로 (예: 답변 3개, 목표 1개) 프론트에서 100%로 자른다.
+- 레벨(LV.1~4)은 `grade` 순서(`BRONZE`=1 … `PLATINUM`=4)로 프론트에서 정한다.
 - 등급과 뱃지는 따로 저장하지 않고, 조회할 때 회원의 활동 수로 계산한다. 그래서 획득 일시는 없다.
 
 등급 — 채택된 답변 수 기준 (삭제된 답변 제외)
