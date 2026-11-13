@@ -35,14 +35,18 @@
 - 사용하지 않는 import, 주석 처리된 코드는 커밋하지 않는다.
 
 ## Git
-- 브랜치: `main` 하나만 사용한다 (`develop` 없음).
-  - 당분간 작업 브랜치를 만들지 않고 `main`에 직접 커밋·push한다.
-  - push 전에 `git pull`로 최신 `main`을 받아 충돌을 먼저 해결한다.
-- 작업 브랜치를 다시 쓰게 되면
-  - 만들기 전에 작업자에게 먼저 확인한다.
-  - 이름: `feat/#이슈번호-기능명` / `fix/#이슈번호-버그명` (예: `feat/#38-question-create`, `fix/#36-login-error`)
+- 브랜치: 기본 브랜치는 `main` 하나다 (`develop` 없음).
+  - `main`에 직접 커밋·push하지 않는다. 모든 작업은 이슈마다 작업 브랜치를 만들어 PR로 합친다.
+  - Claude는 브랜치를 만들기 전에 작업자에게 먼저 확인한다.
+- 작업 브랜치 이름: `feat/#이슈번호-기능명` / `fix/#이슈번호-버그명` (예: `feat/#38-question-create`, `fix/#36-login-error`)
   - 이슈가 없는 작업은 이슈번호를 생략한다 (`docs/claude-md`).
-  - PR은 `main`으로 올리고, 본문에 무엇을 / 어떻게 확인했는지 / 관련 이슈(`Closes #이슈번호`)를 적는다.
-  - 팀원 1명 이상이 Approve한 뒤 merge하고, merge한 브랜치는 삭제한다.
+- 작업 순서
+  1. `git switch main` → `git pull`로 최신 `main`을 받는다.
+  2. `git switch -c {브랜치명}`으로 작업 브랜치를 만든다.
+  3. 작업 후 커밋하고 `git push -u origin {브랜치명}`으로 올린다.
+  4. PR은 `main`으로 올리고, 본문에 무엇을 / 어떻게 확인했는지 / 관련 이슈(`Closes #이슈번호`)를 적는다.
+  5. 팀원 1명 이상이 Approve한 뒤 merge하고, merge한 브랜치는 삭제한다 (GitHub + 로컬 `git branch -d`).
+  6. 다음 작업은 1번부터 다시 시작한다. 브랜치를 merge하지 않고 쌓아 두지 않는다.
+- PR을 올리기 전에 `main`이 바뀌었으면 최신 `main`을 작업 브랜치에 반영하고 충돌을 먼저 해결한다.
 - 커밋 메시지: `타입: 무엇을 했는지 (#이슈번호)` (예: `feat: 질문 목록 페이징 API 추가 (#48)`)
   - feat, fix, refactor, style, docs, test, chore
