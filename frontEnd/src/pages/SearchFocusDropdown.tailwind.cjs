@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 검색 포커스 드롭다운 (6번)". Scoped to #page-search-focus-dropdown so it can't clash with other screens.
 module.exports = {
   important: "#page-search-focus-dropdown",
-  content: ["./src/pages/SearchFocusDropdown.tsx"],
+  content: ["./src/pages/SearchFocusDropdown.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{

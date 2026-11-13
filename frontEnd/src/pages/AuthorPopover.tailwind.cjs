@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 작성자 요약 팝오버 (30번)". Scoped to #page-author-popover so it can't clash with other screens.
 module.exports = {
   important: "#page-author-popover",
-  content: ["./src/pages/AuthorPopover.tsx"],
+  content: ["./src/pages/AuthorPopover.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{

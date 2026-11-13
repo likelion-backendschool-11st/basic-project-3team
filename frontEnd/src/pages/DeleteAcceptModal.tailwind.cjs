@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 삭제 및 채택 확인 모달 (27번)". Scoped to #page-delete-accept-modal so it can't clash with other screens.
 module.exports = {
   important: "#page-delete-accept-modal",
-  content: ["./src/pages/DeleteAcceptModal.tsx"],
+  content: ["./src/pages/DeleteAcceptModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{

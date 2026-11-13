@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 질문 신고 모달 (28번)". Scoped to #page-report-modal so it can't clash with other screens.
 module.exports = {
   important: "#page-report-modal",
-  content: ["./src/pages/ReportModal.tsx"],
+  content: ["./src/pages/ReportModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
