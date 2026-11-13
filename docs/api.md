@@ -474,6 +474,16 @@
 { "answerId": 31 }
 ```
 
+수정 (REQ-ANSWER-003)
+- 작성자만 수정할 수 있다. 다른 회원(관리자 포함)이면 403 `FORBIDDEN`, 정지·탈퇴 회원은 403.
+- 없거나 삭제된 답변은 404 `ANSWER_NOT_FOUND`, 채택된 답변은 409 `ACCEPTED_ANSWER_LOCKED`.
+- `content` 규칙은 작성과 같다.
+
+수정 응답 (`data`) — 200
+```json
+{ "answerId": 31 }
+```
+
 목록 응답 (`data`) — 페이징하지 않는다 (REQ-ANSWER-002).
 ```json
 {

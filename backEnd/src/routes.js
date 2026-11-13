@@ -2,7 +2,7 @@ const express = require('express');
 const mainRouter = require('./main/main.routes');
 const questionRouter = require('./question/question.routes');
 const boardRouter = require('./board/board.routes');
-const { questionAnswerRouter } = require('./answer/answer.routes');
+const { questionAnswerRouter, answerRouter } = require('./answer/answer.routes');
 const memberRouter = require('./member/member.routes');
 const authRouter = require('./auth/auth.routes');
 const reportRouter = require('./report/report.routes');
@@ -32,6 +32,8 @@ router.use('/questions', questionRouter);
 router.use('/questions', boardRouter);
 // 답변 작성·목록 (POST·GET /api/questions/:questionId/answers)
 router.use('/questions/:questionId/answers', questionAnswerRouter);
+// 답변 수정 (PATCH /api/answers/:answerId)
+router.use('/answers', answerRouter);
 
 // 회원가입, 중복 확인 (/api/members/**)
 router.use('/members', memberRouter);
