@@ -129,6 +129,7 @@
 | DUPLICATE_NICKNAME | 409 | 닉네임 중복 |
 | ALREADY_LIKED | 409 | 이미 좋아요함 |
 | ALREADY_REPORTED | 409 | 이미 신고함 |
+| REPORT_ALREADY_PROCESSED | 409 | 이미 처리된(`RESOLVED`·`REJECTED`) 신고를 다시 처리 |
 | ALREADY_ACCEPTED | 409 | 이미 채택된 답변이 있음 |
 | QUESTION_HAS_ACCEPTED_ANSWER | 409 | 채택된 답변이 있는 질문은 삭제할 수 없음 |
 | ACCEPTED_ANSWER_LOCKED | 409 | 채택된 답변은 수정·삭제할 수 없음 |
@@ -638,11 +639,44 @@
 ## 11. 관리자 (Admin)
 | 기능 | Method | URL | 권한 |
 |---|---|---|---|
-| 신고 목록 조회 | GET | /api/admin/reports?targetType=&status=PENDING&page=0 | 관리자 |
+| 신고 목록 조회 | GET | /api/admin/reports?targetType=&status=PENDING&sort=latest&page=0 | 관리자 |
 | 신고 상세 조회 | GET | /api/admin/reports/{reportId} | 관리자 |
 | 신고 처리 | PATCH | /api/admin/reports/{reportId} | 관리자 |
 | 회원 목록 조회 | GET | /api/admin/members?status=&keyword=&page=0 | 관리자 |
 | 회원 상태 변경 (정지·해제) | PATCH | /api/admin/members/{memberId}/status | 관리자 |
+
+신고 목록 조회 (REQ-ADMIN-001) — 쿼리 파라미터는 모두 선택이다.
+
+| 파라미터 | 설명 |
+|---|---|
+| `page`, `size` | 페이징 (기본 0, 10) |
+| `targetType` | `QUESTION`, `ANSWER`. 없으면 전체 |
+| `status` | `PENDING`, `RESOLVED`, `REJECTED`. 없으면 전체 |
+| `sort` | `latest`(최신순, 기본), `oldest`(오래된순), `reports`(같은 대상 신고 많은 순, 같으면 최신순) |
+
+- 신고 1건이 한 행이다. 같은 대상에 신고가 여러 건이면 행도 여러 개다.
+- 허용 값이 아니면 400 `INVALID_INPUT` (`errors`에 해당 필드).
+
+응답 `content` 항목 — 상세 응답에서 `targetContent`를 빼고 `reportCount`를 더한다.
+```json
+{
+  "reportId": 3,
+  "targetType": "ANSWER",
+  "targetId": 31,
+  "questionId": 12,
+  "targetTitle": "JPA N+1 문제 해결 방법",
+  "targetDeleted": false,
+  "reporter": { "memberId": 7, "nickname": "신고자" },
+  "targetWriter": { "memberId": 1, "nickname": "개발자" },
+  "reason": "SPAM",
+  "reasonDetail": null,
+  "status": "PENDING",
+  "reportCount": 2,
+  "createdAt": "2026-11-12T11:00:00"
+}
+```
+- `questionId`, `targetTitle`: 대상이 질문이면 그 질문, 답변이면 답변이 달린 질문의 ID·제목
+- `reportCount`: 같은 대상에 쌓인 전체 신고 수 (상태 무관)
 
 신고 상세 응답 (`data`) — 대상이 이미 삭제됐어도 내용을 보여준다 (REQ-ADMIN-001).
 ```json
@@ -650,6 +684,8 @@
   "reportId": 3,
   "targetType": "QUESTION",
   "targetId": 12,
+  "questionId": 12,
+  "targetTitle": "JPA N+1 문제 해결 방법",
   "targetContent": "신고된 글 내용",
   "targetDeleted": false,
   "reporter": { "memberId": 7, "nickname": "신고자" },
@@ -668,7 +704,19 @@
 - `action`: `DELETE_TARGET`(대상 숨김 처리 후 처리 완료), `REJECT`(삭제 없이 반려)
 - 처리 후 신고 상태: `PENDING` → `RESOLVED` 또는 `REJECTED`
 - 같은 대상에 쌓인 다른 `PENDING` 신고도 함께 같은 상태로 처리한다.
+- `DELETE_TARGET`
+  - 질문: 딸린 답변·답글도 함께 숨긴다 (질문 삭제 API와 같은 처리). 채택된 답변이 있어도 숨긴다.
+  - 답변: 딸린 답글도 함께 숨긴다. 채택된 답변이어도 질문의 해결 표시는 그대로 두고, 다른 답변을 다시 채택할 수 없다.
+  - 대상이 이미 삭제됐으면 신고 상태만 `RESOLVED`로 바꾼다.
+- 대상 숨김과 신고 상태 변경은 한 트랜잭션으로 처리한다.
+- 없는 신고면 404 `REPORT_NOT_FOUND`, 이미 처리된 신고면 409 `REPORT_ALREADY_PROCESSED`, `action`이 허용 값이 아니면 400 `INVALID_INPUT`.
 - 신고와 무관하게 관리자가 글을 지울 때는 각 도메인의 DELETE API를 사용한다.
+
+신고 처리 응답 (`data`)
+```json
+{ "reportId": 3, "status": "RESOLVED", "processedCount": 2 }
+```
+- `processedCount`: 이번에 함께 처리된 신고 수 (요청한 신고 포함)
 
 회원 목록 조회 (REQ-MANAGE-001)
 - `keyword`는 아이디·닉네임으로 찾는다.
