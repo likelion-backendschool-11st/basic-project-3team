@@ -1,4 +1,4 @@
-import { CATEGORIES, type QuestionSearchParams, type QuestionSort, type SearchScope } from "../../api/question";
+import type { QuestionSearchParams, QuestionSort, SearchScope } from "../../api/question";
 import { PAGE_SIZE, parsePage, parseSort } from "../questionList";
 
 export const SEARCH_PATH = "/search-results";
@@ -55,7 +55,8 @@ export function readCondition(params: URLSearchParams): SearchCondition {
   return {
     keyword: (params.get("keyword") ?? "").trim().slice(0, MAX_KEYWORD_LENGTH),
     scope,
-    categoryId: CATEGORIES.some((c) => c.categoryId === categoryId) ? categoryId : null,
+    // 카테고리 목록은 API로 받으므로 여기서는 형식(1 이상 정수)만 본다. 없는 ID면 서버가 빈 결과를 준다.
+    categoryId: Number.isSafeInteger(categoryId) && categoryId >= 1 ? categoryId : null,
     tags: parseTags(params.get("tags")),
     startDate: date("startDate"),
     endDate: date("endDate"),
