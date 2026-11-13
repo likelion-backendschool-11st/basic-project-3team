@@ -1,7 +1,8 @@
 // Generated from Stitch screen "Dev in_ 질문하기 (20번)". Scoped to #page-ask so it can't clash with other screens.
 module.exports = {
   important: "#page-ask",
-  content: ["./src/pages/Ask.tsx"],
+  // 공통 컴포넌트(Header, FieldError)의 클래스도 이 화면 CSS에 만든다.
+  content: ["./src/pages/Ask.tsx", "./src/components/Header.tsx", "./src/components/FieldError.tsx"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{

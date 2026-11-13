@@ -3,7 +3,13 @@ import "./QuestionDetail.css";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
-import { deleteQuestion, getQuestion, type Grade, type QuestionDetail as Question } from "../api/question";
+import {
+  deleteQuestion,
+  getQuestion,
+  readQuestionId,
+  type Grade,
+  type QuestionDetail as Question,
+} from "../api/question";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
 
@@ -19,12 +25,6 @@ const GRADES: Record<Grade, { label: string; color: string }> = {
   GOLD: { label: "골드", color: "#EAB308" },
   PLATINUM: { label: "플래티넘", color: "#06B6D4" },
 };
-
-// 주소의 questionId (?questionId=12). 1 이상의 정수가 아니면 null
-function readQuestionId(value: string | null) {
-  const id = Number(value);
-  return Number.isSafeInteger(id) && id > 0 ? id : null;
-}
 
 // "2026-11-12T10:00:00" → "2026.11.12"
 const formatDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll("-", ".");

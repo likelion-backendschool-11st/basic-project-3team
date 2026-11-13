@@ -105,3 +105,14 @@ export async function getQuestion(questionId: number): Promise<QuestionDetail> {
 export async function deleteQuestion(questionId: number): Promise<void> {
   await api.delete(`/questions/${questionId}`);
 }
+
+// PATCH /api/questions/{questionId} — 작성자만. 보낸 필드만 바꾸고 tags는 전체 교체한다.
+export async function updateQuestion(questionId: number, request: Partial<QuestionRequest>): Promise<void> {
+  await api.patch(`/questions/${questionId}`, request);
+}
+
+// 상세·수정 화면 주소의 questionId (?questionId=12). 1 이상의 정수가 아니면 null
+export function readQuestionId(value: string | null) {
+  const id = Number(value);
+  return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
