@@ -58,6 +58,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ user, initializing, login, logout }), [user, initializing, login, logout]);
+  const refreshUser = useCallback(async () => {
+    setUser(toUser(await authApi.reissue()));
+  }, []);
+
+  const value = useMemo(
+    () => ({ user, initializing, login, logout, refreshUser }),
+    [user, initializing, login, logout, refreshUser],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

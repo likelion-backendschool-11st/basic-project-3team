@@ -12,6 +12,8 @@ export interface AuthContextValue {
   initializing: boolean;
   login: (loginId: string, password: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
+  // 닉네임 변경 등으로 바뀐 로그인 정보를 서버(reissue)에서 다시 받아온다.
+  refreshUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);

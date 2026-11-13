@@ -192,7 +192,7 @@
 | 아이디 중복 확인 | GET | /api/members/check-login-id?loginId= | 전체 |
 | 전화번호 중복 확인 | GET | /api/members/check-phone?phone= | 전체 |
 | 닉네임 중복 확인 | GET | /api/members/check-nickname?nickname= | 전체 |
-| 프로필 조회 (다른 회원 포함) | GET | /api/members/{memberId} | 전체 |
+| 프로필 조회 (다른 회원 포함) | GET | /api/members/{memberId} | 회원 |
 | 내 정보 조회 | GET | /api/members/me | 회원 |
 | 프로필 수정 | PATCH | /api/members/me/profile | 회원 |
 | 개인정보 수정 | PATCH | /api/members/me/private | 회원 |
@@ -227,7 +227,7 @@
 ```
 
 ### 프로필 조회 (REQ-MYPAGE-001)
-응답 (`data`) — 로그인하지 않아도 조회할 수 있고, 개인정보(아이디·전화번호)는 넣지 않는다.
+응답 (`data`) — 로그인한 회원만 조회할 수 있다(토큰이 없으면 401 `UNAUTHORIZED`). 다른 회원의 프로필도 볼 수 있지만 개인정보(아이디·전화번호)는 넣지 않는다.
 ```json
 {
   "memberId": 1,
@@ -326,9 +326,10 @@
 ### 내가 쓴 질문·답변 목록 (REQ-MYPAGE-008)
 최신순. 응답 `content` 항목
 ```json
-{ "questionId": 12, "title": "JPA N+1 문제 해결 방법", "createdAt": "2026-11-12T10:00:00", "accepted": false, "likeCount": 5 }
+{ "questionId": 12, "title": "JPA N+1 문제 해결 방법", "createdAt": "2026-11-12T10:00:00", "accepted": false, "likeCount": 5, "answerCount": 3 }
 ```
-- 답변 목록의 항목은 `answerId`를 더하고, `title`은 답변이 달린 질문의 제목, `accepted`는 그 답변의 채택 여부, `likeCount`는 그 답변의 좋아요 수다.
+- 질문 목록의 `answerCount`는 그 질문에 달린 답변 수다 (삭제된 답변 제외). 프론트는 `accepted`와 함께 채택완료 / 미채택 / 답변 대기중(`answerCount`가 0)을 표시한다.
+- 답변 목록의 항목은 `answerCount` 대신 `answerId`를 더하고, `title`은 답변이 달린 질문의 제목, `accepted`는 그 답변의 채택 여부, `likeCount`는 그 답변의 좋아요 수다.
 
 ## 4. 질문 (Question)
 | 기능 | Method | URL | 권한 |
@@ -583,6 +584,8 @@
 - 1인 1회. 이미 좋아요한 대상이면 409 `ALREADY_LIKED`, 좋아요하지 않은 대상을 취소하면 404 `LIKE_NOT_FOUND`.
 - 본인 질문·답변에는 좋아요를 누를 수 없다: 400 `CANNOT_LIKE_OWN_POST` (REQ-QUESTION-010, REQ-ANSWER-007).
 - 버튼을 다시 누르면 취소하는 동작은 프론트가 `liked` 값을 보고 POST / DELETE 중 하나를 호출해 만든다.
+- 대상이 없거나 삭제됐으면 404 `QUESTION_NOT_FOUND` / `ANSWER_NOT_FOUND` (질문이 삭제된 답변도 404). 정지·탈퇴 회원은 403.
+- 좋아요 행과 대상의 `likeCount`는 한 트랜잭션에서 함께 바뀌고, 좋아요만으로는 `updatedAt`이 바뀌지 않는다.
 
 ## 8. 신고 (Report)
 | 기능 | Method | URL | 권한 |
