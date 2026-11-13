@@ -583,6 +583,8 @@
 - 1인 1회. 이미 좋아요한 대상이면 409 `ALREADY_LIKED`, 좋아요하지 않은 대상을 취소하면 404 `LIKE_NOT_FOUND`.
 - 본인 질문·답변에는 좋아요를 누를 수 없다: 400 `CANNOT_LIKE_OWN_POST` (REQ-QUESTION-010, REQ-ANSWER-007).
 - 버튼을 다시 누르면 취소하는 동작은 프론트가 `liked` 값을 보고 POST / DELETE 중 하나를 호출해 만든다.
+- 대상이 없거나 삭제됐으면 404 `QUESTION_NOT_FOUND` / `ANSWER_NOT_FOUND` (질문이 삭제된 답변도 404). 정지·탈퇴 회원은 403.
+- 좋아요 행과 대상의 `likeCount`는 한 트랜잭션에서 함께 바뀌고, 좋아요만으로는 `updatedAt`이 바뀌지 않는다.
 
 ## 8. 신고 (Report)
 | 기능 | Method | URL | 권한 |
