@@ -319,9 +319,10 @@
 ### 내가 쓴 질문·답변 목록 (REQ-MYPAGE-008)
 최신순. 응답 `content` 항목
 ```json
-{ "questionId": 12, "title": "JPA N+1 문제 해결 방법", "createdAt": "2026-11-12T10:00:00", "accepted": false, "likeCount": 5 }
+{ "questionId": 12, "title": "JPA N+1 문제 해결 방법", "createdAt": "2026-11-12T10:00:00", "accepted": false, "likeCount": 5, "answerCount": 3 }
 ```
-- 답변 목록의 항목은 `answerId`를 더하고, `title`은 답변이 달린 질문의 제목, `accepted`는 그 답변의 채택 여부, `likeCount`는 그 답변의 좋아요 수다.
+- 질문 목록의 `answerCount`는 그 질문에 달린 답변 수다 (삭제된 답변 제외). 프론트는 `accepted`와 함께 채택완료 / 미채택 / 답변 대기중(`answerCount`가 0)을 표시한다.
+- 답변 목록의 항목은 `answerCount` 대신 `answerId`를 더하고, `title`은 답변이 달린 질문의 제목, `accepted`는 그 답변의 채택 여부, `likeCount`는 그 답변의 좋아요 수다.
 
 ## 4. 질문 (Question)
 | 기능 | Method | URL | 권한 |
