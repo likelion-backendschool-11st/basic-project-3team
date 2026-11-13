@@ -458,6 +458,13 @@
 ```json
 { "content": "답변 내용 (마크다운)" }
 ```
+- `content`는 10자 이상(공백 제외), 최대 10,000자. 어기면 400 `INVALID_INPUT`.
+- 없거나 삭제된 질문이면 404 `QUESTION_NOT_FOUND`, 정지·탈퇴 회원은 403.
+
+작성 응답 (`data`) — 201
+```json
+{ "answerId": 31 }
+```
 
 목록 응답 (`data`) — 페이징하지 않는다 (REQ-ANSWER-002).
 ```json
