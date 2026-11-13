@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 
 import { useLocation, useNavigate } from "react-router-dom";
 import type { SearchScope } from "../../api/question";
 import { useRecentSearches } from "../../hooks/useRecentSearches";
+import { usePopularTags } from "../../hooks/useTagData";
+import PopularTags from "../tag/PopularTags";
 import { buildSearchUrl, MAX_KEYWORD_LENGTH, SCOPES, SEARCH_PATH } from "./searchCondition";
 
 // 헤더 검색창 + 검색 드롭다운 (REQ-MAIN-009, REQ-SEARCH-001)
@@ -10,6 +12,7 @@ export default function SearchBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const recent = useRecentSearches();
+  const popularTags = usePopularTags(6);
   const [text, setText] = useState("");
   const [scope, setScope] = useState<SearchScope>("all");
   const [open, setOpen] = useState(false);
@@ -116,6 +119,14 @@ export default function SearchBar() {
               ))}
             </div>
           </fieldset>
+
+          {/* 인기 태그 (GET /api/tags/popular). 누르면 그 태그로 바로 검색한다. 불러오지 못하면 줄째 숨긴다. */}
+          {popularTags.length > 0 && (
+            <div className="flex items-start gap-6 py-2">
+              <span className="font-bold text-neutral-900 w-20 flex-shrink-0">인기 태그</span>
+              <PopularTags limit={6} onSelect={(tag) => search(`#${tag}`, "all")} />
+            </div>
+          )}
 
           <div className="border-t border-neutral-200 my-3"></div>
 
