@@ -627,6 +627,7 @@
 | 기능 | Method | URL | 권한 |
 |---|---|---|---|
 | 태그 목록 | GET | /api/tags?keyword= | 전체 |
+| 인기 태그 | GET | /api/tags/popular?limit= | 전체 |
 | 추천 태그 | POST | /api/tags/recommend | 회원 |
 | 카테고리 목록 | GET | /api/categories | 전체 |
 
@@ -634,6 +635,14 @@
 ```json
 [ { "tagId": 1, "name": "spring" }, { "tagId": 2, "name": "jpa" } ]
 ```
+- `keyword`(선택, 최대 30자)가 있으면 이름에 그 글자가 들어간 태그만, 없으면 전체를 이름순으로 준다. `%`, `_`는 일반 문자로 취급한다.
+
+인기 태그 응답 (`data`) — 검색 드롭다운·검색 결과 없음 화면에서 쓴다.
+```json
+[ { "tagId": 2, "name": "spring", "questionCount": 12 }, { "tagId": 7, "name": "react", "questionCount": 9 } ]
+```
+- 삭제되지 않은 질문에 많이 달린 순(같으면 이름순)이다. 달린 질문이 없는 태그는 빠진다.
+- `limit`: 1~20 정수, 기본 10. 범위를 벗어나면 400 `INVALID_INPUT`.
 
 추천 태그 요청 / 응답 (`data`) (REQ-QUESTION-008)
 ```json
@@ -643,6 +652,9 @@
 { "tags": ["spring", "jpa"] }
 ```
 - 제목·내용에 태그 이름(대소문자 무시)이 들어 있으면 추천한다.
+  - 단어로 들어 있을 때만 추천한다. 앞뒤가 영문자·숫자면 다른 단어의 일부로 본다 (`javascript`에서 `java`, `mysql`에서 `sql`을 추천하지 않는다). 한글 조사가 붙은 `react를`은 추천한다.
+  - 제목·내용에 먼저 나온 순서로 최대 8개.
+- `title`(최대 100자), `content`(최대 10,000자)는 작성 중인 값이라 비어 있거나 빠져도 된다 (빈 배열 응답). 문자열이 아니거나 너무 길면 400 `INVALID_INPUT`.
 - 태그는 `seed.sql`로 미리 넣은 목록에서만 고른다. 사용자가 새 태그를 만들 수 없다 (오타·중복 태그 방지). 태그를 추가할 때는 `seed.sql`을 고친다.
 - 태그 이름은 소문자로 저장한다 (`spring`, `react`, `mysql` 등).
 

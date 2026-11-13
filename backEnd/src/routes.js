@@ -7,6 +7,8 @@ const memberRouter = require('./member/member.routes');
 const authRouter = require('./auth/auth.routes');
 const reportRouter = require('./report/report.routes');
 const adminRouter = require('./admin/admin.routes');
+const tagRouter = require('./tag/tag.routes');
+const categoryRouter = require('./tag/category.routes');
 const auth = require('./middlewares/auth');
 const admin = require('./middlewares/admin');
 
@@ -38,5 +40,9 @@ router.use('/members', memberRouter);
 
 // 질문·답변 신고 (POST /api/reports)
 router.use('/reports', reportRouter);
+
+// 태그 목록·인기 태그·추천 태그 (/api/tags/**), 카테고리 목록 (GET /api/categories)
+router.use('/tags', tagRouter);
+router.use('/categories', categoryRouter);
 
 module.exports = router;
