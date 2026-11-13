@@ -1,5 +1,5 @@
 const express = require('express');
-const auth = require('../middlewares/auth');
+const auth = require('../../middlewares/auth');
 const mypageController = require('./mypage.controller');
 
 // 마이페이지 (/api/members/me/**, /api/members/{memberId})

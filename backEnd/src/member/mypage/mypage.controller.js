@@ -1,10 +1,10 @@
 const mypageService = require('./mypage.service');
-const { setRefreshCookie } = require('../auth/auth.controller');
-const AppError = require('../utils/AppError');
-const ErrorCode = require('../utils/errorCode');
-const { success } = require('../utils/response');
-const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } = require('../utils/constants');
-const { PASSWORD_PATTERN, PHONE_PATTERN, NICKNAME_PATTERN } = require('./member.constants');
+const { setRefreshCookie } = require('../../auth/auth.controller');
+const AppError = require('../../utils/AppError');
+const ErrorCode = require('../../utils/errorCode');
+const { success } = require('../../utils/response');
+const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } = require('../../utils/constants');
+const { PASSWORD_PATTERN, PHONE_PATTERN, NICKNAME_PATTERN } = require('../member.constants');
 const { BIO_MAX_LENGTH, CAREER_YEARS_MAX, TECH_STACK_MAX } = require('./mypage.constants');
 
 const DIGITS = /^\d+$/;
