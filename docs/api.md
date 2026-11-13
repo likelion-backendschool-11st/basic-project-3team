@@ -105,6 +105,7 @@
 | PASSWORD_MISMATCH | 400 | 개인정보 수정 시 현재 비밀번호 불일치 |
 | CANNOT_ACCEPT_OWN_ANSWER | 400 | 본인 답변은 채택할 수 없음 |
 | CANNOT_LIKE_OWN_POST | 400 | 본인 질문·답변에는 좋아요를 누를 수 없음 |
+| CANNOT_REPORT_OWN_POST | 400 | 본인 질문·답변은 신고할 수 없음 |
 | UNAUTHORIZED | 401 | 토큰 없음 |
 | TOKEN_EXPIRED | 401 | Access Token 만료 (프론트가 재발급 시도) |
 | INVALID_TOKEN | 401 | 위조·형식 오류 토큰 |
@@ -115,6 +116,7 @@
 | MEMBER_WITHDRAWN | 403 | 탈퇴한 회원 |
 | API_NOT_FOUND | 404 | 존재하지 않는 URL |
 | MEMBER_NOT_FOUND | 404 | 회원 없음 |
+| ACCOUNT_NOT_MATCHED | 404 | 아이디·비밀번호 찾기에서 입력한 정보와 일치하는 회원 없음 |
 | QUESTION_NOT_FOUND | 404 | 질문 없음 |
 | ANSWER_NOT_FOUND | 404 | 답변 없음 |
 | REPLY_NOT_FOUND | 404 | 답글 없음 |
@@ -138,6 +140,9 @@
 | 로그인 | POST | /api/auth/login | 전체 |
 | 토큰 재발급 | POST | /api/auth/reissue | 전체 (Refresh 쿠키 필요) |
 | 로그아웃 | POST | /api/auth/logout | 회원 |
+| 아이디 찾기 | POST | /api/auth/find-login-id | 전체 |
+| 비밀번호 재설정 본인 확인 | POST | /api/auth/password-reset/verify | 전체 |
+| 비밀번호 재설정 | POST | /api/auth/password-reset | 전체 |
 
 로그인 요청 (REQ-LOGIN-001)
 ```json
@@ -157,6 +162,27 @@
   - 정지·탈퇴 회원이면 403 `MEMBER_BANNED` / `MEMBER_WITHDRAWN`, 저장된 Refresh Token을 삭제한다.
 - 로그아웃: `Authorization` 헤더 필요. DB의 Refresh Token을 삭제하고 쿠키를 만료시킨다. 응답 `data`는 `null`. 프론트는 메모리의 Access Token을 지운다.
 - 쿠키: 이름 `refreshToken`, `HttpOnly`, `SameSite=Strict`, `Path=/api/auth`, 14일. `NODE_ENV=production`이면 `Secure`.
+
+### 아이디·비밀번호 찾기 (REQ-FIND-001~005)
+- 본인 확인 방식: 가입할 때 등록한 전화번호. 입력값 형식은 회원가입과 같은 규칙이고, 틀리면 400 `INVALID_INPUT`(필드별 에러).
+- 정보가 일치하는 회원이 없거나 탈퇴 회원이면 404 `ACCOUNT_NOT_MATCHED`.
+- 틀린 시도 횟수는 제한하지 않는다 (#37에서 결정).
+- 요청 본문에 전화번호가 들어가므로 GET 쿼리가 아니라 POST 본문으로 보낸다.
+
+아이디 찾기 요청 / 응답 (`data`) — 아이디는 앞 3자만 보이고 나머지는 같은 길이의 `*`로 가린다.
+```json
+{ "nickname": "자바왕", "phone": "01011112222" }
+```
+```json
+{ "nickname": "자바왕", "maskedLoginId": "dev********", "createdAt": "2026-11-01T10:00:00" }
+```
+
+비밀번호 재설정은 화면에서 두 단계로 진행한다.
+1. 본인 확인 `POST /api/auth/password-reset/verify` — 요청 `{ "loginId": "devin_user1", "phone": "01011112222" }`, 응답 `data` `{ "verified": true }`
+2. 재설정 `POST /api/auth/password-reset` — 요청 `{ "loginId": "devin_user1", "phone": "01011112222", "newPassword": "devin_5678" }`, 응답 `data` `null`
+- 서버는 1단계 결과를 저장하지 않으므로 2단계에서 아이디·전화번호를 다시 확인한다. 비밀번호 확인 값 비교는 프론트에서 한다.
+- 정지 회원은 403 `MEMBER_BANNED` (1·2단계 모두).
+- 재설정하면 그 회원의 Refresh Token을 삭제하고 Refresh 쿠키를 만료시킨다. 다른 기기는 Access Token이 만료되면(최대 30분) 다시 로그인해야 한다.
 
 ## 3. 회원 (Member)
 | 기능 | Method | URL | 권한 |
@@ -533,6 +559,17 @@
 | `ETC` | 기타 (`reasonDetail` 필수) |
 
 - 같은 회원이 같은 대상을 중복 신고하면 409 `ALREADY_REPORTED`.
+- 본인 질문·답변은 신고할 수 없다: 400 `CANNOT_REPORT_OWN_POST`.
+- `reasonDetail`은 `reason`이 `ETC`일 때만 받는다 (앞뒤 공백 제외 1~200자). 다른 사유와 함께 보내면 저장하지 않는다.
+- 대상이 없거나 삭제됐으면 404 `QUESTION_NOT_FOUND` / `ANSWER_NOT_FOUND`. 질문이 삭제된 답변도 404다.
+- 정지된 회원은 403 `MEMBER_BANNED`, 탈퇴한 회원은 403 `MEMBER_WITHDRAWN`.
+- 형식이 틀리면 400 `INVALID_INPUT` (`errors`에 해당 필드): `targetType`·`reason`이 허용 값이 아님, `targetId`가 1 이상 정수가 아님, `ETC`인데 `reasonDetail`이 비었거나 200자 초과
+- 답글(Reply) 신고는 이번 범위에서 제외한다 (`report.target_type`이 `QUESTION`, `ANSWER`만 허용).
+
+응답 (`data`) — 201
+```json
+{ "reportId": 3 }
+```
 
 ## 9. 알림 (Notification)
 | 기능 | Method | URL | 권한 |

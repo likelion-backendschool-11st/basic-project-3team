@@ -4,6 +4,7 @@ const questionRouter = require('./question/question.routes');
 const boardRouter = require('./board/board.routes');
 const memberRouter = require('./member/member.routes');
 const authRouter = require('./auth/auth.routes');
+const reportRouter = require('./report/report.routes');
 const auth = require('./middlewares/auth');
 const admin = require('./middlewares/admin');
 
@@ -26,5 +27,8 @@ router.use('/questions', boardRouter);
 
 // 회원가입, 중복 확인 (/api/members/**)
 router.use('/members', memberRouter);
+
+// 질문·답변 신고 (POST /api/reports)
+router.use('/reports', reportRouter);
 
 module.exports = router;
