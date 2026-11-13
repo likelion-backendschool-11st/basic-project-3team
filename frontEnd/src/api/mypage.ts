@@ -64,6 +64,32 @@ export interface MyPost {
   likeCount: number;
 }
 
+export type BadgeCode = "FIRST_QUESTION" | "FIRST_ANSWER" | "FIRST_ACCEPTED" | "CURIOUS" | "SOLVER" | "POPULAR_ANSWER";
+
+// GET /api/members/me/grade — 등급·뱃지는 조회할 때 계산한다 (docs/api.md 3장 내 등급·뱃지 조회)
+export interface Badge {
+  code: BadgeCode;
+  name: string;
+  condition: string;
+  acquired: boolean;
+  current: number;
+  target: number;
+}
+
+export interface GradeInfo {
+  grade: Grade;
+  nextGrade: Grade | null;
+  nextGradeCondition: string | null;
+  acceptedCount: number;
+  nextGradeMin: number | null;
+  badges: Badge[];
+}
+
+export async function getMyGrade(): Promise<GradeInfo> {
+  const { data } = await api.get<ApiResponse<GradeInfo>>("/members/me/grade");
+  return data.data;
+}
+
 export async function getMyInfo(): Promise<MyInfo> {
   const { data } = await api.get<ApiResponse<MyInfo>>("/members/me");
   return data.data;
