@@ -68,6 +68,31 @@ async function findQuestionById(questionId) {
   return rows[0] ?? null;
 }
 
+async function findWriterId(questionId) {
+  const [rows] = await pool.query('SELECT member_id AS memberId FROM question WHERE question_id = ? AND deleted = FALSE', [
+    questionId,
+  ]);
+  return rows[0]?.memberId ?? null;
+}
+
+// SET에 넣는 컬럼 이름은 이 허용 목록에서만 가져오고, 값은 모두 플레이스홀더로 넘긴다.
+const UPDATABLE_COLUMNS = Object.freeze({ title: 'title', content: 'content', categoryId: 'category_id' });
+
+// 태그만 바꿔도 수정일이 바뀌도록 updated_at은 항상 NOW()로 지정한다. 삭제된 질문이면 false.
+async function updateQuestion(conn, questionId, fields) {
+  const keys = Object.keys(UPDATABLE_COLUMNS).filter((key) => fields[key] !== undefined);
+  const sets = keys.map((key) => `${UPDATABLE_COLUMNS[key]} = ?`).concat('updated_at = NOW()');
+  const [result] = await conn.query(
+    `UPDATE question SET ${sets.join(', ')} WHERE question_id = ? AND deleted = FALSE`,
+    [...keys.map((key) => fields[key]), questionId],
+  );
+  return result.affectedRows > 0;
+}
+
+async function deleteQuestionTags(conn, questionId) {
+  await conn.query('DELETE FROM question_tag WHERE question_id = ?', [questionId]);
+}
+
 module.exports = {
   existsCategory,
   findTagIdsByNames,
@@ -75,4 +100,7 @@ module.exports = {
   insertQuestionTags,
   increaseViewCount,
   findQuestionById,
+  findWriterId,
+  updateQuestion,
+  deleteQuestionTags,
 };
