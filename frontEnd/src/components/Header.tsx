@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { ADMIN_REPORTS_PATH } from "./admin/adminLabels";
+import NotificationBell from "./notification/NotificationBell";
 import SearchBar from "./search/SearchBar";
 
 const MAIN_PATH = "/questions";
@@ -100,10 +101,8 @@ export default function Header() {
           {/* 로그인 상태 복구(reissue) 중에는 버튼이 깜빡이지 않게 비워 둔다. */}
           {initializing ? null : user ? (
             <>
-              {/* 알림 팝오버는 #70에서 연결한다. */}
-              <button className={`${buttonBase} px-3 bg-white hover:bg-gray-100`} type="button">
-                알림
-              </button>
+              {/* #70: 안 읽은 알림 수 + 알림 팝오버 (실시간 수신은 NotificationProvider) */}
+              <NotificationBell />
               <ProfileMenu nickname={user.nickname} />
             </>
           ) : (
