@@ -393,6 +393,18 @@
 { "questionId": 12 }
 ```
 
+수정 (REQ-QUESTION-006, REQ-QNA-001)
+- 작성자만 수정할 수 있다. 다른 회원(관리자 포함)이면 403 `FORBIDDEN`, 정지·탈퇴 회원은 403 `MEMBER_BANNED`·`MEMBER_WITHDRAWN`.
+- 보낸 필드만 작성과 같은 규칙으로 검사한다. 필드를 하나도 보내지 않거나 값이 `null`이면 400 `INVALID_INPUT`.
+- `tags: []`를 보내면 태그를 모두 지운다.
+- 어떤 필드를 바꾸든(태그만 바꿔도) `updatedAt`이 수정 시각으로 바뀐다.
+- 없거나 삭제된 질문은 404 `QUESTION_NOT_FOUND`.
+
+수정 응답 (`data`) — 200
+```json
+{ "questionId": 12 }
+```
+
 ### 상세 조회 (REQ-QUESTION-005)
 응답 (`data`)
 ```json

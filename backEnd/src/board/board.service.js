@@ -5,34 +5,77 @@ const { findTagsByQuestionIds } = require('../main/main.repository');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 
-async function createQuestion(memberId, { title, content, categoryId, tagNames }) {
-  // 이미 발급된 Access Token은 정지·탈퇴 뒤에도 30분간 유효하므로 쓰기 작업마다 상태를 확인한다 (docs/auth.md).
-  await findWritableMember(memberId);
-
-  if (!(await boardRepository.existsCategory(categoryId))) {
-    throw new AppError(ErrorCode.CATEGORY_NOT_FOUND);
-  }
-
-  const tagIds = await boardRepository.findTagIdsByNames(tagNames);
-  if (tagIds.length !== tagNames.length) {
-    throw new AppError(ErrorCode.INVALID_INPUT, {
-      errors: [{ field: 'tags', reason: '태그 목록에 없는 태그가 있습니다.' }],
-    });
-  }
-
+async function withTransaction(work) {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
-    const questionId = await boardRepository.insertQuestion(conn, { memberId, categoryId, title, content });
-    await boardRepository.insertQuestionTags(conn, questionId, tagIds);
+    const result = await work(conn);
     await conn.commit();
-    return questionId;
+    return result;
   } catch (err) {
     await conn.rollback();
     throw err;
   } finally {
     conn.release();
   }
+}
+
+async function assertCategoryExists(categoryId) {
+  if (!(await boardRepository.existsCategory(categoryId))) {
+    throw new AppError(ErrorCode.CATEGORY_NOT_FOUND);
+  }
+}
+
+// 태그 목록에 없는 이름이 하나라도 있으면 400
+async function findTagIds(tagNames) {
+  const tagIds = await boardRepository.findTagIdsByNames(tagNames);
+  if (tagIds.length !== tagNames.length) {
+    throw new AppError(ErrorCode.INVALID_INPUT, {
+      errors: [{ field: 'tags', reason: '태그 목록에 없는 태그가 있습니다.' }],
+    });
+  }
+  return tagIds;
+}
+
+async function createQuestion(memberId, { title, content, categoryId, tagNames }) {
+  // 이미 발급된 Access Token은 정지·탈퇴 뒤에도 30분간 유효하므로 쓰기 작업마다 상태를 확인한다 (docs/auth.md).
+  await findWritableMember(memberId);
+  await assertCategoryExists(categoryId);
+  const tagIds = await findTagIds(tagNames);
+
+  return withTransaction(async (conn) => {
+    const questionId = await boardRepository.insertQuestion(conn, { memberId, categoryId, title, content });
+    await boardRepository.insertQuestionTags(conn, questionId, tagIds);
+    return questionId;
+  });
+}
+
+// 질문 수정 (#40). fields에는 보낸 필드만 있다. tagNames가 있으면 태그 전체를 교체한다.
+async function updateQuestion(memberId, questionId, fields) {
+  await findWritableMember(memberId);
+
+  const writerId = await boardRepository.findWriterId(questionId);
+  if (writerId === null) {
+    throw new AppError(ErrorCode.QUESTION_NOT_FOUND);
+  }
+  if (writerId !== memberId) {
+    throw new AppError(ErrorCode.FORBIDDEN);
+  }
+  if (fields.categoryId !== undefined) {
+    await assertCategoryExists(fields.categoryId);
+  }
+  const tagIds = fields.tagNames === undefined ? null : await findTagIds(fields.tagNames);
+
+  await withTransaction(async (conn) => {
+    // 확인한 뒤 그사이 삭제됐으면 404
+    if (!(await boardRepository.updateQuestion(conn, questionId, fields))) {
+      throw new AppError(ErrorCode.QUESTION_NOT_FOUND);
+    }
+    if (tagIds !== null) {
+      await boardRepository.deleteQuestionTags(conn, questionId);
+      await boardRepository.insertQuestionTags(conn, questionId, tagIds);
+    }
+  });
 }
 
 // 상세 조회 (#39) + 조회수 1 증가 (#55). 응답에는 올린 뒤의 조회수가 담긴다.
@@ -74,4 +117,4 @@ async function getQuestion(questionId) {
   };
 }
 
-module.exports = { createQuestion, getQuestion };
+module.exports = { createQuestion, getQuestion, updateQuestion };
