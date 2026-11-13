@@ -11,6 +11,7 @@
     "stitch": "node scripts/stitch-to-react.mjs && prettier --write --print-width 120 --log-level warn src/pages src/routes.ts"
   },
   "dependencies": {
+    "axios": "^1.21.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5"

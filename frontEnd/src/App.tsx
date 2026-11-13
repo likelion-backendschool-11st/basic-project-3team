@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import { routes } from './routes'
 import Login from './pages/Login'
+import AuthProvider from './components/AuthProvider'
 
 function ScreenIndex() {
   return (
@@ -23,13 +24,15 @@ function ScreenIndex() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/screens" element={<ScreenIndex />} />
-        {routes.map(({ path, Component }) => (
-          <Route key={path} path={path} element={<Component />} />
-        ))}
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/screens" element={<ScreenIndex />} />
+          {routes.map(({ path, Component }) => (
+            <Route key={path} path={path} element={<Component />} />
+          ))}
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
