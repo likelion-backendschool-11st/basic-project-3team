@@ -725,18 +725,37 @@
 ```
 - `processedCount`: 이번에 함께 처리된 신고 수 (요청한 신고 포함)
 
-회원 목록 조회 (REQ-MANAGE-001)
-- `keyword`는 아이디·닉네임으로 찾는다.
+회원 목록 조회 (REQ-MANAGE-001) — 쿼리 파라미터는 모두 선택이다.
+
+| 파라미터 | 설명 |
+|---|---|
+| `page`, `size` | 페이징 (기본 0, 10) |
+| `status` | `ACTIVE`, `BANNED`, `WITHDRAWN`. 없으면 전체 |
+| `keyword` | 아이디·닉네임 부분 일치, 최대 20자. 앞뒤 공백은 지우고, `%`, `_`는 일반 문자로 취급한다 |
+
+- 최근 가입순으로 정렬한다.
+- 허용 값이 아니면 400 `INVALID_INPUT` (`errors`에 해당 필드).
 - `content` 항목
 ```json
-{ "memberId": 1, "loginId": "devin_user", "nickname": "개발자", "status": "ACTIVE", "reportedCount": 2, "createdAt": "2026-11-01T09:00:00" }
+{ "memberId": 1, "loginId": "devin_user", "nickname": "개발자", "role": "ROLE_USER", "status": "ACTIVE", "reportedCount": 2, "createdAt": "2026-11-01T09:00:00" }
 ```
-- `reportedCount`는 그 회원의 글이 신고된 횟수(`RESOLVED` 기준)로, 정지 판단에 참고한다.
+- `reportedCount`는 그 회원의 글(질문·답변)이 신고된 횟수(`RESOLVED` 기준)로, 정지 판단에 참고한다.
+- `role`은 화면에서 관리자 계정의 정지 버튼을 숨기는 데 쓴다.
 - 신고가 쌓여도 자동으로 정지하지 않는다. 정지는 관리자가 직접 한다.
 
 회원 상태 변경 요청 (REQ-ADMIN-003)
 ```json
 { "status": "BANNED" }
 ```
-- `status`: `ACTIVE`, `BANNED`
+- `status`: `ACTIVE`(해제), `BANNED`(정지). `WITHDRAWN`은 회원 탈퇴로만 바뀐다.
 - 정지 시 해당 회원의 Refresh Token을 삭제한다. 남아 있는 Access Token(최대 30분)으로 쓰기 요청을 하면 403 `MEMBER_BANNED`를 반환한다.
+- 이미 같은 상태면 그대로 200을 응답한다.
+- 400 `INVALID_INPUT`: `status`가 허용 값이 아니거나 `memberId`가 1 이상 정수가 아님
+- 403 `FORBIDDEN`: 대상이 관리자 계정(자기 자신 포함)
+- 403 `MEMBER_WITHDRAWN`: 대상이 탈퇴한 회원
+- 404 `MEMBER_NOT_FOUND`: 없는 회원
+
+회원 상태 변경 응답 (`data`)
+```json
+{ "memberId": 4, "status": "BANNED" }
+```
