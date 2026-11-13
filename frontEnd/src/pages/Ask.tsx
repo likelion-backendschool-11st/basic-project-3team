@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { CATEGORIES, QUESTION_RULES as RULES, createQuestion } from "../api/question";
 import FieldError from "../components/FieldError";
 import Header from "../components/Header";
+import ConfirmModal from "../components/ConfirmModal";
 import { QUESTION_TEMPLATE, isUnchangedTemplate } from "../components/questionTemplate";
 import RecommendedTags from "../components/tag/RecommendedTags";
 import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
@@ -31,16 +32,27 @@ export default function Ask() {
   // #59 질문 템플릿: 처음에는 켜져 있고 내용칸에 템플릿이 채워져 있다 (REQ-QUESTION-002)
   const [useTemplate, setUseTemplate] = useState(true);
   const [templateNotice, setTemplateNotice] = useState<string | null>(null);
+  // 직접 쓴 글이 있을 때 템플릿을 끄면 지우기 전에 확인한다.
+  const [confirmTemplateOff, setConfirmTemplateOff] = useState(false);
 
-  // 쓴 글은 지우거나 덮어쓰지 않는다. 끌 때는 템플릿 그대로일 때만 비우고, 켤 때는 비어 있을 때만 채운다.
+  function turnTemplateOff() {
+    setUseTemplate(false);
+    setConfirmTemplateOff(false);
+    change("content", "");
+  }
+
+  // 켤 때는 내용칸이 비어 있을 때만 채운다(쓴 글을 덮어쓰지 않음).
+  // 끌 때는 비어 있거나 템플릿 그대로면 바로 비우고, 직접 쓴 글이 있으면 확인 창을 띄운다.
   function toggleTemplate(on: boolean) {
-    setUseTemplate(on);
     setTemplateNotice(null);
     if (on) {
+      setUseTemplate(true);
       if (values.content.trim() === "") change("content", QUESTION_TEMPLATE);
       else setTemplateNotice("작성 중인 내용이 있어 템플릿을 넣지 않았습니다.");
-    } else if (isUnchangedTemplate(values.content)) {
-      change("content", "");
+    } else if (values.content.trim() === "" || isUnchangedTemplate(values.content)) {
+      turnTemplateOff();
+    } else {
+      setConfirmTemplateOff(true); // 확인 전까지 체크는 그대로 둔다
     }
   }
 
@@ -320,6 +332,18 @@ export default function Ask() {
               </button>
             </div>
           </form>
+          {confirmTemplateOff && (
+            <ConfirmModal
+              tone="danger"
+              title="템플릿 사용을 끌까요?"
+              message="작성한 내용이 모두 지워집니다."
+              confirmLabel="지우고 끄기"
+              busy={false}
+              error={null}
+              onCancel={() => setConfirmTemplateOff(false)}
+              onConfirm={turnTemplateOff}
+            />
+          )}
         </main>
       </div>
     </div>
