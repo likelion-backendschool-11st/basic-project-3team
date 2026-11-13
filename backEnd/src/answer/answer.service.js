@@ -2,6 +2,7 @@ const answerRepository = require('./answer.repository');
 const { findWritableMember, buildProfile } = require('../member/mypage.service');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
+const { withTransaction } = require('../utils/transaction');
 
 async function assertQuestionExists(questionId) {
   if (!(await answerRepository.existsQuestion(questionId))) {
@@ -57,4 +58,22 @@ async function getAnswers(questionId) {
   };
 }
 
-module.exports = { createAnswer, getAnswers };
+// 답변 수정 (#43, REQ-ANSWER-003). 작성자만 수정할 수 있고(관리자 포함 다른 회원은 403), 채택된 답변은 409.
+async function updateAnswer(memberId, answerId, content) {
+  await findWritableMember(memberId);
+  await withTransaction(async (conn) => {
+    const answer = await answerRepository.findAnswerForUpdate(conn, answerId);
+    if (answer === null) {
+      throw new AppError(ErrorCode.ANSWER_NOT_FOUND);
+    }
+    if (answer.memberId !== memberId) {
+      throw new AppError(ErrorCode.FORBIDDEN);
+    }
+    if (answer.accepted) {
+      throw new AppError(ErrorCode.ACCEPTED_ANSWER_LOCKED);
+    }
+    await answerRepository.updateAnswerContent(conn, answerId, content);
+  });
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer };
