@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { escapeLike } = require('../utils/sql');
 
 async function existsCategory(categoryId) {
   const [rows] = await pool.query('SELECT 1 FROM category WHERE category_id = ?', [categoryId]);
@@ -126,6 +127,57 @@ async function softDeleteQuestion(conn, questionId) {
   await conn.query('UPDATE question SET deleted = TRUE, deleted_at = NOW() WHERE question_id = ?', [questionId]);
 }
 
+async function findTitleAndTagIds(questionId) {
+  const [rows] = await pool.query('SELECT title FROM question WHERE question_id = ? AND deleted = FALSE', [questionId]);
+  if (rows.length === 0) {
+    return null;
+  }
+  const [tagRows] = await pool.query('SELECT tag_id AS tagId FROM question_tag WHERE question_id = ?', [questionId]);
+  return { title: rows[0].title, tagIds: tagRows.map((row) => row.tagId) };
+}
+
+// 유사 질문 후보: 태그가 1개 이상 겹치거나 제목에 단어 중 하나가 들어간 질문 (현재·삭제된 질문 제외)
+// 정렬: 해결됨 → 겹치는 태그 수 → 좋아요 → 최신순. 조건 SQL은 정해 둔 조각만 잇고, 값은 모두 ?로 넘긴다.
+// 열 별칭은 main.service.js의 toListItem 형식이다.
+async function findSimilarQuestions({ questionId, tagIds, words, limit }) {
+  const hasTags = tagIds.length > 0;
+  const overlap = hasTags
+    ? '(SELECT COUNT(*) FROM question_tag sqt WHERE sqt.question_id = q.question_id AND sqt.tag_id IN (?))'
+    : '0';
+  const tagMatch =
+    'EXISTS (SELECT 1 FROM question_tag cqt WHERE cqt.question_id = q.question_id AND cqt.tag_id IN (?))';
+  const candidates = [...(hasTags ? [tagMatch] : []), ...words.map(() => 'q.title LIKE ?')];
+  const params = [
+    ...(hasTags ? [tagIds] : []),
+    questionId,
+    ...(hasTags ? [tagIds] : []),
+    ...words.map((word) => `%${escapeLike(word)}%`),
+    limit,
+  ];
+  const [rows] = await pool.query(
+    `SELECT q.question_id AS questionId,
+            q.title,
+            m.member_id AS writerId,
+            m.nickname AS writerNickname,
+            c.category_id AS categoryId,
+            c.name AS categoryName,
+            q.accepted_answer_id IS NOT NULL AS accepted,
+            q.like_count AS likeCount,
+            q.view_count AS viewCount,
+            (SELECT COUNT(*) FROM answer a WHERE a.question_id = q.question_id AND a.deleted = FALSE) AS answerCount,
+            DATE_FORMAT(q.created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt,
+            ${overlap} AS overlapCount
+       FROM question q
+       JOIN member m ON m.member_id = q.member_id
+       JOIN category c ON c.category_id = q.category_id
+      WHERE q.deleted = FALSE AND q.question_id <> ? AND (${candidates.join(' OR ')})
+      ORDER BY accepted DESC, overlapCount DESC, q.like_count DESC, q.created_at DESC, q.question_id DESC
+      LIMIT ?`,
+    params,
+  );
+  return rows;
+}
+
 module.exports = {
   existsCategory,
   findTagIdsByNames,
@@ -140,4 +192,6 @@ module.exports = {
   softDeleteRepliesByQuestionId,
   softDeleteAnswersByQuestionId,
   softDeleteQuestion,
+  findTitleAndTagIds,
+  findSimilarQuestions,
 };
