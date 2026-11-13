@@ -12,6 +12,11 @@ const ErrorCode = Object.freeze({
     code: 'CANNOT_LIKE_OWN_POST',
     message: '본인 질문·답변에는 좋아요를 누를 수 없습니다.',
   },
+  CANNOT_REPORT_OWN_POST: {
+    status: 400,
+    code: 'CANNOT_REPORT_OWN_POST',
+    message: '본인 질문·답변은 신고할 수 없습니다.',
+  },
 
   UNAUTHORIZED: { status: 401, code: 'UNAUTHORIZED', message: '로그인이 필요합니다.' },
   TOKEN_EXPIRED: { status: 401, code: 'TOKEN_EXPIRED', message: '토큰이 만료되었습니다.' },

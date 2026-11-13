@@ -105,6 +105,7 @@
 | PASSWORD_MISMATCH | 400 | 개인정보 수정 시 현재 비밀번호 불일치 |
 | CANNOT_ACCEPT_OWN_ANSWER | 400 | 본인 답변은 채택할 수 없음 |
 | CANNOT_LIKE_OWN_POST | 400 | 본인 질문·답변에는 좋아요를 누를 수 없음 |
+| CANNOT_REPORT_OWN_POST | 400 | 본인 질문·답변은 신고할 수 없음 |
 | UNAUTHORIZED | 401 | 토큰 없음 |
 | TOKEN_EXPIRED | 401 | Access Token 만료 (프론트가 재발급 시도) |
 | INVALID_TOKEN | 401 | 위조·형식 오류 토큰 |
@@ -529,6 +530,17 @@
 | `ETC` | 기타 (`reasonDetail` 필수) |
 
 - 같은 회원이 같은 대상을 중복 신고하면 409 `ALREADY_REPORTED`.
+- 본인 질문·답변은 신고할 수 없다: 400 `CANNOT_REPORT_OWN_POST`.
+- `reasonDetail`은 `reason`이 `ETC`일 때만 받는다 (앞뒤 공백 제외 1~200자). 다른 사유와 함께 보내면 저장하지 않는다.
+- 대상이 없거나 삭제됐으면 404 `QUESTION_NOT_FOUND` / `ANSWER_NOT_FOUND`. 질문이 삭제된 답변도 404다.
+- 정지된 회원은 403 `MEMBER_BANNED`, 탈퇴한 회원은 403 `MEMBER_WITHDRAWN`.
+- 형식이 틀리면 400 `INVALID_INPUT` (`errors`에 해당 필드): `targetType`·`reason`이 허용 값이 아님, `targetId`가 1 이상 정수가 아님, `ETC`인데 `reasonDetail`이 비었거나 200자 초과
+- 답글(Reply) 신고는 이번 범위에서 제외한다 (`report.target_type`이 `QUESTION`, `ANSWER`만 허용).
+
+응답 (`data`) — 201
+```json
+{ "reportId": 3 }
+```
 
 ## 9. 알림 (Notification)
 | 기능 | Method | URL | 권한 |
