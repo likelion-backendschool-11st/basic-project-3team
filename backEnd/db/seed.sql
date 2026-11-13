@@ -26,7 +26,10 @@ INSERT INTO tag (name) VALUES
   ('android'), ('swift'), ('flutter');
 
 -- 회원
--- 1: 관리자, 2~4: 일반 회원, 5: 정지 회원
+-- 1: 관리자, 2~4: 일반 회원, 5: 정지 회원, 6: 관리자 화면 확인용 관리자
+-- 6번(admin / 비밀번호 admin)은 팀 로컬 테스트용으로 비밀번호를 일부러 공개한 계정이다.
+--   회원가입 규칙(아이디·비밀번호 8~12자)에 맞지 않아 이 seed로만 만들어진다.
+--   누구나 추측할 수 있는 관리자 계정이므로 배포(운영) DB에는 이 seed를 넣지 않는다.
 INSERT INTO member (member_id, login_id, password_hash, phone, nickname, bio, career_years, role, status,
                     notification_enabled, created_at) VALUES
   (1, 'admin_devin', '$2a$10$eDFXVrQasj6wUpiOh9xS0.uK5.5fD5PBvahJK98HctWS.an0Iwy6u', '01000000000', '관리자',
@@ -38,7 +41,9 @@ INSERT INTO member (member_id, login_id, password_hash, phone, nickname, bio, ca
   (4, 'devin_user3', '$2a$10$SuxOTv9J1Cuw48wykDRwfeGI.xmuJhDrz4HefM1tSSnLRNmzbjRgm', '01055556666', '신입개발자',
    NULL, 0, 'ROLE_USER', 'ACTIVE', TRUE, '2026-11-03 10:00:00'),
   (5, 'banned_user', '$2a$10$SuxOTv9J1Cuw48wykDRwfeGI.xmuJhDrz4HefM1tSSnLRNmzbjRgm', '01077778888', '정지회원',
-   NULL, NULL, 'ROLE_USER', 'BANNED', TRUE, '2026-11-04 10:00:00');
+   NULL, NULL, 'ROLE_USER', 'BANNED', TRUE, '2026-11-04 10:00:00'),
+  (6, 'admin', '$2b$10$Znjr92elAgmDHrBqPPTNhueWqV0jY0pBFrNedxpbYVW.FoVc0NVNi', '01000000001', '운영자',
+   NULL, NULL, 'ROLE_ADMIN', 'ACTIVE', FALSE, '2026-11-01 09:30:00');
 
 INSERT INTO member_tech_stack (member_id, tag_id)
 SELECT 2, tag_id FROM tag WHERE name IN ('java', 'spring', 'jpa', 'mysql');
