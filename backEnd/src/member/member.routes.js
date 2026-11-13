@@ -1,6 +1,6 @@
 const express = require('express');
 const memberController = require('./member.controller');
-const mypageRouter = require('./mypage.routes');
+const mypageRouter = require('./mypage/mypage.routes');
 
 const router = express.Router();
 

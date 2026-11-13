@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../../config/db');
 const { POPULAR_ANSWER_LIKE_COUNT } = require('./mypage.constants');
 
 // 프로필 수정에서 바꿀 수 있는 필드 → 컬럼. SET 절에는 이 목록의 컬럼만 넣는다.
