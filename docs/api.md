@@ -413,6 +413,10 @@
 - 작성자: 채택된 답변이 있으면 409 `QUESTION_HAS_ACCEPTED_ANSWER`.
 - 관리자: 신고 처리(`/api/admin/reports/{reportId}`)나 이 API로 삭제한다. 채택된 답변이 있어도 삭제할 수 있다.
 - 삭제하면 `deleted = true`로 숨김 처리한다. 달린 답변·답글은 질문과 함께 조회되지 않는다.
+- 다른 회원은 403 `FORBIDDEN`, 정지·탈퇴 회원은 403, 없거나 이미 삭제된 질문은 404 `QUESTION_NOT_FOUND`.
+- 달린 답변·답글도 같은 트랜잭션에서 `deleted = true`로 바꾼다. 이미 삭제된 답변·답글의 삭제 시각은 바꾸지 않는다.
+
+삭제 응답 — 200, `data`는 `null`
 
 ## 5. 답변 (Answer)
 | 기능 | Method | URL | 권한 |
