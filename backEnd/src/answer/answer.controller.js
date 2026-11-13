@@ -61,4 +61,14 @@ async function deleteAnswer(req, res, next) {
   }
 }
 
-module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer };
+async function acceptAnswer(req, res, next) {
+  try {
+    const answerId = parsePathId(req.params.answerId, 'answerId');
+    await answerService.acceptAnswer(req.user.memberId, answerId);
+    return success(res, { answerId });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer, acceptAnswer };
