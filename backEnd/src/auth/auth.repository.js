@@ -11,6 +11,31 @@ async function findMemberByLoginId(loginId) {
   return rows[0] ?? null;
 }
 
+// 아이디 찾기: 닉네임 + 전화번호가 모두 일치하는 회원
+async function findMemberByNicknameAndPhone(nickname, phone) {
+  const [rows] = await pool.query(
+    `SELECT login_id AS loginId, nickname, status,
+            DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt
+       FROM member
+      WHERE nickname = ? AND phone = ?`,
+    [nickname, phone],
+  );
+  return rows[0] ?? null;
+}
+
+// 비밀번호 재설정: 아이디 + 전화번호가 모두 일치하는 회원
+async function findMemberByLoginIdAndPhone(loginId, phone) {
+  const [rows] = await pool.query('SELECT member_id AS memberId, status FROM member WHERE login_id = ? AND phone = ?', [
+    loginId,
+    phone,
+  ]);
+  return rows[0] ?? null;
+}
+
+async function updatePasswordHash(conn, memberId, passwordHash) {
+  await conn.query('UPDATE member SET password_hash = ? WHERE member_id = ?', [passwordHash, memberId]);
+}
+
 async function findMemberById(memberId) {
   const [rows] = await pool.query(
     'SELECT member_id AS memberId, nickname, role, status FROM member WHERE member_id = ?',
@@ -45,12 +70,16 @@ async function rotateRefreshToken({ memberId, oldTokenHash, tokenHash, expiresAt
   return result.affectedRows === 1;
 }
 
-async function deleteRefreshToken(memberId) {
-  await pool.query('DELETE FROM refresh_token WHERE member_id = ?', [memberId]);
+// conn을 넘기면 그 트랜잭션 안에서 삭제한다.
+async function deleteRefreshToken(memberId, conn = pool) {
+  await conn.query('DELETE FROM refresh_token WHERE member_id = ?', [memberId]);
 }
 
 module.exports = {
   findMemberByLoginId,
+  findMemberByNicknameAndPhone,
+  findMemberByLoginIdAndPhone,
+  updatePasswordHash,
   findMemberById,
   findRefreshToken,
   saveRefreshToken,

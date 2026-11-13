@@ -1,11 +1,13 @@
 const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 const authRepository = require('./auth.repository');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { MEMBER_STATUS } = require('../utils/constants');
-const { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN_MS } = require('./auth.constants');
+const { BCRYPT_SALT_ROUNDS } = require('../member/member.constants');
+const { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN_MS, LOGIN_ID_VISIBLE_LENGTH } = require('./auth.constants');
 
 // 아이디가 없을 때도 bcrypt.compare를 한 번 실행해 응답 시간으로 아이디 존재 여부가 드러나지 않게 한다.
 const DUMMY_PASSWORD_HASH = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), 10);
@@ -109,4 +111,56 @@ async function logout(memberId) {
   await authRepository.deleteRefreshToken(memberId);
 }
 
-module.exports = { login, reissue, logout };
+// 앞 3자만 보이고 나머지는 같은 길이의 *로 가린다 (devin_user1 → dev********).
+function maskLoginId(loginId) {
+  return loginId.slice(0, LOGIN_ID_VISIBLE_LENGTH) + '*'.repeat(Math.max(loginId.length - LOGIN_ID_VISIBLE_LENGTH, 0));
+}
+
+// 본인 확인 방식: 가입 때 등록한 전화번호 (#37). 탈퇴 회원은 일치하는 회원이 없는 것으로 본다.
+async function findLoginId({ nickname, phone }) {
+  const member = await authRepository.findMemberByNicknameAndPhone(nickname, phone);
+  if (!member || member.status === MEMBER_STATUS.WITHDRAWN) {
+    throw new AppError(ErrorCode.ACCOUNT_NOT_MATCHED);
+  }
+  return { nickname: member.nickname, maskedLoginId: maskLoginId(member.loginId), createdAt: member.createdAt };
+}
+
+async function findResettableMember({ loginId, phone }) {
+  const member = await authRepository.findMemberByLoginIdAndPhone(loginId, phone);
+  if (!member || member.status === MEMBER_STATUS.WITHDRAWN) {
+    throw new AppError(ErrorCode.ACCOUNT_NOT_MATCHED);
+  }
+  // 정지 회원은 로그인할 수 없으므로 비밀번호도 바꿀 수 없다.
+  if (member.status === MEMBER_STATUS.BANNED) {
+    throw new AppError(ErrorCode.MEMBER_BANNED);
+  }
+  return member;
+}
+
+// 비밀번호 재설정 1단계: 화면에서 새 비밀번호 입력칸을 열기 전에 본인 확인만 한다.
+async function verifyPasswordReset({ loginId, phone }) {
+  await findResettableMember({ loginId, phone });
+  return { verified: true };
+}
+
+// 비밀번호 재설정 2단계: 서버는 상태를 저장하지 않으므로 아이디·전화번호를 다시 확인한 뒤 바꾼다.
+// 비밀번호와 Refresh Token을 함께 바꾸므로 트랜잭션으로 묶는다. 다른 기기는 Access Token 만료(최대 30분) 후 로그아웃된다.
+async function resetPassword({ loginId, phone, newPassword }) {
+  const { memberId } = await findResettableMember({ loginId, phone });
+  const passwordHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    await authRepository.updatePasswordHash(conn, memberId, passwordHash);
+    await authRepository.deleteRefreshToken(memberId, conn);
+    await conn.commit();
+  } catch (err) {
+    await conn.rollback();
+    throw err;
+  } finally {
+    conn.release();
+  }
+}
+
+module.exports = { login, reissue, logout, findLoginId, verifyPasswordReset, resetPassword };

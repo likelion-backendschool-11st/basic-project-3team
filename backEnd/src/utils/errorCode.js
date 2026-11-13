@@ -35,6 +35,7 @@ const ErrorCode = Object.freeze({
   API_NOT_FOUND: { status: 404, code: 'API_NOT_FOUND', message: '존재하지 않는 API입니다.' },
   MEMBER_NOT_FOUND: { status: 404, code: 'MEMBER_NOT_FOUND', message: '존재하지 않는 회원입니다.' },
   QUESTION_NOT_FOUND: { status: 404, code: 'QUESTION_NOT_FOUND', message: '존재하지 않는 질문입니다.' },
+  ACCOUNT_NOT_MATCHED: { status: 404, code: 'ACCOUNT_NOT_MATCHED', message: '일치하는 회원 정보가 없습니다.' },
   ANSWER_NOT_FOUND: { status: 404, code: 'ANSWER_NOT_FOUND', message: '존재하지 않는 답변입니다.' },
   REPLY_NOT_FOUND: { status: 404, code: 'REPLY_NOT_FOUND', message: '존재하지 않는 답글입니다.' },
   LIKE_NOT_FOUND: { status: 404, code: 'LIKE_NOT_FOUND', message: '좋아요하지 않은 대상입니다.' },

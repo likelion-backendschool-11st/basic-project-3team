@@ -3,6 +3,32 @@ const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { success } = require('../utils/response');
 const { REFRESH_TOKEN_EXPIRES_IN_MS, REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } = require('./auth.constants');
+const { LOGIN_ID_PATTERN, PASSWORD_PATTERN, PHONE_PATTERN, NICKNAME_PATTERN } = require('../member/member.constants');
+
+// 아이디·비밀번호 찾기 입력값 규칙 (회원가입과 같은 규칙, docs/api.md 1장)
+const FIND_ACCOUNT_RULES = Object.freeze({
+  loginId: {
+    pattern: LOGIN_ID_PATTERN,
+    reason: '아이디는 8~12자의 영문, 숫자, 특수기호(_ . -)만 사용할 수 있습니다.',
+  },
+  newPassword: {
+    pattern: PASSWORD_PATTERN,
+    reason: '비밀번호는 8~12자의 영문, 숫자, 특수기호(_ . -)만 사용할 수 있습니다.',
+  },
+  nickname: { pattern: NICKNAME_PATTERN, reason: '닉네임은 2~10자의 한글, 영문, 숫자만 사용할 수 있습니다.' },
+  phone: { pattern: PHONE_PATTERN, reason: '전화번호는 01로 시작하는 하이픈 없는 숫자 10~11자리여야 합니다.' },
+});
+
+// 검사한 필드만 담아 반환한다. 하나라도 틀리면 필드별 에러 목록으로 400.
+function validateFindAccount(body, fields) {
+  const errors = fields
+    .filter((field) => typeof body[field] !== 'string' || !FIND_ACCOUNT_RULES[field].pattern.test(body[field]))
+    .map((field) => ({ field, reason: FIND_ACCOUNT_RULES[field].reason }));
+  if (errors.length > 0) {
+    throw new AppError(ErrorCode.INVALID_INPUT, { errors });
+  }
+  return Object.fromEntries(fields.map((field) => [field, body[field]]));
+}
 
 // docs/auth.md: HttpOnly, Secure(배포 환경), SameSite=Strict, 경로 /api/auth
 const REFRESH_COOKIE_OPTIONS = Object.freeze({
@@ -65,4 +91,34 @@ async function logout(req, res, next) {
   }
 }
 
-module.exports = { login, reissue, logout };
+async function findLoginId(req, res, next) {
+  try {
+    const input = validateFindAccount(req.body ?? {}, ['nickname', 'phone']);
+    return success(res, await authService.findLoginId(input));
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function verifyPasswordReset(req, res, next) {
+  try {
+    const input = validateFindAccount(req.body ?? {}, ['loginId', 'phone']);
+    return success(res, await authService.verifyPasswordReset(input));
+  } catch (err) {
+    return next(err);
+  }
+}
+
+async function resetPassword(req, res, next) {
+  try {
+    const input = validateFindAccount(req.body ?? {}, ['loginId', 'phone', 'newPassword']);
+    await authService.resetPassword(input);
+    // 이 브라우저의 Refresh 쿠키도 더 이상 쓸 수 없으므로 지운다.
+    clearRefreshCookie(res);
+    return success(res);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { login, reissue, logout, findLoginId, verifyPasswordReset, resetPassword };
