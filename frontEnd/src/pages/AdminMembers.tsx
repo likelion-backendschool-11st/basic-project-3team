@@ -12,6 +12,7 @@ import ConfirmModal from "../components/admin/ConfirmModal";
 import ListStatus from "../components/ListStatus";
 import Pagination from "../components/Pagination";
 import { formatDate, PAGE_SIZE, parsePage } from "../components/questionList";
+import "./AdminMembers.css";
 
 const KEYWORD_MAX = 20;
 const STATUS_OPTIONS: { value: MemberStatus | "all"; label: string }[] = [
@@ -97,164 +98,169 @@ export default function AdminMembers() {
 
   const data = state.status === "done" ? state.data : null;
 
+  // 이 화면의 Tailwind 설정("AdminMembers.tailwind.cjs")은 #page-admin-members 안에서만 적용된다.
   return (
-    <AdminLayout title="회원 관리">
-      <section className="flex flex-wrap items-center justify-between gap-3 mb-5" aria-label="회원 검색">
-        <form className="flex items-center gap-2 flex-1 max-w-md" role="search" onSubmit={handleSearch}>
-          <input
-            className="flex-1 border-2 border-[#121212] shadow-[2px_2px_0_#121212] px-3.5 py-2 text-sm font-medium focus:ring-0 focus:outline-none placeholder-gray-500 bg-white"
-            placeholder="닉네임 또는 아이디로 검색"
-            aria-label="닉네임 또는 아이디"
-            type="search"
-            maxLength={KEYWORD_MAX}
-            value={keywordInput}
-            onChange={(event) => setKeywordInput(event.target.value)}
-          />
-          <button className={`${actionButton} bg-white px-4 py-2 text-sm hover:bg-gray-50`} type="submit">
-            검색
-          </button>
-        </form>
-        <select
-          className="bg-white border-2 border-[#121212] shadow-[2px_2px_0_#121212] px-3.5 py-2 pr-8 text-sm font-bold focus:ring-0 cursor-pointer"
-          aria-label="회원 상태"
-          value={status}
-          onChange={(event) => update({ status: event.target.value as Query["status"] })}
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </section>
-
-      {notice && (
-        <p className="mb-4 px-4 py-2.5 bg-green-50 border-2 border-[#121212] text-sm font-bold" role="status">
-          {notice}
-        </p>
-      )}
-
-      <section
-        className="w-full overflow-x-auto bg-white border-2 border-[#121212] shadow-[3px_3px_0_#121212] mb-6"
-        aria-busy={state.status === "loading"}
-      >
-        {state.status === "loading" && <ListStatus>회원을 불러오는 중입니다...</ListStatus>}
-        {state.status === "error" && (
-          <ListStatus>
-            <p className="text-[#E11D48]">{state.message}</p>
-            <button
-              className="mt-4 h-9 px-4 bg-white border-2 border-[#111111] text-sm font-bold"
-              type="button"
-              onClick={() => setReloadKey((k) => k + 1)}
-            >
-              다시 시도
+    <div id="page-admin-members">
+      <AdminLayout title="회원 관리">
+        <section className="flex flex-wrap items-center justify-between gap-3 mb-5" aria-label="회원 검색">
+          <form className="flex items-center gap-2 flex-1 max-w-md" role="search" onSubmit={handleSearch}>
+            <input
+              className="flex-1 border-2 border-[#121212] shadow-[2px_2px_0_#121212] px-3.5 py-2 text-sm font-medium focus:ring-0 focus:outline-none placeholder-gray-500 bg-white"
+              placeholder="닉네임 또는 아이디로 검색"
+              aria-label="닉네임 또는 아이디"
+              type="search"
+              maxLength={KEYWORD_MAX}
+              value={keywordInput}
+              onChange={(event) => setKeywordInput(event.target.value)}
+            />
+            <button className={`${actionButton} bg-white px-4 py-2 text-sm hover:bg-gray-50`} type="submit">
+              검색
             </button>
-          </ListStatus>
-        )}
-        {data && data.content.length === 0 && <ListStatus>조건에 맞는 회원이 없습니다.</ListStatus>}
-        {data && data.content.length > 0 && (
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212]">
-                <th className="py-3 px-4" scope="col">
-                  닉네임
-                </th>
-                <th className="py-3 px-4" scope="col">
-                  아이디
-                </th>
-                <th className="py-3 px-4 text-center whitespace-nowrap" scope="col">
-                  가입일
-                </th>
-                <th className="py-3 px-4 text-center whitespace-nowrap" scope="col" title="처리 완료된 신고 기준">
-                  받은 신고
-                </th>
-                <th className="py-3 px-4 text-center whitespace-nowrap" scope="col">
-                  상태
-                </th>
-                <th className="py-3 px-4 text-center whitespace-nowrap" scope="col">
-                  관리
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y-2 divide-[#121212] font-medium">
-              {data.content.map((member) => {
-                const statusLabel = MEMBER_STATUS_LABEL[member.status];
-                const isAdmin = member.role === "ROLE_ADMIN";
-                return (
-                  <tr key={member.memberId} className="hover:bg-amber-50/50 divide-x-2 divide-[#121212]">
-                    <td className="py-3 px-4 font-bold">
-                      {member.nickname}
-                      {isAdmin && <span className="ml-1.5 text-[11px] font-bold text-[#2563EB]">관리자</span>}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-xs">{member.loginId}</td>
-                    <td className="py-3 px-4 text-center text-gray-600">{formatDate(member.createdAt)}</td>
-                    <td className={`py-3 px-4 text-center font-bold ${member.reportedCount > 0 ? "text-red-600" : ""}`}>
-                      {member.reportedCount}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span
-                        className={`inline-block px-2 py-0.5 text-xs font-bold border-2 border-[#121212] ${statusLabel.className}`}
-                      >
-                        {statusLabel.label}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      {/* 관리자 계정·탈퇴 회원은 상태를 바꿀 수 없다 (docs/api.md 11장) */}
-                      {isAdmin || member.status === "WITHDRAWN" ? (
-                        <span className="text-xs text-neutral-400">-</span>
-                      ) : member.status === "BANNED" ? (
-                        <button
-                          className={`${actionButton} bg-white hover:bg-[#FFD43B]`}
-                          type="button"
-                          onClick={() => setModal({ member, next: "ACTIVE", busy: false, error: null })}
-                        >
-                          [정지 해제]
-                        </button>
-                      ) : (
-                        <button
-                          className={`${actionButton} bg-white hover:bg-[#E11D48] hover:text-white`}
-                          type="button"
-                          onClick={() => setModal({ member, next: "BANNED", busy: false, error: null })}
-                        >
-                          [정지]
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </section>
+          </form>
+          <select
+            className="bg-white border-2 border-[#121212] shadow-[2px_2px_0_#121212] px-3.5 py-2 pr-8 text-sm font-bold focus:ring-0 cursor-pointer"
+            aria-label="회원 상태"
+            value={status}
+            onChange={(event) => update({ status: event.target.value as Query["status"] })}
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </section>
 
-      <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={(next) => update({ page: next })} />
+        {notice && (
+          <p className="mb-4 px-4 py-2.5 bg-green-50 border-2 border-[#121212] text-sm font-bold" role="status">
+            {notice}
+          </p>
+        )}
 
-      {modal && (
-        <ConfirmModal
-          title={modal.next === "BANNED" ? "회원 정지" : "회원 정지 해제"}
-          confirmLabel={modal.next === "BANNED" ? "정지" : "해제"}
-          danger={modal.next === "BANNED"}
-          busy={modal.busy}
-          error={modal.error}
-          onConfirm={confirmChange}
-          onClose={() => setModal(null)}
+        <section
+          className="w-full overflow-x-auto bg-white border-2 border-[#121212] shadow-[3px_3px_0_#121212] mb-6"
+          aria-busy={state.status === "loading"}
         >
-          <div className="border-l-4 border-[#111111] bg-gray-50 rounded-md px-3.5 py-2.5">
-            <p className="font-bold text-black">
-              {modal.member.nickname} <span className="font-medium text-gray-600">({modal.member.loginId})</span>
-              {modal.next === "BANNED" ? " 회원을 정지하시겠습니까?" : " 회원의 정지를 해제하시겠습니까?"}
-            </p>
-            {modal.next === "BANNED" ? (
-              <p className="mt-0.5 text-xs font-semibold text-red-600">
-                정지된 회원은 로그인할 수 없고, 글·답변·신고를 작성할 수 없습니다.
+          {state.status === "loading" && <ListStatus>회원을 불러오는 중입니다...</ListStatus>}
+          {state.status === "error" && (
+            <ListStatus>
+              <p className="text-[#E11D48]">{state.message}</p>
+              <button
+                className="mt-4 h-9 px-4 bg-white border-2 border-[#111111] text-sm font-bold"
+                type="button"
+                onClick={() => setReloadKey((k) => k + 1)}
+              >
+                다시 시도
+              </button>
+            </ListStatus>
+          )}
+          {data && data.content.length === 0 && <ListStatus>조건에 맞는 회원이 없습니다.</ListStatus>}
+          {data && data.content.length > 0 && (
+            <table className="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212]">
+                  <th className="py-3 px-4" scope="col">
+                    닉네임
+                  </th>
+                  <th className="py-3 px-4" scope="col">
+                    아이디
+                  </th>
+                  <th className="py-3 px-4 text-center whitespace-nowrap" scope="col">
+                    가입일
+                  </th>
+                  <th className="py-3 px-4 text-center whitespace-nowrap" scope="col" title="처리 완료된 신고 기준">
+                    받은 신고
+                  </th>
+                  <th className="py-3 px-4 text-center whitespace-nowrap" scope="col">
+                    상태
+                  </th>
+                  <th className="py-3 px-4 text-center whitespace-nowrap" scope="col">
+                    관리
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y-2 divide-[#121212] font-medium">
+                {data.content.map((member) => {
+                  const statusLabel = MEMBER_STATUS_LABEL[member.status];
+                  const isAdmin = member.role === "ROLE_ADMIN";
+                  return (
+                    <tr key={member.memberId} className="hover:bg-amber-50/50 divide-x-2 divide-[#121212]">
+                      <td className="py-3 px-4 font-bold">
+                        {member.nickname}
+                        {isAdmin && <span className="ml-1.5 text-[11px] font-bold text-[#2563EB]">관리자</span>}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-xs">{member.loginId}</td>
+                      <td className="py-3 px-4 text-center text-gray-600">{formatDate(member.createdAt)}</td>
+                      <td
+                        className={`py-3 px-4 text-center font-bold ${member.reportedCount > 0 ? "text-red-600" : ""}`}
+                      >
+                        {member.reportedCount}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span
+                          className={`inline-block px-2 py-0.5 text-xs font-bold border-2 border-[#121212] ${statusLabel.className}`}
+                        >
+                          {statusLabel.label}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        {/* 관리자 계정·탈퇴 회원은 상태를 바꿀 수 없다 (docs/api.md 11장) */}
+                        {isAdmin || member.status === "WITHDRAWN" ? (
+                          <span className="text-xs text-neutral-400">-</span>
+                        ) : member.status === "BANNED" ? (
+                          <button
+                            className={`${actionButton} bg-white hover:bg-[#FFD43B]`}
+                            type="button"
+                            onClick={() => setModal({ member, next: "ACTIVE", busy: false, error: null })}
+                          >
+                            [정지 해제]
+                          </button>
+                        ) : (
+                          <button
+                            className={`${actionButton} bg-white hover:bg-[#E11D48] hover:text-white`}
+                            type="button"
+                            onClick={() => setModal({ member, next: "BANNED", busy: false, error: null })}
+                          >
+                            [정지]
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </section>
+
+        <Pagination page={page} totalPages={data?.totalPages ?? 0} onChange={(next) => update({ page: next })} />
+
+        {modal && (
+          <ConfirmModal
+            title={modal.next === "BANNED" ? "회원 정지" : "회원 정지 해제"}
+            confirmLabel={modal.next === "BANNED" ? "정지" : "해제"}
+            danger={modal.next === "BANNED"}
+            busy={modal.busy}
+            error={modal.error}
+            onConfirm={confirmChange}
+            onClose={() => setModal(null)}
+          >
+            <div className="border-l-4 border-[#111111] bg-gray-50 rounded-md px-3.5 py-2.5">
+              <p className="font-bold text-black">
+                {modal.member.nickname} <span className="font-medium text-gray-600">({modal.member.loginId})</span>
+                {modal.next === "BANNED" ? " 회원을 정지하시겠습니까?" : " 회원의 정지를 해제하시겠습니까?"}
               </p>
-            ) : (
-              <p className="mt-0.5 text-xs text-gray-600">해제하면 다시 로그인하고 글을 쓸 수 있습니다.</p>
-            )}
-          </div>
-        </ConfirmModal>
-      )}
-    </AdminLayout>
+              {modal.next === "BANNED" ? (
+                <p className="mt-0.5 text-xs font-semibold text-red-600">
+                  정지된 회원은 로그인할 수 없고, 글·답변·신고를 작성할 수 없습니다.
+                </p>
+              ) : (
+                <p className="mt-0.5 text-xs text-gray-600">해제하면 다시 로그인하고 글을 쓸 수 있습니다.</p>
+              )}
+            </div>
+          </ConfirmModal>
+        )}
+      </AdminLayout>
+    </div>
   );
 }
