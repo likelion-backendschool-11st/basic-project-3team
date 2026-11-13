@@ -13,6 +13,8 @@ import {
 } from "../api/question";
 import FieldError from "../components/FieldError";
 import Header from "../components/Header";
+import Markdown from "../components/markdown/Markdown";
+import { useMarkdownToolbar } from "../hooks/useMarkdownToolbar";
 import RecommendedTags from "../components/tag/RecommendedTags";
 import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
 
@@ -25,6 +27,11 @@ const detailPath = (questionId: number) => `/question-detail?questionId=${questi
 
 const sameRequest = (a: QuestionRequest, b: QuestionRequest) =>
   a.title === b.title && a.content === b.content && a.categoryId === b.categoryId && a.tags.join() === b.tags.join();
+
+// 작성/미리보기 탭 (디자인의 선택·비선택 모양)
+const ACTIVE_TAB = "bg-white neo-border shadow-[1.5px_1.5px_0_#111111] hover:bg-gray-50";
+const INACTIVE_TAB =
+  "bg-gray-200 border border-gray-400 text-gray-600 hover:bg-white hover:text-black hover:neo-border transition-all";
 
 type LoadState = { status: "loading" } | { status: "error"; message: string } | { status: "done" };
 
@@ -48,6 +55,9 @@ export default function QuestionEdit() {
     toggleTag,
     submit,
   } = useQuestionForm();
+  // #62: 툴바(B, I, 코드 블록, 링크, 이미지)는 내용칸에 마크다운 기호를 넣고, 미리보기는 상세 화면과 같은 모양으로 보여 준다.
+  const toolbar = useMarkdownToolbar(values.content, (content) => change("content", content));
+  const [preview, setPreview] = useState(false);
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
   // 불러온 원래 값. 바뀐 것이 없으면 요청하지 않는다 (내용 그대로인데 수정일만 바뀌는 것 방지).
   const original = useRef<QuestionRequest | null>(null);
@@ -214,38 +224,48 @@ export default function QuestionEdit() {
 
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <button
-                        className="w-8 h-8 font-black text-sm bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors"
+                        className="w-8 h-8 font-black text-sm bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         title="굵게"
                         type="button"
+                        disabled={preview}
+                        onClick={() => toolbar.apply("bold")}
                       >
                         {" B "}
                       </button>{" "}
                       <button
-                        className="w-8 h-8 italic font-serif font-black text-sm bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors"
+                        className="w-8 h-8 italic font-serif font-black text-sm bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         title="기울임"
                         type="button"
+                        disabled={preview}
+                        onClick={() => toolbar.apply("italic")}
                       >
                         {" I "}
                       </button>{" "}
                       <button
-                        className="h-8 px-2.5 font-mono font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors"
+                        className="h-8 px-2.5 font-mono font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         title="코드 블록"
                         type="button"
+                        disabled={preview}
+                        onClick={() => toolbar.apply("codeBlock")}
                       >
                         {" 코드 블록 "}
                         <span className="text-gray-500 ml-1">```</span>
                       </button>{" "}
                       <button
-                        className="h-8 px-2.5 font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors"
+                        className="h-8 px-2.5 font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         title="링크 삽입"
                         type="button"
+                        disabled={preview}
+                        onClick={() => toolbar.apply("link")}
                       >
                         {" 링크 "}
                       </button>{" "}
                       <button
-                        className="h-8 px-2.5 font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors"
+                        className="h-8 px-2.5 font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         title="이미지 추가"
                         type="button"
+                        disabled={preview}
+                        onClick={() => toolbar.apply("image")}
                       >
                         {" 이미지 "}
                       </button>
@@ -255,16 +275,20 @@ export default function QuestionEdit() {
 
                     <div className="flex items-center gap-1">
                       <button
-                        className="px-3 py-1 font-bold text-xs bg-white neo-border shadow-[1.5px_1.5px_0_#111111] hover:bg-gray-50"
+                        aria-pressed={!preview}
+                        className={`px-3 py-1 font-bold text-xs ${preview ? INACTIVE_TAB : ACTIVE_TAB}`}
                         data-purpose="editor-tab-write"
                         type="button"
+                        onClick={() => setPreview(false)}
                       >
                         {" 작성 "}
                       </button>{" "}
                       <button
-                        className="px-3 py-1 font-bold text-xs bg-gray-200 border border-gray-400 text-gray-600 hover:bg-white hover:text-black hover:neo-border transition-all"
+                        aria-pressed={preview}
+                        className={`px-3 py-1 font-bold text-xs ${preview ? ACTIVE_TAB : INACTIVE_TAB}`}
                         data-purpose="editor-tab-preview"
                         type="button"
+                        onClick={() => setPreview(true)}
                       >
                         {" 미리보기 "}
                       </button>
@@ -274,7 +298,18 @@ export default function QuestionEdit() {
                   {/* Content Textarea with Pre-filled Markdown */}
 
                   <div className="p-1">
+                    {preview && (
+                      <div className="min-h-[260px] p-4 bg-[#FCFDFE]" data-purpose="markdown-preview">
+                        {values.content.trim() ? (
+                          <Markdown content={values.content} />
+                        ) : (
+                          <p className="text-sm text-gray-400">미리 볼 내용이 없습니다.</p>
+                        )}
+                      </div>
+                    )}
                     <textarea
+                      ref={toolbar.textareaRef}
+                      hidden={preview}
                       className="w-full p-4 font-mono text-sm leading-relaxed border-none focus:ring-0 resize-y bg-[#FCFDFE] text-gray-800 placeholder-gray-400"
                       id="post-content"
                       name="content"

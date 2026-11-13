@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { CATEGORIES, QUESTION_RULES as RULES, createQuestion } from "../api/question";
 import FieldError from "../components/FieldError";
 import Header from "../components/Header";
+import Markdown from "../components/markdown/Markdown";
+import { useMarkdownToolbar } from "../hooks/useMarkdownToolbar";
 import ConfirmModal from "../components/ConfirmModal";
 import { QUESTION_TEMPLATE, isUnchangedTemplate } from "../components/questionTemplate";
 import RecommendedTags from "../components/tag/RecommendedTags";
@@ -32,6 +34,9 @@ export default function Ask() {
   // #59 질문 템플릿: 처음에는 켜져 있고 내용칸에 템플릿이 채워져 있다 (REQ-QUESTION-002)
   const [useTemplate, setUseTemplate] = useState(true);
   const [templateNotice, setTemplateNotice] = useState<string | null>(null);
+  // #62: 툴바(B, I, 코드 블록, 링크, 이미지)는 내용칸에 마크다운 기호를 넣고, 미리보기는 상세 화면과 같은 모양으로 보여 준다.
+  const toolbar = useMarkdownToolbar(values.content, (content) => change("content", content));
+  const [preview, setPreview] = useState(false);
   // 직접 쓴 글이 있을 때 템플릿을 끄면 지우기 전에 확인한다.
   const [confirmTemplateOff, setConfirmTemplateOff] = useState(false);
 
@@ -194,37 +199,47 @@ export default function Ask() {
 
                 <div className="flex items-center flex-wrap gap-1.5 font-mono">
                   <button
-                    className="w-8 h-8 flex items-center justify-center font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors"
+                    className="w-8 h-8 flex items-center justify-center font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title="굵게"
                     type="button"
+                    disabled={preview}
+                    onClick={() => toolbar.apply("bold")}
                   >
                     {" B "}
                   </button>{" "}
                   <button
-                    className="w-8 h-8 flex items-center justify-center italic font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors"
+                    className="w-8 h-8 flex items-center justify-center italic font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title="기울임"
                     type="button"
+                    disabled={preview}
+                    onClick={() => toolbar.apply("italic")}
                   >
                     {" I "}
                   </button>{" "}
                   <button
-                    className="px-2.5 h-8 flex items-center justify-center font-bold text-xs border border-black bg-white hover:bg-black hover:text-white transition-colors"
+                    className="px-2.5 h-8 flex items-center justify-center font-bold text-xs border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title="코드 블록"
                     type="button"
+                    disabled={preview}
+                    onClick={() => toolbar.apply("codeBlock")}
                   >
                     {" 코드 블록 ``` "}
                   </button>{" "}
                   <button
-                    className="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors"
+                    className="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title="링크 추가"
                     type="button"
+                    disabled={preview}
+                    onClick={() => toolbar.apply("link")}
                   >
                     {" 링크 "}
                   </button>{" "}
                   <button
-                    className="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors"
+                    className="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title="이미지 첨부"
                     type="button"
+                    disabled={preview}
+                    onClick={() => toolbar.apply("image")}
                   >
                     {" 이미지 "}
                   </button>
@@ -233,12 +248,19 @@ export default function Ask() {
                 {/* Write/Preview Toggle Tabs */}
 
                 <div className="flex items-center border border-black">
-                  <button className="px-4 py-1 text-xs font-bold bg-black text-white" type="button">
+                  <button
+                    aria-pressed={!preview}
+                    className={`px-4 py-1 text-xs font-bold ${preview ? "bg-white text-gray-700 hover:bg-gray-100" : "bg-black text-white"}`}
+                    type="button"
+                    onClick={() => setPreview(false)}
+                  >
                     {" 작성 "}
                   </button>{" "}
                   <button
-                    className="px-4 py-1 text-xs font-bold bg-white text-gray-700 hover:bg-gray-100 transition-colors border-l border-black"
+                    aria-pressed={preview}
+                    className={`px-4 py-1 text-xs font-bold border-l border-black transition-colors ${preview ? "bg-black text-white" : "bg-white text-gray-700 hover:bg-gray-100"}`}
                     type="button"
+                    onClick={() => setPreview(true)}
                   >
                     {" 미리보기 "}
                   </button>
@@ -248,7 +270,18 @@ export default function Ask() {
               {/* Editor Content Area */}
 
               <div className="p-4">
+                {preview && (
+                  <div className="min-h-[300px] p-2" data-purpose="markdown-preview">
+                    {values.content.trim() ? (
+                      <Markdown content={values.content} />
+                    ) : (
+                      <p className="text-sm text-gray-400">미리 볼 내용이 없습니다.</p>
+                    )}
+                  </div>
+                )}
                 <textarea
+                  ref={toolbar.textareaRef}
+                  hidden={preview}
                   className="w-full p-2 border-0 focus:ring-0 font-mono-code text-sm leading-relaxed text-gray-900 placeholder-gray-400 resize-y"
                   id="editor-textarea"
                   placeholder="질문 내용을 자세하게 작성해주세요..."

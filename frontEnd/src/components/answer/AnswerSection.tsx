@@ -15,6 +15,7 @@ import { getErrorMessage, getFieldErrors } from "../../api/client";
 import { charLength } from "../../hooks/useQuestionForm";
 import { useAuth } from "../../hooks/useAuth";
 import ConfirmModal from "../ConfirmModal";
+import Markdown from "../markdown/Markdown";
 import FieldError from "../FieldError";
 import ReportDialog from "../report/ReportDialog";
 import { GRADES, formatDate, profilePath, writerSummary } from "../writer";
@@ -337,9 +338,9 @@ export default function AnswerSection({
                   </div>
                 </div>
               ) : (
-                // 마크다운 렌더링·코드 하이라이팅은 #62. 지금은 원문을 그대로 보여 준다 (React가 HTML을 이스케이프).
-                <div className="text-sm font-medium text-gray-800 leading-relaxed my-4 whitespace-pre-wrap break-words">
-                  {answer.content}
+                // 마크다운으로 보여 준다 (#62). HTML 태그는 실행하지 않는다 (REQ-QNA-003).
+                <div className="text-sm font-medium text-gray-800 leading-relaxed my-4">
+                  <Markdown content={answer.content} />
                 </div>
               )}
 
