@@ -1,7 +1,7 @@
 // Generated from Stitch screen "Dev in_ 답글 목록 및 작성 (25번)". Scoped to #page-replies so it can't clash with other screens.
 module.exports = {
   important: "#page-replies",
-  content: ["./src/pages/Replies.tsx"],
+  content: ["./src/pages/Replies.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
