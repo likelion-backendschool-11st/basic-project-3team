@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { getProfile, type Profile } from "../api/mypage";
+import Header from "../components/Header";
 import ProfileDetails from "../components/ProfileDetails";
 import { useAuth } from "../hooks/useAuth";
 import "./Mypage.css";
@@ -62,26 +63,7 @@ export default function MemberProfile() {
           backgroundSize: "18px 18px",
         }}
       >
-        <header className="sticky top-0 z-40 bg-white border-b-[2.5px] border-black px-4 lg:px-8 py-3.5 neo-box-shadow-sm">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <Link aria-label="Dev in_ 홈으로 이동" className="flex items-center gap-2" to="/questions">
-              <div className="flex items-center font-sans font-black text-2xl tracking-tight text-[#111111]">
-                Dev
-                <span className="bg-[#FFD43B] border-2 border-black px-1.5 py-0.5 rounded text-black font-mono font-bold text-sm ml-1">
-                  in_
-                </span>
-              </div>
-            </Link>
-            {user && (
-              <Link
-                className="bg-[#FFD43B] text-neutral-900 font-bold border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] px-3.5 py-1.5 text-sm"
-                to="/mypage"
-              >
-                {user.nickname} ▾
-              </Link>
-            )}
-          </div>
-        </header>
+        <Header />
         <main className="flex-1 max-w-2xl w-full mx-auto p-4 sm:p-6 lg:p-8">
           <section className="bg-white neo-border neo-box-shadow p-5 sm:p-6" data-purpose="member-profile-card">
             <div className="flex items-center justify-between pb-4 mb-4 border-b-2 border-neutral-200 gap-2">

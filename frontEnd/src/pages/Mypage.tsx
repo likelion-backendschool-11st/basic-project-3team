@@ -7,6 +7,7 @@ import { getErrorMessage } from "../api/client";
 import {
   getAcceptedAnswers,
   getMyAnswers,
+  getMyCategories,
   getMyGrade,
   getMyInfo,
   getMyQuestions,
@@ -18,8 +19,11 @@ import {
   type GradeInfo,
   type MyInfo,
 } from "../api/mypage";
+import { getCategories } from "../api/tag";
 import { BADGE_ICON, GRADE_NAME } from "../components/gradeBadge";
+import Header from "../components/Header";
 import ProfileDetails, { GRADE_LABEL, formatRate } from "../components/ProfileDetails";
+import { detailPath } from "../components/questionList";
 import { useAuth } from "../hooks/useAuth";
 import "./Mypage.css";
 
@@ -29,6 +33,7 @@ const BADGE_PREVIEW_SIZE = 3;
 interface MypageData {
   me: MyInfo;
   grade: GradeInfo;
+  categoryNames: string[];
   questionCount: number;
   answerCount: number;
   acceptedCount: number;
@@ -47,9 +52,11 @@ function formatDate(value: string) {
 
 // 활동 수는 목록 API의 totalElements를 쓴다 (size=1로 개수만 받는다).
 async function loadMypage(): Promise<MypageData> {
-  const [me, grade, questions, answers, accepted] = await Promise.all([
+  const [me, grade, setting, categories, questions, answers, accepted] = await Promise.all([
     getMyInfo(),
     getMyGrade(),
+    getMyCategories(),
+    getCategories(),
     getMyQuestions(0, 1),
     getMyAnswers(0, 1),
     getAcceptedAnswers(0, RECENT_ACCEPTED_SIZE),
@@ -57,6 +64,8 @@ async function loadMypage(): Promise<MypageData> {
   return {
     me,
     grade,
+    // 카테고리 목록 순서대로 관심 카테고리 이름을 보여준다
+    categoryNames: categories.filter((c) => setting.categoryIds.includes(c.categoryId)).map((c) => c.name),
     questionCount: questions.totalElements,
     answerCount: answers.totalElements,
     acceptedCount: accepted.totalElements,
@@ -338,59 +347,7 @@ export default function Mypage() {
         }}
       >
         {/* BEGIN: GlobalHeader */}
-        <header className="sticky top-0 z-40 bg-white border-b-[2.5px] border-black px-4 lg:px-8 py-3.5 neo-box-shadow-sm">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            {/* Brand Logo */}
-
-            <div className="flex items-center gap-3">
-              <a aria-label="Dev in_ 홈으로 이동" className="flex items-center gap-2 group" href="#">
-                <div className="flex items-center font-sans font-black text-2xl tracking-tight text-[#111111]">
-                  Dev
-                  <span className="bg-[#FFD43B] border-2 border-black px-1.5 py-0.5 rounded text-black font-mono font-bold text-sm ml-1">
-                    in_
-                  </span>
-                </div>
-              </a>
-            </div>
-
-            {/* Center Search Bar */}
-
-            <div className="hidden md:flex flex-1 max-w-xl mx-4">
-              <div className="relative w-full">
-                <input
-                  className="w-full neo-border py-2 px-4 bg-neutral-50 text-sm font-medium focus:outline-none focus:ring-0 focus:bg-white placeholder-neutral-500 rounded-[8px]"
-                  placeholder="검색어를 입력하세요"
-                  type="text"
-                />
-              </div>
-            </div>
-
-            {/* Right Action Items */}
-
-            <div className="flex items-center gap-3">
-              <a
-                href="#"
-                className="bg-[#2563EB] text-white font-bold border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] px-3.5 py-1.5 text-sm transition-transform active:translate-x-[1px] active:translate-y-[1px] flex items-center justify-center"
-              >
-                질문하기
-              </a>
-              <button
-                type="button"
-                className="bg-white text-neutral-900 font-bold border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] px-3 py-1.5 text-sm flex items-center gap-1 transition-transform active:translate-x-[1px] active:translate-y-[1px]"
-              >
-                <span>알림</span>
-                <span className="bg-rose-600 text-white rounded-full text-xs px-1.5 py-0.5 font-bold ml-1">3</span>
-              </button>
-              <button
-                type="button"
-                className="bg-[#FFD43B] text-neutral-900 font-bold border-2 border-black rounded-[8px] shadow-[2px_2px_0_#111111] px-3.5 py-1.5 text-sm flex items-center gap-1.5 transition-transform active:translate-x-[1px] active:translate-y-[1px]"
-              >
-                <span>{user?.nickname ?? "닉네임"}</span>
-                <span className="text-xs ml-0.5">▾</span>
-              </button>
-            </div>
-          </div>
-        </header>
+        <Header />
         {/* END: GlobalHeader */} {/* BEGIN: MainContent */}
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
           {/* BEGIN: TopOverviewCards */}
@@ -437,11 +394,22 @@ export default function Mypage() {
                 {data && (
                   <>
                     <ProfileDetails profile={data.me} />
-                    {/* 관심 카테고리는 카테고리 목록 API가 생기면 #69에서 연결한다 */}
+                    {/* 관심 카테고리 (REQ-MYPAGE-004, 수정은 프로필 수정 화면) */}
                     <div className="flex items-center pt-4 text-sm">
                       <span className="w-24 font-bold text-neutral-500 shrink-0">관심 카테고리</span>
-                      <span className="text-xs font-semibold text-neutral-400" data-field="categories">
-                        준비 중
+                      <span className="flex flex-wrap gap-1.5" data-field="categories">
+                        {data.categoryNames.length === 0 ? (
+                          <span className="font-medium text-neutral-400">미등록</span>
+                        ) : (
+                          data.categoryNames.map((name) => (
+                            <span
+                              className="bg-sky-100 text-sky-900 neo-border-thin text-xs font-bold px-2.5 py-0.5"
+                              key={name}
+                            >
+                              {name}
+                            </span>
+                          ))
+                        )}
                       </span>
                     </div>
                   </>
@@ -632,7 +600,7 @@ export default function Mypage() {
                   <li key={item.answerId}>
                     <Link
                       className="flex items-center justify-between gap-4 py-2.5 group"
-                      to={`/question-detail?questionId=${item.questionId}`}
+                      to={detailPath(item.questionId)}
                     >
                       <span className="font-bold text-sm text-neutral-900 group-hover:underline truncate">
                         {item.questionTitle}
