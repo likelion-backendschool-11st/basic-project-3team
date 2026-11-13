@@ -4,6 +4,7 @@ const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { withTransaction } = require('../utils/transaction');
 const { ROLE } = require('../utils/constants');
+const { notifyAnswerCreated, notifyAnswerAccepted } = require('../notification/notification.service');
 
 async function assertQuestionExists(questionId) {
   if (!(await answerRepository.existsQuestion(questionId))) {
@@ -31,12 +32,14 @@ async function findWriterProfiles(rows) {
 }
 
 // 답변 작성 (#42, REQ-ANSWER-001)
-// shortcut: 질문 작성자에게 보내는 답변 등록 알림(ANSWER_CREATED)은 알림 기능(#69)이 생기면 여기서 보낸다.
 async function createAnswer(memberId, questionId, content) {
   // 이미 발급된 Access Token은 정지·탈퇴 뒤에도 30분간 유효하므로 쓰기 작업마다 상태를 확인한다 (docs/auth.md).
   await findWritableMember(memberId);
   await assertQuestionExists(questionId);
-  return answerRepository.insertAnswer({ questionId, memberId, content });
+  const answerId = await answerRepository.insertAnswer({ questionId, memberId, content });
+  // #69: 질문 작성자에게 알림. 기다리지 않으며, 실패해도 답변 작성은 성공으로 둔다.
+  void notifyAnswerCreated({ questionId, answerWriterId: memberId });
+  return answerId;
 }
 
 // 답변 목록 (#42, REQ-ANSWER-002). 페이징하지 않는다.
@@ -106,10 +109,9 @@ async function deleteAnswer({ memberId, role }, answerId) {
 
 // 답변 채택 (#45, REQ-ANSWER-005, 006). 질문 작성자만(관리자 포함 다른 회원은 403), 본인 답변 불가, 질문당 1개·취소 불가.
 // 채택 여부·해결 여부·채택률·등급은 모두 question.accepted_answer_id로 계산하므로 이 UPDATE 하나로 함께 반영된다.
-// shortcut: 답변 작성자에게 보내는 채택 알림(ANSWER_ACCEPTED)은 알림 기능(#69)이 생기면 여기서 보낸다.
 async function acceptAnswer(memberId, answerId) {
   await findWritableMember(memberId);
-  await withTransaction(async (conn) => {
+  const questionId = await withTransaction(async (conn) => {
     const answer = await answerRepository.findAnswerForUpdate(conn, answerId);
     if (answer === null) {
       throw new AppError(ErrorCode.ANSWER_NOT_FOUND);
@@ -124,7 +126,10 @@ async function acceptAnswer(memberId, answerId) {
     if (answer.questionAccepted || !(await answerRepository.acceptAnswer(conn, answer.questionId, answerId))) {
       throw new AppError(ErrorCode.ALREADY_ACCEPTED);
     }
+    return answer.questionId;
   });
+  // #69: 채택이 commit된 뒤 답변 작성자에게 알림. 기다리지 않으며, 실패해도 채택은 성공으로 둔다.
+  void notifyAnswerAccepted({ questionId, answerId, acceptorId: memberId });
 }
 
 module.exports = { createAnswer, getAnswers, updateAnswer, deleteAnswer, acceptAnswer, findWriterProfiles };
