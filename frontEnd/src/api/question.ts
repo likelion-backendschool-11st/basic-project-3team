@@ -91,20 +91,23 @@ export async function createQuestion(request: QuestionRequest): Promise<{ questi
 
 export type Grade = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
 
+// 질문·답변 응답의 작성자 정보 (docs/api.md 1장 작성자 정보)
+export interface Writer {
+  memberId: number;
+  nickname: string;
+  careerYears: number | null;
+  techStacks: string[];
+  grade: Grade;
+  acceptRate: number;
+}
+
 export interface QuestionDetail {
   questionId: number;
   title: string;
   content: string;
   category: { categoryId: number; name: string };
   tags: string[];
-  writer: {
-    memberId: number;
-    nickname: string;
-    careerYears: number | null;
-    techStacks: string[];
-    grade: Grade;
-    acceptRate: number;
-  };
+  writer: Writer;
   viewCount: number;
   likeCount: number;
   liked: boolean;
