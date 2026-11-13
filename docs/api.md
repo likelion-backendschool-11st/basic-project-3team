@@ -179,6 +179,13 @@
 - 비밀번호 확인 값 비교(REQ-SIGNUP-002)는 프론트에서 하고 서버로 보내지 않는다.
 - 중복 확인을 거친 값이어도 가입 시 서버가 다시 확인한다. 중복이면 409 `DUPLICATE_LOGIN_ID` / `DUPLICATE_PHONE` / `DUPLICATE_NICKNAME`.
 
+응답 (`data`) — 201 Created. 가입 후 자동 로그인하지 않으므로 토큰은 발급하지 않는다.
+```json
+{ "memberId": 1 }
+```
+
+- 중복 확인 API의 쿼리 값도 입력값 규칙으로 검사하고, 어기면 400 `INVALID_INPUT`.
+
 중복 확인 응답 (`data`)
 ```json
 { "available": true }
