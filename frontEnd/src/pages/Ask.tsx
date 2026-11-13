@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { CATEGORIES, QUESTION_RULES as RULES, createQuestion } from "../api/question";
 import FieldError from "../components/FieldError";
 import Header from "../components/Header";
+import RecommendedTags from "../components/tag/RecommendedTags";
 import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -13,8 +14,19 @@ const css =
 
 export default function Ask() {
   const navigate = useNavigate();
-  const { values, tagInput, setTagInput, errors, formError, submitting, change, handleTagKeyDown, removeTag, submit } =
-    useQuestionForm();
+  const {
+    values,
+    tagInput,
+    setTagInput,
+    errors,
+    formError,
+    submitting,
+    change,
+    handleTagKeyDown,
+    removeTag,
+    toggleTag,
+    submit,
+  } = useQuestionForm();
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -258,6 +270,15 @@ export default function Ask() {
                   질문과 관련된 기술 스택 태그를 추가할 수 있어요. (선택, 최대 {RULES.maxTags}개)
                 </p>
               )}
+              {/* #61: 제목·내용 기반 추천 태그. 누르면 추가, 다시 누르면 제거 */}
+              <div className="mt-2">
+                <RecommendedTags
+                  title={values.title}
+                  content={values.content}
+                  selected={values.tags}
+                  onToggle={toggleTag}
+                />
+              </div>
             </section>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
