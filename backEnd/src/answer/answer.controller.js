@@ -35,7 +35,9 @@ async function createAnswer(req, res, next) {
 
 async function getAnswers(req, res, next) {
   try {
-    const data = await answerService.getAnswers(parsePathId(req.params.questionId, 'questionId'));
+    // 로그인했으면(optionalAuth) 답변마다 조회자가 좋아요했는지(liked)를 채운다.
+    const questionId = parsePathId(req.params.questionId, 'questionId');
+    const data = await answerService.getAnswers(questionId, req.user?.memberId ?? null);
     return success(res, data);
   } catch (err) {
     return next(err);

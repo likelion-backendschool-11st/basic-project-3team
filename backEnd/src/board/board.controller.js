@@ -99,7 +99,8 @@ const parseQuestionId = (value) => parsePathId(value, 'questionId');
 
 async function getQuestion(req, res, next) {
   try {
-    const data = await boardService.getQuestion(parseQuestionId(req.params.questionId));
+    // 로그인했으면(optionalAuth) 조회자 id로 liked를 채우고, 작성자 본인 조회는 조회수를 올리지 않는다.
+    const data = await boardService.getQuestion(parseQuestionId(req.params.questionId), req.user?.memberId ?? null);
     return success(res, data);
   } catch (err) {
     return next(err);

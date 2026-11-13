@@ -15,7 +15,8 @@ async function insertAnswer({ questionId, memberId, content }) {
 }
 
 // 채택된 답변 → 좋아요 많은 순 → 최신순 (REQ-ANSWER-002). 채택 여부는 question.accepted_answer_id로 판단한다.
-async function findAnswersByQuestionId(questionId) {
+// liked: 조회자가 좋아요했는지. 비로그인은 0으로 넘겨 항상 false (member_id는 1부터)
+async function findAnswersByQuestionId(questionId, viewerId) {
   const [rows] = await pool.query(
     `SELECT a.answer_id AS answerId,
             a.content,
@@ -24,6 +25,7 @@ async function findAnswersByQuestionId(questionId) {
             m.bio AS writerBio,
             m.career_years AS writerCareerYears,
             a.like_count AS likeCount,
+            EXISTS (SELECT 1 FROM answer_like al WHERE al.answer_id = a.answer_id AND al.member_id = ?) AS liked,
             COALESCE(q.accepted_answer_id = a.answer_id, FALSE) AS accepted,
             IF(q.accepted_answer_id = a.answer_id, DATE_FORMAT(q.accepted_at, '%Y-%m-%dT%H:%i:%s'), NULL) AS acceptedAt,
             (SELECT COUNT(*) FROM reply r WHERE r.answer_id = a.answer_id AND r.deleted = FALSE) AS replyCount,
@@ -34,7 +36,7 @@ async function findAnswersByQuestionId(questionId) {
        JOIN member m ON m.member_id = a.member_id
       WHERE a.question_id = ? AND a.deleted = FALSE
       ORDER BY accepted DESC, a.like_count DESC, a.created_at DESC, a.answer_id DESC`,
-    [questionId],
+    [viewerId ?? 0, questionId],
   );
   return rows;
 }

@@ -33,17 +33,18 @@ async function insertQuestionTags(conn, questionId, tagIds) {
 }
 
 // updated_at을 자기 값으로 지정해 ON UPDATE CURRENT_TIMESTAMP로 수정일이 바뀌지 않게 한다.
-async function increaseViewCount(questionId) {
-  const [result] = await pool.query(
+// 작성자 본인 조회는 올리지 않는다 (member_id <> 조회자). 비로그인은 0으로 넘겨 모든 조회를 센다 (member_id는 1부터).
+async function increaseViewCount(questionId, viewerId) {
+  await pool.query(
     `UPDATE question
         SET view_count = view_count + 1, updated_at = updated_at
-      WHERE question_id = ? AND deleted = FALSE`,
-    [questionId],
+      WHERE question_id = ? AND deleted = FALSE AND member_id <> ?`,
+    [questionId, viewerId ?? 0],
   );
-  return result.affectedRows > 0;
 }
 
-async function findQuestionById(questionId) {
+// liked: 조회자가 좋아요했는지. 비로그인은 0으로 넘겨 항상 false
+async function findQuestionById(questionId, viewerId) {
   const [rows] = await pool.query(
     `SELECT q.question_id AS questionId,
             q.title,
@@ -56,6 +57,7 @@ async function findQuestionById(questionId) {
             m.career_years AS writerCareerYears,
             q.view_count AS viewCount,
             q.like_count AS likeCount,
+            EXISTS (SELECT 1 FROM question_like ql WHERE ql.question_id = q.question_id AND ql.member_id = ?) AS liked,
             (SELECT COUNT(*) FROM answer a WHERE a.question_id = q.question_id AND a.deleted = FALSE) AS answerCount,
             q.accepted_answer_id IS NOT NULL AS accepted,
             DATE_FORMAT(q.created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt,
@@ -64,7 +66,7 @@ async function findQuestionById(questionId) {
        JOIN member m ON m.member_id = q.member_id
        JOIN category c ON c.category_id = q.category_id
       WHERE q.question_id = ? AND q.deleted = FALSE`,
-    [questionId],
+    [viewerId ?? 0, questionId],
   );
   return rows[0] ?? null;
 }
