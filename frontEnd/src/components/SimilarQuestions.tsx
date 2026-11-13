@@ -47,11 +47,11 @@ export default function SimilarQuestions({ questionId }: { questionId: number })
             <div className="flex items-center gap-3">
               {question.accepted ? (
                 <span className="bg-[#DCFCE7] text-[#15803D] border border-emerald-600 text-xs font-black px-2 py-0.5 rounded shrink-0">
-                  해결됨
+                  채택
                 </span>
               ) : (
                 <span className="bg-[#F1F5F9] text-[#64748B] border border-slate-400 text-xs font-black px-2 py-0.5 rounded shrink-0">
-                  미해결
+                  미채택
                 </span>
               )}
               <span className="text-sm font-bold text-gray-900 hover:underline truncate">{question.title}</span>

@@ -166,11 +166,11 @@ export default function QuestionDetail() {
                   <div className="flex flex-wrap items-center gap-3">
                     {question.accepted ? (
                       <span className="px-3.5 py-1 text-sm font-bold bg-neoGreen text-neoBlack border-thick border-neoBlack rounded-full tracking-wide">
-                        해결됨
+                        채택
                       </span>
                     ) : (
                       <span className="px-3.5 py-1 text-sm font-bold bg-white text-gray-600 border-thick border-neoBlack rounded-full tracking-wide">
-                        미해결
+                        미채택
                       </span>
                     )}
                     <span className="px-3 py-1 text-xs font-bold bg-neoYellow text-neoBlack border-thick border-neoBlack rounded-full">
