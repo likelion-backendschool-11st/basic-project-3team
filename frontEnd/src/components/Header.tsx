@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import SearchBar from "./search/SearchBar";
 
 const MAIN_PATH = "/questions";
-const SEARCH_PATH = "/search-results";
 
 const buttonBase =
   "h-10 px-4 border-2 border-[#111111] text-sm font-bold shadow-[2px_2px_0_#111111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all whitespace-nowrap";
@@ -69,13 +69,6 @@ function ProfileMenu({ nickname }: { nickname: string }) {
 export default function Header() {
   const navigate = useNavigate();
   const { user, initializing } = useAuth();
-  const [keyword, setKeyword] = useState("");
-
-  function handleSearch(event: FormEvent) {
-    event.preventDefault();
-    const trimmed = keyword.trim();
-    navigate(trimmed ? `${SEARCH_PATH}?keyword=${encodeURIComponent(trimmed)}` : SEARCH_PATH);
-  }
 
   return (
     <header className="w-full bg-white border-b-2 sticky top-0 z-40 border-[#111111]" data-purpose="global-header">
@@ -87,17 +80,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <form className="flex-1 max-w-[460px] mx-2 sm:mx-6" role="search" onSubmit={handleSearch}>
-          <input
-            className="w-full h-[40px] px-3.5 py-2 bg-white border-2 border-black rounded-[8px] text-sm text-[#111111] placeholder:text-[#888888] focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0_#111111] transition-all"
-            placeholder="검색어를 입력하세요"
-            type="search"
-            aria-label="질문 검색"
-            maxLength={100}
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-          />
-        </form>
+        <SearchBar />
 
         <div className="flex items-center gap-2.5">
           <button
