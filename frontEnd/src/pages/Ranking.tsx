@@ -9,8 +9,14 @@ import Header from "../components/Header";
 import ListStatus from "../components/ListStatus";
 import { GRADES } from "../components/writer";
 
-// 1~3위는 노란 바탕 + 굵은 테두리로 눈에 띄게 한다. 테두리는 3px: 2.5px는 브라우저가 2px로 그려 다른 줄과 구분되지 않는다.
-const TOP_RANK = 3;
+// 앞에서 3명은 시상대 카드로, 나머지는 줄로 보여 준다 (#159). 동점이라 rank가 같아도 앞 3명만 카드다.
+const PODIUM_SIZE = 3;
+// 3명일 때만 가운데 1위·왼쪽 2위·오른쪽 3위로 옮긴다. HTML 순서는 1·2·3 그대로라 화면 읽기 프로그램은 1위부터 읽는다.
+const PODIUM_ORDER = ["order-2", "order-1", "order-3"];
+// 계단 단차 (아래쪽 기준): 1위 32px·2위 16px 위로, 3위는 그대로. 작은 화면은 절반.
+const PODIUM_LIFT = ["-translate-y-4 sm:-translate-y-8", "-translate-y-2 sm:-translate-y-4", ""];
+// 메달 색 (rank 기준이라 1위 동점이면 둘 다 금색)
+const MEDAL_COLOR: Record<number, string> = { 1: "#FFD43B", 2: "#D1D5DB", 3: "#D97706" };
 
 type State = { status: "loading" } | { status: "error"; message: string } | { status: "done"; items: RankingItem[] };
 
@@ -80,11 +86,24 @@ export default function Ranking() {
         )}
 
         {state.status === "done" && state.items.length > 0 && (
-          <ol className="flex flex-col gap-3" data-purpose="ranking-list">
-            {state.items.map((item) => (
-              <RankingRow key={item.memberId} item={item} />
-            ))}
-          </ol>
+          <>
+            <ol className="grid grid-cols-3 items-end gap-2 sm:gap-4 md:gap-5 pt-10" data-purpose="ranking-podium">
+              {state.items.slice(0, PODIUM_SIZE).map((item, index, podium) => (
+                <PodiumCard
+                  key={item.memberId}
+                  item={item}
+                  className={`${podium.length === PODIUM_SIZE ? PODIUM_ORDER[index] : ""} ${PODIUM_LIFT[index]}`}
+                />
+              ))}
+            </ol>
+            {state.items.length > PODIUM_SIZE && (
+              <ol className="mt-7 flex flex-col gap-3" data-purpose="ranking-list">
+                {state.items.slice(PODIUM_SIZE).map((item) => (
+                  <RankingRow key={item.memberId} item={item} />
+                ))}
+              </ol>
+            )}
+          </>
         )}
       </main>
 
@@ -93,21 +112,62 @@ export default function Ranking() {
   );
 }
 
+// 1~3위 시상대 카드: 정사각형, 가운데 정렬로 메달 → 닉네임 → 등급 → 채택 수 → 채택률·좋아요
+// 카드 폭이 휴대폰 약 100px, sm 약 180px, md 이상 약 225px라 정사각형 안에 들어가도록 세 단계로 키운다 (메달 32·48·64px).
+// 감싸는 span(AuthorPopover)도 카드 폭을 넘지 않게 해야 긴 닉네임이 말줄임된다.
+// 팝오버가 열린 카드만 위로 올린다. hover·focus로 올리면 다른 카드에 포커스가 남았을 때 order 순서상 뒤 카드가 덮는다.
+function PodiumCard({ item, className }: { item: RankingItem; className: string }) {
+  const grade = GRADES[item.grade];
+  const first = item.rank === 1;
+
+  return (
+    <li
+      className={`relative z-0 has-[[aria-expanded=true]]:z-20 aspect-square min-w-0 flex flex-col items-center justify-center sm:gap-1 md:gap-1.5 p-1.5 sm:p-2 md:p-3 text-center border-[3px] border-[#111111] ${
+        first ? "bg-[#FFF7D1] shadow-[6px_6px_0_#111111]" : "bg-white shadow-[4px_4px_0_#111111]"
+      } ${className}`}
+      data-rank={item.rank}
+    >
+      <span
+        className="shrink-0 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full border-[3px] border-[#111111] font-black font-mono text-base sm:text-xl md:text-2xl text-[#111111]"
+        style={{ backgroundColor: MEDAL_COLOR[item.rank] }}
+        aria-label={`${item.rank}위`}
+      >
+        {item.rank}
+      </span>
+      <div className="w-full min-w-0 flex justify-center [&>span]:max-w-full">
+        <AuthorPopover
+          className="block max-w-full truncate font-black text-xs leading-tight sm:text-sm md:text-lg text-gray-950 hover:underline"
+          memberId={item.memberId}
+          nickname={item.nickname}
+        />
+      </div>
+      <span
+        className="shrink-0 px-1.5 sm:px-2 py-px sm:py-0.5 rounded text-[10px] leading-tight sm:text-xs font-bold text-[#111111] border border-[#111111]"
+        style={{ backgroundColor: grade.color }}
+      >
+        {grade.label}
+      </span>
+      <p className="font-black text-sm sm:text-lg md:text-2xl leading-tight text-gray-950">
+        {item.acceptedCount}개 채택
+      </p>
+      <p className="hidden sm:block text-[11px] md:text-xs font-medium text-gray-500">
+        채택률 {item.acceptRate}% · 좋아요 {item.likeCount}
+      </p>
+    </li>
+  );
+}
+
+// 4~20위 줄
 function RankingRow({ item }: { item: RankingItem }) {
-  const top = item.rank <= TOP_RANK;
   const grade = GRADES[item.grade];
 
   return (
     <li
-      className={`flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 border-[#111111] ${
-        top ? "bg-[#FFD43B] border-[3px] shadow-[4px_4px_0_#111111]" : "bg-white border-2 shadow-[2px_2px_0_#111111]"
-      }`}
+      className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 bg-white border-2 border-[#111111] shadow-[2px_2px_0_#111111]"
       data-rank={item.rank}
     >
       <span
-        className={`shrink-0 w-10 h-10 flex items-center justify-center font-black font-mono border-2 border-[#111111] rounded-full ${
-          top ? "bg-white text-lg" : "bg-gray-50 text-base"
-        }`}
+        className="shrink-0 w-10 h-10 flex items-center justify-center font-black font-mono text-base bg-gray-50 border-2 border-[#111111] rounded-full"
         aria-label={`${item.rank}위`}
       >
         {item.rank}
@@ -120,7 +180,7 @@ function RankingRow({ item }: { item: RankingItem }) {
           nickname={item.nickname}
         />
         <span
-          className="shrink-0 px-2 py-0.5 rounded text-xs font-bold text-white border border-[#111111]"
+          className="shrink-0 px-2 py-0.5 rounded text-xs font-bold text-[#111111] border border-[#111111]"
           style={{ backgroundColor: grade.color }}
         >
           {grade.label}
