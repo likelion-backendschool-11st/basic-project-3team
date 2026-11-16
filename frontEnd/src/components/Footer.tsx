@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 // 공통 푸터 (Stitch "전체 질문 목록" 화면의 푸터)
 export default function Footer() {
   return (
@@ -9,9 +11,14 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-4 font-medium">
-          <span>이용약관</span>
+          {/* #158: 이용약관·개인정보처리방침 페이지 연결 */}
+          <Link className="hover:text-black hover:underline" to="/terms">
+            이용약관
+          </Link>
           <span>·</span>
-          <span>개인정보처리방침</span>
+          <Link className="hover:text-black hover:underline" to="/privacy">
+            개인정보처리방침
+          </Link>
           <span>·</span>
           <span>문의하기</span>
         </div>
