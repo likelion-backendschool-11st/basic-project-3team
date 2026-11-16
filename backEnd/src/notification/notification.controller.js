@@ -52,4 +52,12 @@ async function readAllNotifications(req, res, next) {
   }
 }
 
-module.exports = { getNotifications, getUnreadCount, readNotification, readAllNotifications };
+async function deleteAllNotifications(req, res, next) {
+  try {
+    return success(res, await notificationService.deleteAllNotifications(req.user.memberId));
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { getNotifications, getUnreadCount, readNotification, readAllNotifications, deleteAllNotifications };

@@ -11,6 +11,8 @@ export interface NotificationContextValue {
   refresh: () => Promise<void>;
   markRead: (notificationId: number) => Promise<void>;
   markAllRead: () => Promise<void>;
+  // 내 알림을 모두 지운다 (#152). 성공하면 목록과 안 읽은 수를 비운다.
+  deleteAll: () => Promise<void>;
 }
 
 export const NotificationContext = createContext<NotificationContextValue | null>(null);

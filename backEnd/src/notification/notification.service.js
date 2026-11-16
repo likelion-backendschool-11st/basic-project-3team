@@ -46,6 +46,11 @@ async function readAllNotifications(memberId) {
   return { updatedCount: await notificationRepository.markAllRead(memberId) };
 }
 
+// 내 알림을 읽음 여부와 관계없이 모두 지운다 (#152). 지울 알림이 없어도 성공(deletedCount 0).
+async function deleteAllNotifications(memberId) {
+  return { deletedCount: await notificationRepository.deleteAllByMember(memberId) };
+}
+
 // ---- 다른 도메인에서 부르는 알림 생성 함수 ----
 // 글 작성·채택이 성공한 뒤(트랜잭션 commit 뒤) 부른다. 알림이 실패해도 원래 요청은 성공으로 두고 로그만 남긴다.
 
@@ -129,6 +134,7 @@ module.exports = {
   getUnreadCount,
   readNotification,
   readAllNotifications,
+  deleteAllNotifications,
   notifyAnswerCreated,
   notifyAnswerAccepted,
   notifyCategoryQuestion,

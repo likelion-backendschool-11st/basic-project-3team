@@ -28,9 +28,10 @@ const headerButton =
 // 헤더 알림 버튼 + 알림 팝오버 (REQ-MAIN-005, #70). 로그인한 상태에서만 헤더가 그린다.
 export default function NotificationBell() {
   const navigate = useNavigate();
-  const { items, unreadCount, loading, error, refresh, markRead, markAllRead } = useNotifications();
+  const { items, unreadCount, loading, error, refresh, markRead, markAllRead, deleteAll } = useNotifications();
   const [open, setOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
   // 바깥을 누르거나 Esc를 누르면 닫는다.
@@ -74,6 +75,20 @@ export default function NotificationBell() {
       await markAllRead();
     } catch {
       setActionError("모두 읽음 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  // #152: 확인 없이 바로 지운다. 삭제 중에는 버튼을 막아 요청이 두 번 가지 않게 한다.
+  async function handleDeleteAll() {
+    if (deleting) return;
+    setActionError(null);
+    setDeleting(true);
+    try {
+      await deleteAll();
+    } catch {
+      setActionError("모두 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -162,6 +177,20 @@ export default function NotificationBell() {
               );
             })}
           </ul>
+
+          {/* #152: 목록 아래 한 줄. 지울 알림이 없으면 줄째로 숨긴다. */}
+          {items.length > 0 && (
+            <div className="flex justify-end px-4 py-2 border-t-2 border-black">
+              <button
+                className="text-[11px] font-bold text-gray-500 hover:text-[#E11D48] disabled:opacity-60 disabled:hover:text-gray-500"
+                type="button"
+                disabled={deleting}
+                onClick={handleDeleteAll}
+              >
+                {deleting ? "삭제 중..." : "모두 삭제"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
