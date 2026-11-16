@@ -235,18 +235,14 @@ export default function AnswerSection({
                       ★
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 font-medium">
-                    {summary && (
-                      <>
-                        {summary}
-                        <span className="text-gray-400 mx-1">|</span>
-                      </>
-                    )}
-                    <time dateTime={answer.createdAt}>{formatDateTime(answer.createdAt)}</time>
-                  </p>
+                  {summary && <p className="text-xs text-gray-600 font-medium">{summary}</p>}
                 </div>
 
+                {/* #163: 작성일은 닉네임 줄 오른쪽 끝에 둬서 작성자 정보 줄을 짧게 한다 */}
                 <div className="flex items-center gap-2 shrink-0">
+                  <time className="text-xs text-gray-500 font-semibold whitespace-nowrap" dateTime={answer.createdAt}>
+                    {formatDateTime(answer.createdAt)}
+                  </time>
                   {answer.accepted && (
                     <span className="bg-emerald-500 text-white font-black text-xs px-3 py-1.5 rounded-lg border-thick border-neoBlack shadow-brutal-sm">
                       ✓ 채택됨

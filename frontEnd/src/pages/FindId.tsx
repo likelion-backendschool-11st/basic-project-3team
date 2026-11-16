@@ -113,7 +113,7 @@ export default function FindId() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-lg lg:gap-gutter items-start">
             {/* LEFT CARD: 회원 정보 입력 */}
-            <div className="bg-surface-container-lowest brutal-border brutal-shadow p-6 md:p-8 flex flex-col justify-between relative">
+            <div className="bg-surface-container-lowest brutal-border brutal-shadow rounded-xl p-6 md:p-8 flex flex-col justify-between relative">
               <div>
                 <div className="flex items-center justify-between pb-4 mb-6 border-b-[2.5px] border-on-background">
                   <div className="flex items-center gap-2">
@@ -207,7 +207,7 @@ export default function FindId() {
             {/* RIGHT CARD: 조회 결과 (조회 전 / 찾음 / 일치하는 회원 없음) */}
             <div
               aria-live="polite"
-              className="bg-surface-container-lowest brutal-border brutal-shadow p-6 md:p-8 flex flex-col relative overflow-hidden min-h-[360px]"
+              className="bg-surface-container-lowest brutal-border brutal-shadow rounded-xl p-6 md:p-8 flex flex-col relative overflow-hidden min-h-[360px]"
             >
               <div className="absolute -right-10 -top-10 w-24 h-24 bg-secondary-container brutal-border rotate-45 pointer-events-none"></div>
 

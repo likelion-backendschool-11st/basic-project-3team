@@ -35,7 +35,8 @@ function ProfileMenu({ nickname }: { nickname: string }) {
   async function handleLogout() {
     setOpen(false);
     await logout();
-    navigate(MAIN_PATH);
+    // 비로그인은 질문 화면을 볼 수 없으므로 첫 화면(로그인)으로 보낸다.
+    navigate("/", { replace: true });
   }
 
   const itemClass = "block w-full text-left px-4 py-2.5 text-sm font-bold hover:bg-[#FFD43B]";

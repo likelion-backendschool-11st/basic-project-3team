@@ -13,9 +13,9 @@ const css =
   "body {\n      font-family: 'Noto Sans KR', sans-serif;\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#111111 0.75px, transparent 0.75px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n    .font-mono {\n      font-family: 'JetBrains Mono', monospace;\n    }\n    .brutal-border {\n      border: 2.5px solid #111111;\n    }";
 
 const INPUT_CLASS =
-  "w-full px-3.5 py-2.5 bg-white brutal-border rounded-md text-xs placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-brutal-sm transition-all disabled:bg-neutral-100 disabled:text-neutral-500";
+  "w-full px-3.5 py-2.5 bg-white brutal-border rounded-md text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-brutal-sm transition-all disabled:bg-neutral-100 disabled:text-neutral-500";
 const PASSWORD_INPUT_CLASS =
-  "w-full pl-3.5 pr-16 py-2.5 bg-white brutal-border rounded-md text-xs placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-brutal-sm transition-all";
+  "w-full pl-3.5 pr-16 py-2.5 bg-white brutal-border rounded-md text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-brutal-sm transition-all";
 const ACTIVE_BUTTON =
   "bg-[#FFDE59] text-neutral-900 shadow-brutal cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-none";
 const DISABLED_BUTTON = "bg-[#D9D9D9] text-neutral-500 cursor-not-allowed";
@@ -46,9 +46,9 @@ function CardHeader({
     <div className="flex items-center justify-between pb-4 mb-4 border-b-[2.5px] border-black">
       <div className="flex items-center gap-2">
         <span className={`w-2.5 h-2.5 rounded-full inline-block ${dotClass}`}></span>
-        <h2 className="text-base font-bold text-neutral-900">{title}</h2>
+        <h2 className="text-[18px] font-bold text-neutral-900">{title}</h2>
       </div>
-      <span className={`px-2 py-0.5 brutal-border text-[10px] font-extrabold tracking-wider ${badgeClass}`}>
+      <span className={`px-2 py-0.5 brutal-border text-[11px] font-extrabold tracking-wider ${badgeClass}`}>
         {badge}
       </span>
     </div>
@@ -73,7 +73,7 @@ function PasswordInput({
   const [visible, setVisible] = useState(false);
   return (
     <>
-      <label className="block text-xs font-bold text-neutral-800 mb-1.5" htmlFor={id}>
+      <label className="block text-[13px] font-bold text-neutral-800 mb-1.5" htmlFor={id}>
         {label} <span className="text-red-500">*</span>
       </label>
       <div className="relative">
@@ -90,7 +90,7 @@ function PasswordInput({
         />
         <button
           aria-label={visible ? "비밀번호 숨기기" : "비밀번호 보기"}
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-bold bg-[#FFFDF5] border-2 border-black rounded cursor-pointer"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-bold bg-white border-2 border-black rounded cursor-pointer"
           onClick={() => setVisible((v) => !v)}
           type="button"
         >
@@ -199,12 +199,14 @@ export default function FindPassword() {
         <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-10 flex flex-col justify-center">
           <div className="text-center mb-9">
             <div className="inline-block mb-3.5">
-              <span className="px-3 py-1 bg-[#FFFDF5] brutal-border shadow-brutal-sm text-xs font-bold tracking-wider uppercase">
+              <span className="px-3 py-1 bg-white brutal-border shadow-brutal-sm text-[11px] font-bold tracking-wider uppercase">
                 {"Security & Account Recovery"}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 mb-2.5">비밀번호 찾기</h1>
-            <p className="text-xs sm:text-sm text-neutral-600 font-medium">
+            <h1 className="text-[28px] md:text-[40px] leading-tight font-black tracking-tight text-neutral-900 mb-2.5">
+              비밀번호 찾기
+            </h1>
+            <p className="text-sm text-neutral-600 font-medium">
               가입 시 등록한 아이디와 전화번호로 본인 확인 후 새 비밀번호를 설정할 수 있습니다.
             </p>
           </div>
@@ -212,20 +214,20 @@ export default function FindPassword() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             {/* LEFT CARD: 계정 정보 입력 + 본인 확인 */}
             <section
-              className="bg-[#FFFDF5] brutal-border rounded-xl shadow-brutal p-6 flex flex-col justify-between"
+              className="bg-white brutal-border rounded-xl shadow-brutal p-6 flex flex-col justify-between"
               data-purpose="account-input-form"
             >
               <div>
                 <div className="flex items-center justify-between pb-4 mb-5 border-b-[2.5px] border-black">
-                  <h2 className="text-base font-bold text-neutral-900">계정 정보 입력</h2>
-                  <span className="px-2 py-0.5 bg-[#FFFDF5] brutal-border text-[11px] font-bold shadow-brutal-sm">
+                  <h2 className="text-[18px] font-bold text-neutral-900">계정 정보 입력</h2>
+                  <span className="px-2 py-0.5 bg-white brutal-border text-[11px] font-bold shadow-brutal-sm">
                     전화번호 본인 확인
                   </span>
                 </div>
 
                 <form className="space-y-4" noValidate onSubmit={handleVerify}>
                   <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1.5" htmlFor="user-id">
+                    <label className="block text-[13px] font-bold text-neutral-800 mb-1.5" htmlFor="user-id">
                       아이디 <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -241,7 +243,7 @@ export default function FindPassword() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1.5" htmlFor="user-phone">
+                    <label className="block text-[13px] font-bold text-neutral-800 mb-1.5" htmlFor="user-phone">
                       전화번호 <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -267,7 +269,7 @@ export default function FindPassword() {
 
                   <div className="pt-2">
                     <button
-                      className={`w-full py-2.5 brutal-border font-bold text-xs rounded transition-all ${
+                      className={`w-full py-3 brutal-border font-bold text-[18px] rounded transition-all ${
                         canVerify ? ACTIVE_BUTTON : DISABLED_BUTTON
                       }`}
                       disabled={!canVerify}
@@ -298,7 +300,7 @@ export default function FindPassword() {
 
             {/* RIGHT CARD: 본인 확인 전(잠김) → 새 비밀번호 입력 → 변경 완료 */}
             <section
-              className="bg-[#FFFDF5] brutal-border rounded-xl shadow-brutal p-6 flex flex-col justify-between"
+              className="bg-white brutal-border rounded-xl shadow-brutal p-6 flex flex-col justify-between"
               data-purpose="password-reset-card"
             >
               {step === "locked" && (
@@ -313,8 +315,8 @@ export default function FindPassword() {
                     <div className="w-12 h-12 brutal-border rounded-full bg-white shadow-brutal-sm flex items-center justify-center text-xl">
                       🔒
                     </div>
-                    <p className="text-xs font-bold">왼쪽에서 본인 확인을 먼저 해주세요.</p>
-                    <p className="text-[11px] text-neutral-500 font-medium">
+                    <p className="text-base font-bold">왼쪽에서 본인 확인을 먼저 해주세요.</p>
+                    <p className="text-xs text-neutral-500 font-medium">
                       아이디와 가입할 때 등록한 전화번호가 일치하면
                       <br />새 비밀번호를 설정할 수 있어요.
                     </p>
@@ -331,7 +333,7 @@ export default function FindPassword() {
                       dotClass="bg-black"
                       title="새 비밀번호 설정"
                     />
-                    <p className="text-xs text-neutral-600 mb-4 font-medium">
+                    <p className="text-sm text-neutral-600 mb-4 font-medium">
                       본인 확인이 완료되었습니다. 사용할 새 비밀번호를 입력해주세요.
                     </p>
                     <div className="space-y-4">
@@ -373,7 +375,7 @@ export default function FindPassword() {
                       </p>
                     )}
                     <button
-                      className={`w-full py-2.5 brutal-border font-bold text-xs rounded transition-all ${
+                      className={`w-full py-3 brutal-border font-bold text-[18px] rounded transition-all ${
                         canReset ? ACTIVE_BUTTON : DISABLED_BUTTON
                       }`}
                       disabled={!canReset}
@@ -382,7 +384,7 @@ export default function FindPassword() {
                       {submitting ? "변경 중..." : "비밀번호 변경"}
                     </button>
                     <Link
-                      className="block w-full py-2.5 text-center bg-[#FFFDF5] hover:bg-neutral-100 text-neutral-900 brutal-border shadow-brutal-sm font-bold text-xs rounded transition-all"
+                      className="block w-full py-2.5 text-center bg-white hover:bg-neutral-100 text-neutral-900 brutal-border shadow-brutal-sm font-bold text-[13px] rounded transition-all"
                       to="/find-id"
                     >
                       아이디 찾기
@@ -402,8 +404,8 @@ export default function FindPassword() {
                     />
                     <div className="brutal-border rounded-lg p-5 bg-white shadow-brutal-sm text-center space-y-2">
                       <div className="text-2xl">✅</div>
-                      <p className="text-sm font-black">비밀번호가 변경되었습니다.</p>
-                      <p className="text-[11px] text-neutral-600 font-medium">
+                      <p className="text-base font-black">비밀번호가 변경되었습니다.</p>
+                      <p className="text-xs text-neutral-600 font-medium">
                         새 비밀번호로 다시 로그인해주세요.
                         <br />
                         다른 기기에서 로그인된 상태도 함께 로그아웃됩니다.
@@ -412,7 +414,7 @@ export default function FindPassword() {
                   </div>
                   <div className="space-y-2.5 mt-6">
                     <Link
-                      className="block w-full py-2.5 text-center bg-[#FFDE59] text-neutral-900 brutal-border shadow-brutal font-bold text-xs rounded transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                      className="block w-full py-3 text-center bg-[#FFDE59] text-neutral-900 brutal-border shadow-brutal font-bold text-[18px] rounded transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                       to="/login"
                     >
                       로그인하러 가기 →

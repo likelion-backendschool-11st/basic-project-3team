@@ -490,12 +490,12 @@ export default function Login() {
             </div>
 
             <div className="flex items-center gap-4">
-              <a className="hover:text-black" href="#terms">
+              <Link className="hover:text-black" to="/terms">
                 이용약관
-              </a>{" "}
-              <a className="hover:text-black font-bold text-black" href="#privacy">
+              </Link>{" "}
+              <Link className="hover:text-black font-bold text-black" to="/privacy">
                 개인정보처리방침
-              </a>
+              </Link>
             </div>
           </div>
         </footer>

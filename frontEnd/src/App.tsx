@@ -6,6 +6,20 @@ import ErrorBoundary from './components/ErrorBoundary'
 import NotificationProvider from './components/notification/NotificationProvider'
 import NotFound from './pages/NotFound'
 import Ranking from './pages/Ranking'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
+import RequireAuth from './components/RequireAuth'
+
+// 로그인하지 않아도 볼 수 있는 화면. 나머지(질문·검색·랭킹·마이페이지 등)는 로그인 화면으로 보낸다.
+const PUBLIC_PATHS = new Set([
+  '/login',
+  '/login-failed-modal',
+  '/signup',
+  '/signup-complete-modal',
+  '/find-id',
+  '/find-password',
+  '/system-status',
+])
 
 function ScreenIndex() {
   return (
@@ -37,9 +51,16 @@ export default function App() {
               <Route path="/" element={<Login />} />
               <Route path="/screens" element={<ScreenIndex />} />
               {/* #64: Stitch 시안이 없는 화면이라 routes.ts(자동 생성)가 아닌 여기에 둔다 */}
-              <Route path="/ranking" element={<Ranking />} />
+              <Route path="/ranking" element={<RequireAuth><Ranking /></RequireAuth>} />
+              {/* #158: 이용약관·개인정보처리방침 (Stitch 시안 없음) */}
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
               {routes.map(({ path, Component }) => (
-                <Route key={path} path={path} element={<Component />} />
+                <Route
+                  key={path}
+                  path={path}
+                  element={PUBLIC_PATHS.has(path) ? <Component /> : <RequireAuth><Component /></RequireAuth>}
+                />
               ))}
               <Route path="*" element={<NotFound />} />
             </Routes>
