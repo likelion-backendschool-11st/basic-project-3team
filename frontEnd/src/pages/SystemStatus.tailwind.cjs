@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 시스템 상태 및 예외 화면 (29번)". Scoped to #page-system-status so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-system-status",
   content: ["./src/pages/SystemStatus.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -7,11 +8,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily: {
-          sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-          mono: ["JetBrains Mono", "monospace"],
-          display: ["Plus Jakarta Sans", "Pretendard", "sans-serif"],
-        },
+        fontFamily,
         colors: {
           cream: "#FFFDF5",
           "neo-yellow": "#FDE047",

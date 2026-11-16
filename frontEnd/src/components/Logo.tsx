@@ -8,7 +8,7 @@ export default function Logo({ to }: { to: string }) {
   return (
     <Link to={to} className="flex items-center gap-1.5 select-none" aria-label="Dev in_ 메인으로">
       <span className="text-2xl font-black text-[#111111] tracking-tight">Dev</span>
-      <span className="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-['JetBrains_Mono',monospace] font-bold text-[#111111] shadow-[2px_2px_0_#111111]">
+      <span className="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-mono font-bold text-[#111111] shadow-[2px_2px_0_#111111]">
         in_
       </span>
     </Link>

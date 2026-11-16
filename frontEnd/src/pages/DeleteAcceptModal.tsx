@@ -3,7 +3,7 @@ import "./DeleteAcceptModal.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "body {\n      background-color: #F8F9FA;\n      color: #111827;\n      font-family: 'Noto Sans KR', sans-serif;\n    }\n\n    /* Dot grid background pattern */\n    .dot-pattern-overlay {\n      background-image: radial-gradient(#CBD5E1 1.2px, transparent 1.2px);\n      background-size: 20px 20px;\n    }\n\n    /* Blurred modal backdrop showcase */\n    .modal-backdrop-layer {\n      background-color: rgba(255, 253, 245, 0.55);\n      backdrop-filter: blur(8px);\n      -webkit-backdrop-filter: blur(8px);\n    }\n\n    /* Custom neo-brutal borders */\n    .border-neo {\n      border: 2.5px solid #111111;\n    }";
+  "body {\n      background-color: #F8F9FA;\n      color: #111827;\n    }\n\n    /* Dot grid background pattern */\n    .dot-pattern-overlay {\n      background-image: radial-gradient(#CBD5E1 1.2px, transparent 1.2px);\n      background-size: 20px 20px;\n    }\n\n    /* Blurred modal backdrop showcase */\n    .modal-backdrop-layer {\n      background-color: rgba(255, 253, 245, 0.55);\n      backdrop-filter: blur(8px);\n      -webkit-backdrop-filter: blur(8px);\n    }\n\n    /* Custom neo-brutal borders */\n    .border-neo {\n      border: 2.5px solid #111111;\n    }";
 
 export default function DeleteAcceptModal() {
   return (

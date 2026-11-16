@@ -3,7 +3,7 @@ import "./SignupCompleteModal.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');\n    body {\n      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;\n    }\n  \n\n    .border-brutal {\n      border: 2.5px solid #000000;\n    }\n    .btn-bounce {\n      transition: transform 0.1s ease, box-shadow 0.1s ease;\n    }\n    .btn-bounce:hover {\n      transform: translate(-2px, -2px);\n      box-shadow: 6px 6px 0px #000000;\n    }\n    .btn-bounce:active {\n      transform: translate(2px, 2px);\n      box-shadow: 2px 2px 0px #000000;\n    }";
+  ".border-brutal {\n      border: 2.5px solid #000000;\n    }\n    .btn-bounce {\n      transition: transform 0.1s ease, box-shadow 0.1s ease;\n    }\n    .btn-bounce:hover {\n      transform: translate(-2px, -2px);\n      box-shadow: 6px 6px 0px #000000;\n    }\n    .btn-bounce:active {\n      transform: translate(2px, 2px);\n      box-shadow: 2px 2px 0px #000000;\n    }";
 
 export default function SignupCompleteModal() {
   return (

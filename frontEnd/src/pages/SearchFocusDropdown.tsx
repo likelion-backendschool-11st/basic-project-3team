@@ -4,7 +4,7 @@ import "./SearchFocusDropdown.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  '/* Custom font styling for developer/coding feel */\n    body {\n      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Pretendard", "Noto Sans KR", sans-serif;\n      color: #111827;\n      background-color: #fafafa;\n    }\n    \n    /* Blinking input cursor simulation */\n    @keyframes blink {\n      0%, 100% { opacity: 1; }\n      50% { opacity: 0; }\n    }\n    .custom-cursor {\n      display: inline-block;\n      width: 2px;\n      height: 1.25rem;\n      background-color: #111827;\n      animation: blink 1s step-end infinite;\n      vertical-align: middle;\n      margin-left: 1px;\n    }';
+  '/* Custom font styling for developer/coding feel */\n    body {\n      color: #111827;\n      background-color: #fafafa;\n    }\n    \n    /* Blinking input cursor simulation */\n    @keyframes blink {\n      0%, 100% { opacity: 1; }\n      50% { opacity: 0; }\n    }\n    .custom-cursor {\n      display: inline-block;\n      width: 2px;\n      height: 1.25rem;\n      background-color: #111827;\n      animation: blink 1s step-end infinite;\n      vertical-align: middle;\n      margin-left: 1px;\n    }';
 
 export default function SearchFocusDropdown() {
   return (

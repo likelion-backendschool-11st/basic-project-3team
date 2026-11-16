@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 질문 신고 모달 (28번)". Scoped to #page-report-modal so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-report-modal",
   content: ["./src/pages/ReportModal.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -7,9 +8,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily: {
-          sans: ['"Noto Sans KR"', "sans-serif"],
-        },
+        fontFamily,
         colors: {
           brand: {
             cream: "#FFFDF9",

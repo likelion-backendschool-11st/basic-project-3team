@@ -15,7 +15,7 @@ import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "body {\n      font-family: 'Noto Sans KR', sans-serif;\n      background-color: #FAFAFA;\n      color: #111827;\n    }\n    .font-mono-code {\n      font-family: 'JetBrains Mono', monospace;\n    }";
+  "body {\n      background-color: #FAFAFA;\n      color: #111827;\n    }";
 
 export default function Ask() {
   const navigate = useNavigate();
@@ -285,7 +285,7 @@ export default function Ask() {
                 <textarea
                   ref={toolbar.textareaRef}
                   hidden={preview}
-                  className="w-full p-2 border-0 focus:ring-0 font-mono-code text-sm leading-relaxed text-gray-900 placeholder-gray-400 resize-y"
+                  className="w-full p-2 border-0 focus:ring-0 font-mono text-sm leading-relaxed text-gray-900 placeholder-gray-400 resize-y"
                   id="editor-textarea"
                   placeholder="질문 내용을 자세하게 작성해주세요..."
                   rows={15}

@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 회원 추방 모달 (13번)". Scoped to #page-member-ban-modal so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-member-ban-modal",
   content: ["./src/pages/MemberBanModal.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -7,6 +8,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
+        fontFamily,
         colors: {
           neoRed: "#EF4444",
           neoDark: "#1E1E1E",

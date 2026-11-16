@@ -4,7 +4,7 @@ import "./NotificationPopover.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  'body {\n      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans KR", sans-serif;\n      color: #111827;\n      background-color: #ffffff;\n    }\n  \n\n    .border-hard {\n      border: 2px solid #000000;\n    }\n    .border-hard-thick {\n      border: 2.5px solid #000000;\n    }\n    .border-subtle {\n      border-color: #e5e7eb;\n    }';
+  'body {\n      color: #111827;\n      background-color: #ffffff;\n    }\n  \n\n    .border-hard {\n      border: 2px solid #000000;\n    }\n    .border-hard-thick {\n      border: 2.5px solid #000000;\n    }\n    .border-subtle {\n      border-color: #e5e7eb;\n    }';
 
 export default function NotificationPopover() {
   return (

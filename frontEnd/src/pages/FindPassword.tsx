@@ -10,7 +10,7 @@ import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "body {\n      font-family: 'Noto Sans KR', sans-serif;\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#111111 0.75px, transparent 0.75px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n    .font-mono {\n      font-family: 'JetBrains Mono', monospace;\n    }\n    .brutal-border {\n      border: 2.5px solid #111111;\n    }";
+  "body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#111111 0.75px, transparent 0.75px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n    .brutal-border {\n      border: 2.5px solid #111111;\n    }";
 
 const INPUT_CLASS =
   "w-full px-3.5 py-2.5 bg-white brutal-border rounded-md text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-brutal-sm transition-all disabled:bg-neutral-100 disabled:text-neutral-500";

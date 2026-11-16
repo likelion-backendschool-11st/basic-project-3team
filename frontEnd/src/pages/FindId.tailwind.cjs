@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 아이디 찾기". Scoped to #page-find-id so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-find-id",
   content: ["./src/pages/FindId.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -74,19 +75,7 @@ module.exports = {
           "margin-mobile": "1rem",
           "gutter-mobile": "0.75rem",
         },
-        fontFamily: {
-          "headline-xl": ["Noto Sans KR", "sans-serif"],
-          "headline-lg": ["Noto Sans KR", "sans-serif"],
-          "headline-md": ["Noto Sans KR", "sans-serif"],
-          "headline-sm": ["Noto Sans KR", "sans-serif"],
-          "body-lg": ["Noto Sans KR", "sans-serif"],
-          "body-md": ["Noto Sans KR", "sans-serif"],
-          "body-sm": ["Noto Sans KR", "sans-serif"],
-          "label-lg": ["JetBrains Mono", "monospace"],
-          "label-md": ["JetBrains Mono", "monospace"],
-          "label-sm": ["JetBrains Mono", "monospace"],
-          "code-block": ["JetBrains Mono", "monospace"],
-        },
+        fontFamily,
         fontSize: {
           "headline-xl": [
             "40px",

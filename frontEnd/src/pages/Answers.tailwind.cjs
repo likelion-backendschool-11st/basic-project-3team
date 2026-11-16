@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 답변 목록 및 작성 (24번)". Scoped to #page-answers so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-answers",
   content: ["./src/pages/Answers.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -7,6 +8,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
+        fontFamily,
         colors: {
           cream: "#FFFDF5",
           neoBlack: "#121212",
