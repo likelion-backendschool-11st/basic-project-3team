@@ -8,8 +8,8 @@ export const GRADES: Record<Grade, { label: string; color: string }> = {
   PLATINUM: { label: "플래티넘", color: "#06B6D4" },
 };
 
-// "2026-11-12T10:00:00" → "2026.11.12"
-export const formatDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll("-", ".");
+// "2026-11-12T10:00:00" → "2026.11.12 10:00" (#141: 날짜만 있으면 최신순이 헷갈린다)
+export const formatDateTime = (dateTime: string) => dateTime.slice(0, 16).replace("T", " ").replaceAll("-", ".");
 
 // 경력을 등록하지 않았으면 null (닉네임만 표시한다, REQ-QNA-004)
 export function writerSummary({ careerYears, techStacks, grade, acceptRate }: Writer) {
