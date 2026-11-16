@@ -98,8 +98,11 @@ npm run dev
 
 ### 5. 프론트엔드 실행
 
+`frontEnd/.env.example`을 복사해 `frontEnd/.env`를 만든다 (`VITE_API_URL`). 개발 환경은 `/api` 그대로 둔다.
+
 ```bash
 cd frontEnd
+cp .env.example .env
 npm install
 npm run dev
 ```

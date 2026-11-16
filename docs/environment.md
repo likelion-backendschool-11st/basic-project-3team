@@ -26,6 +26,7 @@
 ## 실행
 - Backend: `cd backEnd && npm install && npm run dev` (nodemon, 포트는 `.env`의 `PORT`, 기본 8080)
 - Frontend: `cd frontEnd && npm install && npm run dev` (기본 포트 5173)
+- 프론트 설정: `frontEnd/.env.example`을 복사해 `frontEnd/.env`를 만든다 (`VITE_API_URL`).
 - DB: `backEnd/db/schema.sql`로 테이블을 만들고 `backEnd/db/seed.sql`로 팀 공통 테스트 데이터를 넣는다.
 - 설정: `backEnd/.env`에 `PORT`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `NODE_ENV`를 둔다. 배포 환경은 `NODE_ENV=production`(Refresh 쿠키에 `Secure` 적용).
 - `.env`는 커밋하지 않고, 키 이름만 적은 `.env.example`을 커밋한다.
