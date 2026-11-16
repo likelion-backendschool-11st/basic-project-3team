@@ -171,6 +171,14 @@ function parseCategoriesBody(body) {
   return { categoryIds: [...new Set(categoryIds)], notificationEnabled };
 }
 
+async function getRanking(req, res, next) {
+  try {
+    return success(res, await mypageService.getRanking());
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function getProfile(req, res, next) {
   try {
     return success(res, await mypageService.getProfile(parseMemberId(req.params.memberId)));
@@ -260,6 +268,7 @@ async function getMyAnswers(req, res, next) {
 
 module.exports = {
   getProfile,
+  getRanking,
   getMe,
   updateProfile,
   updatePrivate,

@@ -18,6 +18,9 @@ const GRADES = Object.freeze([
   { grade: 'PLATINUM', minAccepted: 50 },
 ]);
 
+// 채택 랭킹에 보여 줄 회원 수 (docs/api.md 3장 채택 랭킹)
+const RANKING_SIZE = 20;
+
 // 좋아요를 이만큼 받은 답변이 있으면 POPULAR_ANSWER 뱃지
 const POPULAR_ANSWER_LIKE_COUNT = 10;
 
@@ -45,4 +48,5 @@ module.exports = {
   GRADES,
   POPULAR_ANSWER_LIKE_COUNT,
   BADGES,
+  RANKING_SIZE,
 };
