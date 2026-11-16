@@ -204,6 +204,7 @@
 | 내가 쓴 질문 목록 | GET | /api/members/me/questions?page=0 | 회원 |
 | 내가 쓴 답변 목록 | GET | /api/members/me/answers?page=0 | 회원 |
 | 회원 탈퇴 | DELETE | /api/members/me | 회원 |
+| 채택 랭킹 | GET | /api/members/ranking | 전체 |
 
 - 마이페이지 수정 API(PATCH `/me/profile`, `/me/private`, PUT `/me/categories`)는 성공하면 `data: null`을 돌려준다. 프론트는 저장 후 필요한 값을 다시 조회한다.
 - 정지(`BANNED`) 회원은 조회 API는 쓸 수 있고, 수정 API는 403 `MEMBER_BANNED`. 탈퇴(`WITHDRAWN`) 회원은 `/me/**` 전체가 403 `MEMBER_WITHDRAWN`.
@@ -332,6 +333,22 @@
 | `CURIOUS` | 질문왕 | 질문 10개 작성 |
 | `SOLVER` | 해결사 | 채택된 답변 10개 |
 | `POPULAR_ANSWER` | 인기 답변 | 좋아요 10개 이상 받은 답변 1개 |
+
+### 채택 랭킹 (REQ-RANKING-001)
+응답 (`data`) — 로그인하지 않아도 조회할 수 있다.
+```json
+[
+  { "rank": 1, "memberId": 3, "nickname": "리액트러", "grade": "SILVER", "acceptedCount": 12, "acceptRate": 60.0, "likeCount": 30 },
+  { "rank": 1, "memberId": 7, "nickname": "닉네임", "grade": "SILVER", "acceptedCount": 12, "acceptRate": 48.0, "likeCount": 30 },
+  { "rank": 3, "memberId": 2, "nickname": "자바왕", "grade": "SILVER", "acceptedCount": 12, "acceptRate": 75.0, "likeCount": 25 }
+]
+```
+- 기준: 채택된 답변 수가 많은 순, 전체 기간, 상위 20명 (페이지 나누기 없음).
+- 동점: 채택 수가 같으면 받은 좋아요 수(`likeCount`)가 많은 순. 둘 다 같으면 같은 순위 (1, 1, 3), 보여 주는 순서는 가입이 빠른 회원이 먼저.
+- `likeCount`: 그 회원의 답변(삭제된 답변 제외)이 받은 좋아요 합. 질문이 받은 좋아요는 넣지 않는다.
+- 제외: 채택 0개 회원, 탈퇴(`WITHDRAWN`)·정지(`BANNED`) 회원, 관리자(`ROLE_ADMIN`), 삭제된 답변.
+- `grade`, `acceptRate`는 프로필 조회와 같은 방식으로 계산한다. 등급·뱃지처럼 저장하지 않고 조회할 때 계산한다.
+- 20위와 21위가 같은 순위여도 20명까지만 내려준다.
 
 ### 채택 내역 (REQ-MYPAGE-007)
 응답 `content` 항목 — 채택일 최신순.

@@ -1,5 +1,6 @@
 const pool = require('../../config/db');
 const { POPULAR_ANSWER_LIKE_COUNT } = require('./mypage.constants');
+const { ROLE, MEMBER_STATUS } = require('../../utils/constants');
 
 // 프로필 수정에서 바꿀 수 있는 필드 → 컬럼. SET 절에는 이 목록의 컬럼만 넣는다.
 const PROFILE_COLUMNS = Object.freeze({
@@ -235,6 +236,39 @@ async function countAnswersByMember(memberId) {
   return rows[0].total;
 }
 
+// 채택 랭킹 (docs/api.md 3장). 채택 수는 findActivityStats와 같은 방식으로 센다 (삭제된 답변 제외).
+// 순위는 채택 수 → 받은 좋아요 수로 가리고, 둘 다 같으면 같은 순위(RANK: 1, 1, 3). 같은 순위는 가입이 빠른 순.
+// ACTIVE인 일반 회원만 넣는다 (탈퇴·정지·관리자 제외). 채택 0개는 뺀다.
+async function findRanking(limit) {
+  const [rows] = await pool.query(
+    `SELECT memberId, nickname, answerCount, acceptedCount, likeCount,
+            RANK() OVER (ORDER BY acceptedCount DESC, likeCount DESC) AS ranking
+       FROM (SELECT m.member_id AS memberId,
+                    m.nickname,
+                    m.created_at AS joinedAt,
+                    COUNT(*) AS answerCount,
+                    SUM(q.accepted_answer_id = a.answer_id) AS acceptedCount,
+                    SUM(a.like_count) AS likeCount
+               FROM member m
+               JOIN answer a ON a.member_id = m.member_id AND a.deleted = FALSE
+               JOIN question q ON q.question_id = a.question_id
+              WHERE m.status = ? AND m.role = ?
+              GROUP BY m.member_id
+             HAVING acceptedCount > 0) stats
+      ORDER BY ranking, joinedAt, memberId
+      LIMIT ?`,
+    [MEMBER_STATUS.ACTIVE, ROLE.USER, limit],
+  );
+  return rows.map((row) => ({
+    rank: Number(row.ranking),
+    memberId: row.memberId,
+    nickname: row.nickname,
+    answerCount: Number(row.answerCount),
+    acceptedCount: Number(row.acceptedCount),
+    likeCount: Number(row.likeCount),
+  }));
+}
+
 module.exports = {
   findMemberById,
   findPasswordHash,
@@ -257,4 +291,5 @@ module.exports = {
   countQuestionsByMember,
   findAnswersByMember,
   countAnswersByMember,
+  findRanking,
 };
