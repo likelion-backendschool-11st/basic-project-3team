@@ -27,7 +27,7 @@ import "./SearchResults.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  '/* Subtle dot grid pattern matching the requested neo-brutalist feel */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 24px 24px;\n      color: #111111;\n      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;\n    }\n  \n\n    .border-neo {\n      border: 2.5px solid #111111;\n    }\n    .border-neo-b {\n      border-bottom: 2.5px solid #111111;\n    }';
+  '/* Subtle dot grid pattern matching the requested neo-brutalist feel */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 24px 24px;\n      color: #111111;\n      font-family: "Noto Sans KR", sans-serif;\n    }\n  \n\n    .border-neo {\n      border: 2.5px solid #111111;\n    }\n    .border-neo-b {\n      border-bottom: 2.5px solid #111111;\n    }';
 
 type LoadState =
   { status: "loading" } | { status: "error"; message: string } | { status: "done"; data: Page<Question> };
