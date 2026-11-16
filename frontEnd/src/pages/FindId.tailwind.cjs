@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 아이디 찾기". Scoped to #page-find-id so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-find-id",
   content: ["./src/pages/FindId.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -75,7 +75,6 @@ module.exports = {
           "margin-mobile": "1rem",
           "gutter-mobile": "0.75rem",
         },
-        fontFamily,
         fontSize: {
           "headline-xl": [
             "40px",

@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 질문 신고 모달 (28번)". Scoped to #page-report-modal so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-report-modal",
   content: ["./src/pages/ReportModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -8,7 +8,6 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily,
         colors: {
           brand: {
             cream: "#FFFDF9",

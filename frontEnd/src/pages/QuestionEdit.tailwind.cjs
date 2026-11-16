@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 질문 수정 (22번)". Scoped to #page-question-edit so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-question-edit",
   // 공통 컴포넌트(Header·검색창·FieldError 등)의 클래스도 이 화면 CSS에 만든다.
   content: ["./src/pages/QuestionEdit.tsx", "./src/components/**/*.tsx"],
@@ -9,7 +9,6 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily,
         colors: {
           "cream-bg": "#FFFDF5",
           "neo-yellow": "#FACC15",

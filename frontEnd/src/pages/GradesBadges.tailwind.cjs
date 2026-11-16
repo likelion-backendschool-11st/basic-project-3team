@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 등급 및 뱃지 (19번)". Scoped to #page-grades-badges so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-grades-badges",
   content: ["./src/pages/GradesBadges.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -8,7 +8,6 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily,
         colors: {
           brand: {
             yellow: "#FACC15",

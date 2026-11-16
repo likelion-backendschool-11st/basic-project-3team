@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 로그인". Scoped to #page-login so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-login",
   content: ["./src/pages/Login.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -18,7 +18,6 @@ module.exports = {
             subtle: "#F4F0EA",
           },
         },
-        fontFamily,
       },
     },
   },

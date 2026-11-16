@@ -30,16 +30,17 @@
 | 항목 | 버튼·입력칸 | 카드·모달 | 상태 배지 | 태그 |
 |---|---|---|---|---|
 | 둥글기 | 8px (`rounded-lg`) | 12px (`rounded-xl`) | 알약형 (`rounded-full`) | 4px (`rounded`) |
-| 테두리 | 2.5px `#111111` | 2.5px `#111111` | 1.5px | 없음 |
+| 테두리 | 2px `#111111` | 2px `#111111` | 1.5px | 없음 |
 | 그림자 | `2px 2px 0 #111111` | `4px 4px 0 #111111` | 없음 | 없음 |
 
-- 구분선도 테두리와 같은 2.5px를 쓴다.
+- 구분선도 테두리와 같은 2px를 쓴다.
+- 테두리는 정수 px로 쓴다. 2.5px처럼 소수로 쓰면 브라우저가 화면 픽셀 단위로 내려서, 배율 100%·150% 화면에서는 2px, 200% 화면에서는 2.5px로 화면마다 굵기가 달라진다.
 
 ## 3. 글꼴
 
 - 본문: Noto Sans KR
 - 고정폭(코드, 아이디, 전화번호): JetBrains Mono. 한글은 Noto Sans KR로 대체된다.
-- 값은 `frontEnd/tailwind.fonts.cjs` 한 곳에서 정하고, 모든 Tailwind 설정이 이 파일을 불러온다.
+- 값은 `frontEnd/tailwind.preset.cjs` 한 곳에서 정하고, 모든 Tailwind 설정이 이 파일을 `presets`로 불러온다.
 
 ## 4. 버튼
 
@@ -79,7 +80,7 @@
 
 ## 6. 카드·모달
 
-- 카드와 모달은 같은 모양이다 (흰 바탕, 12px, 2.5px 테두리, 4px 그림자).
+- 카드와 모달은 같은 모양이다 (흰 바탕, 12px, 2px 테두리, 4px 그림자).
 - 모달 버튼은 오른쪽 아래에 `[취소] [확인]` 순서로 둔다. 되돌릴 수 없는 동작은 확인 버튼을 위험(빨강)으로 한다.
 - 확인 모달 컴포넌트는 하나로 합친다 (지금 `components/ConfirmModal.tsx`, `components/admin/ConfirmModal.tsx` 두 개).
 
@@ -141,8 +142,27 @@
 
 - 화면 배경은 `#FFFDF5`에 점무늬(`#D9D4C3`, 1.2px 점, 18px 간격)를 쓴다.
 
+## 코드에서 쓰는 법
+
+| 파일 | 내용 |
+|---|---|
+| `frontEnd/tailwind.preset.cjs` | 글꼴, 색(`devin-*`), 테두리 `border-devin`(2px), 그림자 `shadow-devin-sm`(2px)·`shadow-devin`(4px), 폭 `max-w-devin-narrow`(460px), 배경 `bg-devin-dots` |
+| `frontEnd/src/components/uiStyles.ts` | 버튼 `buttonClass(종류, 크기)`, 입력칸 `INPUT`, 카드 `CARD`, 카테고리 `CATEGORY`, 태그 `TAG`, 안내 상자 `NOTICE`, 화면 배경 `PAGE_BACKGROUND` |
+| `frontEnd/src/components/StatusBadge.tsx` | 상태 배지 `<StatusBadge kind="accepted" />` (7절 표의 상태를 모두 가짐) |
+| `frontEnd/src/components/headerStyles.ts` | 헤더 버튼. `uiStyles`의 보통 크기 버튼과 같다 |
+
+```tsx
+<button className={buttonClass("primary")}>질문 등록</button>
+<button className={buttonClass("secondary", "sm")}>취소</button>
+<input className={`${INPUT.base} ${hasError ? INPUT.error : ""}`} />
+<div className={`${CARD} p-5`}>...</div>
+<StatusBadge kind={question.accepted ? "accepted" : question.answerCount === 0 ? "waiting" : "unaccepted"} />
+```
+
+- 화면별 Tailwind 설정에 있는 `brutal`, `cream`, `neoBlack` 같은 이름은 화면을 공통 값으로 바꾸면서 지운다.
+
 ## 적용 방법
 
-1. 기준 값 반영 (한 명): 색·둥글기·그림자·테두리를 `tailwind.fonts.cjs`처럼 공통 Tailwind 설정 한 파일에 넣고, 버튼·입력칸·카드·상태 배지 클래스를 `components/` 공통 파일로 만든다.
-2. 화면 적용 (화면 담당자): 자기 화면의 요소를 공통 값으로 바꾼다. 기준과 다른 요소가 48개 파일에 약 300개 있다 (2026-11-16 기준).
+1. 기준 값 반영 (한 명): `tailwind.preset.cjs`, `uiStyles.ts`, `StatusBadge.tsx`를 만든다. (#182에서 반영, 화면은 아직 그대로)
+2. 화면 적용 (화면 담당자): 자기 화면의 요소를 위 공통 값으로 바꾼다. 기준과 다른 요소가 48개 파일에 약 300개 있다 (2026-11-16 기준).
 3. 새 공통 요소가 생기면 이 문서에 먼저 추가한다.

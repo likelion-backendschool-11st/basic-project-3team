@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 로그인 실패 모달". Scoped to #page-login-failed-modal so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-login-failed-modal",
   content: ["./src/pages/LoginFailedModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -75,7 +75,6 @@ module.exports = {
           "space-xl": "2.5rem",
           margin: "2rem",
         },
-        fontFamily,
         fontSize: {
           "label-lg": [
             "15px",

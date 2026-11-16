@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 작성자 요약 팝오버 (30번)". Scoped to #page-author-popover so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-author-popover",
   content: ["./src/pages/AuthorPopover.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -26,7 +26,6 @@ module.exports = {
             },
           },
         },
-        fontFamily,
         boxShadow: {
           "brutal-sm": "2px 2px 0px #000000",
           "brutal-md": "4px 4px 0px #000000",
