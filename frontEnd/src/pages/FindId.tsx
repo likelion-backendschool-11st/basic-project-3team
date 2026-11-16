@@ -3,7 +3,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { findLoginId, type FindLoginIdResult } from "../api/auth";
 import { getErrorMessage } from "../api/client";
-import { INPUT_PATTERNS, INPUT_RULES, filterPhoneInput, toPhoneDigits } from "../api/member";
+import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindId.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -162,7 +162,7 @@ export default function FindId() {
                       id="user-phone"
                       inputMode="numeric"
                       maxLength={13}
-                      onChange={(e) => setPhone(filterPhoneInput(e.target.value))}
+                      onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
                       placeholder="010-0000-0000"
                       type="tel"
                       value={phone}
@@ -170,7 +170,7 @@ export default function FindId() {
                     <FieldHint
                       errorText="01로 시작하는 10~11자리 숫자를 입력해 주세요"
                       invalid={phone !== "" && !phoneValid}
-                      text="하이픈은 있어도 없어도 돼요"
+                      text="숫자만 입력하면 하이픈이 자동으로 들어가요"
                     />
                   </div>
                   <div className="p-3.5 bg-surface-container-low brutal-border flex items-start gap-2.5 text-on-surface-variant">
