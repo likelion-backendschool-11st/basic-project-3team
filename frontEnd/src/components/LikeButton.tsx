@@ -1,10 +1,10 @@
 // 질문·답변 좋아요 버튼 (#66, REQ-QUESTION-010, REQ-ANSWER-007). 누르면 좋아요, 다시 누르면 취소.
 // 모양(className)은 쓰는 곳이 정하고 동작만 여기서 맡는다. 숫자는 미리 바꾸지 않고 서버 응답으로만 바꾼다.
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { setLike, type LikeTarget } from "../api/like";
 import { useAuth } from "../hooks/useAuth";
+import { useLoginPrompt } from "../hooks/useLoginPrompt";
 
 const MESSAGE_SHOW_MS = 2500;
 
@@ -23,7 +23,7 @@ export default function LikeButton({
   isMine: boolean;
   className: string;
 }) {
-  const navigate = useNavigate();
+  const openLoginPrompt = useLoginPrompt();
   const { user } = useAuth();
   const [state, setState] = useState({ liked: initialLiked, likeCount: initialCount });
   const [busy, setBusy] = useState(false);
@@ -43,7 +43,7 @@ export default function LikeButton({
   async function toggle() {
     if (busy) return;
     if (!user) {
-      navigate("/login"); // 비로그인이면 로그인 유도
+      openLoginPrompt("좋아요를 누르려면 로그인이 필요해요."); // 비로그인이면 로그인 안내 팝업
       return;
     }
     setBusy(true);
