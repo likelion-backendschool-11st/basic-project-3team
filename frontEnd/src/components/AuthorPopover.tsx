@@ -25,6 +25,9 @@ const HEADER_SELECTOR = '[data-purpose="global-header"]';
 // 마우스가 닉네임 옆 빈 곳을 지나 카드로 대각선 이동할 때 바로 닫히지 않도록 잠깐 기다린다.
 const CLOSE_DELAY_MS = 150;
 
+// 화면 가장자리와 카드 사이에 남길 여백 (#159: 오른쪽 끝 닉네임에서 열면 화면 밖으로 나가지 않게)
+const EDGE_GAP_PX = 8;
+
 interface Props {
   memberId: number;
   nickname: string;
@@ -39,6 +42,8 @@ export default function AuthorPopover({ memberId, nickname, className }: Props) 
   const wrapperRef = useRef<HTMLSpanElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [placement, setPlacement] = useState<"bottom" | "top">("bottom");
+  // 닉네임 왼쪽 끝 기준으로 카드를 옆으로 옮기는 거리 (px, 0 또는 음수)
+  const [shiftX, setShiftX] = useState(0);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cancelClose = () => {
@@ -105,6 +110,10 @@ export default function AuthorPopover({ memberId, nickname, className }: Props) 
     const spaceBelow = window.innerHeight - anchor.bottom;
     const spaceAbove = anchor.top - Math.max(headerBottom, 0);
     setPlacement(spaceBelow < needed && spaceAbove > spaceBelow ? "top" : "bottom");
+    // 오른쪽이 화면을 넘으면 넘는 만큼 왼쪽으로 옮긴다. 화면 왼쪽 끝보다 더 가지는 않는다.
+    const overflowRight =
+      anchor.left + popoverRef.current.offsetWidth - (document.documentElement.clientWidth - EDGE_GAP_PX);
+    setShiftX(Math.max(Math.min(0, -overflowRight), EDGE_GAP_PX - anchor.left));
   }, [open, profile, error]);
 
   // 키보드 사용자는 ESC로 닫는다.
@@ -147,7 +156,8 @@ export default function AuthorPopover({ memberId, nickname, className }: Props) 
         <div
           ref={popoverRef}
           data-placement={placement}
-          className={`absolute left-0 z-30 ${placement === "top" ? "bottom-full pb-2" : "top-full pt-2"}`}
+          className={`absolute z-30 ${placement === "top" ? "bottom-full pb-2" : "top-full pt-2"}`}
+          style={{ left: shiftX }}
         >
           <section
             id={popoverId}
