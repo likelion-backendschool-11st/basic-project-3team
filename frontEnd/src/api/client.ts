@@ -28,7 +28,8 @@ export function getAccessToken() {
 }
 
 // 백엔드 API 주소 (frontEnd/.env의 VITE_API_URL). 값이 없거나 비어 있으면 Vite 프록시를 쓰는 /api
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+// 끝의 /는 뗀다. "/api/"로 적으면 재발급 주소가 "/api//auth/reissue"가 되어 404가 난다.
+const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, "");
 
 export const api = axios.create({
   baseURL: API_URL,
