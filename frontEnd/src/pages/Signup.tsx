@@ -6,7 +6,7 @@ import {
   INPUT_PATTERNS,
   INPUT_RULES,
   checkAvailable,
-  filterPhoneInput,
+  formatPhoneInput,
   signup,
   toPhoneDigits,
   type DuplicateField,
@@ -548,7 +548,7 @@ export default function Signup() {
                       inputMode="numeric"
                       maxLength={13}
                       name="phone"
-                      onChange={(e) => change("phone", filterPhoneInput(e.target.value))}
+                      onChange={(e) => change("phone", formatPhoneInput(e.target.value))}
                       placeholder="010-0000-0000"
                       style={INPUT_STYLE}
                       type="tel"

@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent, type Ref } from "react";
 import { Link } from "react-router-dom";
 import { resetPassword, verifyPasswordReset } from "../api/auth";
 import { getErrorMessage } from "../api/client";
-import { INPUT_PATTERNS, INPUT_RULES, filterPhoneInput, toPhoneDigits } from "../api/member";
+import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindPassword.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -255,7 +255,7 @@ export default function FindPassword() {
                       id="user-phone"
                       inputMode="numeric"
                       maxLength={13}
-                      onChange={(e) => editAccount(setPhone, filterPhoneInput(e.target.value))}
+                      onChange={(e) => editAccount(setPhone, formatPhoneInput(e.target.value))}
                       placeholder="010-0000-0000"
                       type="tel"
                       value={phone}
