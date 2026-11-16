@@ -91,6 +91,10 @@ export default function Header() {
         <SearchBar />
 
         <div className="flex items-center gap-2.5">
+          {/* #64: 채택 랭킹은 로그인하지 않아도 본다. inline-flex라야 h-10이 적용돼 질문하기와 높이가 같다. */}
+          <Link className={`${buttonBase} inline-flex items-center bg-white hover:bg-gray-100`} to="/ranking">
+            랭킹
+          </Link>
           <button
             className={`${buttonBase} bg-[#2563EB] text-white hover:bg-blue-700`}
             type="button"
