@@ -158,7 +158,7 @@ export default function AdminMembers() {
           {data && data.content.length > 0 && (
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212]">
+                <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212] whitespace-nowrap">
                   <th className="py-3 px-4" scope="col">
                     닉네임
                   </th>
@@ -184,7 +184,7 @@ export default function AdminMembers() {
                   const statusLabel = MEMBER_STATUS_LABEL[member.status];
                   const isAdmin = member.role === "ROLE_ADMIN";
                   return (
-                    <tr key={member.memberId} className="hover:bg-amber-50/50 divide-x-2 divide-[#121212]">
+                    <tr key={member.memberId} className="hover:bg-amber-50/50 divide-x-2 divide-[#121212] whitespace-nowrap">
                       <td className="py-3 px-4 font-bold">
                         {member.nickname}
                         {isAdmin && <span className="ml-1.5 text-[11px] font-bold text-[#2563EB]">관리자</span>}

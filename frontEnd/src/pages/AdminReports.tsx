@@ -220,7 +220,7 @@ export default function AdminReports() {
           {data && data.content.length > 0 && (
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
-                <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212]">
+                <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212] whitespace-nowrap">
                   <th className="py-2.5 px-3 text-center w-14" scope="col">
                     유형
                   </th>
@@ -251,19 +251,22 @@ export default function AdminReports() {
                 {data.content.map((report) => {
                   const statusLabel = REPORT_STATUS_LABEL[report.status];
                   return (
-                    <tr key={report.reportId} className="hover:bg-yellow-50 divide-x-2 divide-[#121212]">
+                    <tr key={report.reportId} className="hover:bg-yellow-50 divide-x-2 divide-[#121212] whitespace-nowrap">
                       <td className="py-2 px-3 text-center font-bold">{TARGET_TYPE_LABEL[report.targetType]}</td>
+                      {/* w-full max-w-0: 다른 칸을 먼저 채우고 남은 폭만 써서, 긴 제목은 표를 넓히지 않고 … 로 자른다 */}
                       <td
-                        className={`py-2 px-3 max-w-xs truncate ${report.targetDeleted ? "text-neutral-400" : "font-semibold"}`}
+                        className={`py-2 px-3 w-full max-w-0 ${report.targetDeleted ? "text-neutral-400" : "font-semibold"}`}
                       >
-                        {targetLabel(report)}
+                        <div className="truncate" title={targetLabel(report)}>
+                          {targetLabel(report)}
+                        </div>
                       </td>
                       <td className="py-2 px-3">{report.targetWriter.nickname}</td>
                       <td className="py-2 px-3">
                         {REPORT_REASON_LABEL[report.reason]}
                         {report.reasonDetail && (
                           <span
-                            className="block text-[11px] text-neutral-500 truncate max-w-[220px]"
+                            className="block text-[11px] text-neutral-500 truncate max-w-[160px]"
                             title={report.reasonDetail}
                           >
                             {report.reasonDetail}
