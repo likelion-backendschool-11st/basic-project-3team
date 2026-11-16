@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage, getFieldErrors } from "../api/client";
+import { withdraw } from "../api/member";
 import { getMyInfo, updatePrivate, type MyInfo, type PrivateUpdateRequest } from "../api/mypage";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
@@ -196,17 +197,216 @@ function CompleteDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
+// 회원 탈퇴 구역 (REQ-MYPAGE-009, 010). 저장 폼과 따로 둔다.
+function WithdrawSection({ onOpen }: { onOpen: () => void }) {
+  return (
+    <section
+      className="mt-10 p-6 rounded-xl border-[2.5px] border-dashed border-rose-500 bg-rose-50/60"
+      data-purpose="withdraw-section"
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base font-extrabold text-rose-700 mb-2">회원 탈퇴</h2>
+          <ul className="text-xs text-gray-700 font-medium space-y-1 leading-relaxed">
+            <li>
+              · 탈퇴하면 <strong className="text-black">되돌릴 수 없어요.</strong>
+            </li>
+            <li>
+              · 작성한 질문·답변·답글은 남고, 작성자는 <strong className="text-black">"탈퇴한 회원"</strong>으로
+              표시돼요.
+            </li>
+            <li>· 프로필·관심 카테고리·알림은 모두 삭제돼요.</li>
+          </ul>
+        </div>
+        <button
+          className="neo-btn shrink-0 px-5 py-2.5 bg-white text-rose-700 font-extrabold text-sm rounded-lg cursor-pointer hover:bg-rose-100"
+          onClick={onOpen}
+          type="button"
+        >
+          회원 탈퇴
+        </button>
+      </div>
+    </section>
+  );
+}
+
+// 이중 확인: 비밀번호 입력 + 동의 체크를 모두 해야 탈퇴할 수 있다.
+function WithdrawDialog({ onClose, onWithdrawn }: { onClose: () => void; onWithdrawn: () => void }) {
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const canSubmit = password !== "" && agreed && !submitting;
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !submitting) onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose, submitting]);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!canSubmit) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await withdraw(password);
+      onWithdrawn();
+    } catch (err) {
+      setError(
+        getErrorCode(err) === "PASSWORD_MISMATCH"
+          ? "현재 비밀번호가 일치하지 않아요."
+          : getErrorMessage(err, "탈퇴를 처리하지 못했어요. 잠시 후 다시 시도해주세요."),
+      );
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[8px]"
+      onClick={() => !submitting && onClose()}
+      style={{ backgroundColor: "rgba(255, 253, 245, 0.55)" }}
+    >
+      <form
+        aria-describedby="withdraw-detail"
+        aria-labelledby="withdraw-title"
+        aria-modal="true"
+        className="neo-box w-full max-w-md bg-white p-7"
+        noValidate
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={handleSubmit}
+        role="dialog"
+      >
+        <div className="flex flex-col items-center text-center mb-5">
+          <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 border-[2.5px] border-black flex items-center justify-center text-2xl font-black mb-4">
+            !
+          </div>
+          <h2 className="text-xl font-black mb-2" id="withdraw-title">
+            정말 탈퇴할까요?
+          </h2>
+          <p className="text-sm text-gray-600 font-medium leading-relaxed" id="withdraw-detail">
+            탈퇴하면 계정을 되돌릴 수 없어요.
+            <br />
+            작성한 글은 "탈퇴한 회원" 이름으로 남아요.
+          </p>
+        </div>
+        <label className="block text-sm font-bold mb-1.5" htmlFor="withdraw-password">
+          비밀번호 확인
+        </label>
+        <div className="relative">
+          <input
+            aria-invalid={Boolean(error)}
+            autoComplete="current-password"
+            autoFocus
+            className="w-full neo-input bg-white text-sm px-3.5 py-2.5 pr-10 font-mono tracking-wider"
+            id="withdraw-password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError(null);
+            }}
+            placeholder="현재 비밀번호 입력"
+            type={visible ? "text" : "password"}
+            value={password}
+          />
+          <button
+            aria-label={visible ? "비밀번호 숨기기" : "비밀번호 표시"}
+            className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-black focus:outline-none"
+            onClick={() => setVisible((v) => !v)}
+            type="button"
+          >
+            <EyeIcon open={visible} />
+          </button>
+        </div>
+        <ErrorText>{error}</ErrorText>
+        <label className="mt-4 flex items-start gap-2 text-sm font-semibold cursor-pointer">
+          <input
+            checked={agreed}
+            className="mt-0.5 w-4 h-4 accent-rose-600"
+            onChange={(e) => setAgreed(e.target.checked)}
+            type="checkbox"
+          />
+          <span>위 내용을 확인했고, 탈퇴에 동의합니다.</span>
+        </label>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <button
+            className="neo-btn py-2.5 bg-white font-bold text-sm rounded-lg cursor-pointer disabled:cursor-not-allowed"
+            disabled={submitting}
+            onClick={onClose}
+            type="button"
+          >
+            취소
+          </button>
+          <button
+            className={`neo-btn py-2.5 font-extrabold text-sm rounded-lg ${
+              canSubmit
+                ? "bg-rose-600 text-white cursor-pointer hover:bg-rose-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+            disabled={!canSubmit}
+            type="submit"
+          >
+            {submitting ? "탈퇴 처리 중…" : "탈퇴하기"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function WithdrawCompleteDialog({ onConfirm }: { onConfirm: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[8px]"
+      style={{ backgroundColor: "rgba(255, 253, 245, 0.55)" }}
+    >
+      <section
+        aria-labelledby="withdraw-complete-title"
+        aria-modal="true"
+        className="neo-box w-full max-w-sm bg-white p-8 text-center"
+        role="dialog"
+      >
+        <div className="w-14 h-14 rounded-full bg-gray-100 border-[2.5px] border-black mx-auto mb-5 flex items-center justify-center text-2xl">
+          👋
+        </div>
+        <h2 className="text-xl font-black mb-2" id="withdraw-complete-title">
+          탈퇴가 완료되었습니다
+        </h2>
+        <p className="text-sm text-gray-600 font-medium mb-6">그동안 Dev in_을 이용해 주셔서 감사합니다.</p>
+        <button
+          autoFocus
+          className="neo-btn w-full py-2.5 bg-[#FFD43B] font-extrabold text-sm rounded-lg cursor-pointer hover:bg-yellow-400"
+          onClick={onConfirm}
+          type="button"
+        >
+          확인
+        </button>
+      </section>
+    </div>
+  );
+}
+
 const EMPTY_VALUES: Record<Field, string> = { currentPassword: "", newPassword: "", passwordConfirm: "", phone: "" };
 
 export default function AccountEdit() {
   const navigate = useNavigate();
-  const { user, initializing } = useAuth();
+  const { user, initializing, logout } = useAuth();
   const [me, setMe] = useState<MyInfo | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [values, setValues] = useState(EMPTY_VALUES);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [withdrawStep, setWithdrawStep] = useState<"closed" | "confirm" | "done">("closed");
+
+  // 탈퇴 후: 이 브라우저의 로그인 상태를 지우고 로그인 화면으로 보낸다.
+  async function finishWithdraw() {
+    await logout();
+    navigate("/login", { replace: true });
+  }
 
   // 로그인이 필요한 화면이다. 새로고침 직후에는 reissue로 로그인 상태를 복구할 때까지 기다린다.
   useEffect(() => {
@@ -449,10 +649,15 @@ export default function AccountEdit() {
               {/* END: ActionButtons */}
             </form>
           )}
+          {me && <WithdrawSection onOpen={() => setWithdrawStep("confirm")} />}
         </main>
         {/* END: MainContent */}
       </div>
       {completed && <CompleteDialog onClose={() => setCompleted(false)} />}
+      {withdrawStep === "confirm" && (
+        <WithdrawDialog onClose={() => setWithdrawStep("closed")} onWithdrawn={() => setWithdrawStep("done")} />
+      )}
+      {withdrawStep === "done" && <WithdrawCompleteDialog onConfirm={finishWithdraw} />}
     </div>
   );
 }
