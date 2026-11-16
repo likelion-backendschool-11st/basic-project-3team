@@ -65,7 +65,7 @@ export const QUESTION_RULES = {
   maxTags: 8,
 } as const;
 
-// shortcut: 카테고리 목록 API(GET /api/categories, #60)가 없어 seed.sql의 고정 7개를 그대로 둔다. #60이 나오면 API로 바꾼다.
+// 카테고리 API(GET /api/categories)를 불러오기 전·실패 시 보여 줄 기본 목록 (seed.sql과 같다, useCategories에서 사용)
 export const CATEGORIES = [
   { categoryId: 1, name: "백엔드" },
   { categoryId: 2, name: "프론트엔드" },
