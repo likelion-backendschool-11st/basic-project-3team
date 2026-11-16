@@ -59,19 +59,24 @@ cd basic-project-3team
 
 ### 2. 환경 변수 파일 만들기
 
-`backEnd/.env.example`을 복사해 `backEnd/.env`를 만들고 값을 채운다. `.env`는 커밋하지 않는다.
+`backEnd/.env.example`, `frontEnd/.env.example`을 복사해 각각 `.env`를 만들고 값을 채운다. `.env`는 커밋하지 않는다.
 
 ```bash
 cp backEnd/.env.example backEnd/.env
+cp frontEnd/.env.example frontEnd/.env
 ```
 
-| 키 | 설명 |
+| 키 (backEnd/.env) | 설명 |
 |---|---|
 | `PORT` | 백엔드 포트 (기본 8080) |
 | `NODE_ENV` | `development` / 배포 환경은 `production` (Refresh 쿠키에 `Secure` 적용) |
 | `DB_HOST`, `DB_PORT` | MySQL 주소 (기본 `localhost`, `3306`) |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD` | 프로젝트 DB 이름·계정·비밀번호 |
 | `JWT_SECRET`, `JWT_REFRESH_SECRET` | Access·Refresh Token 비밀키 |
+
+| 키 (frontEnd/.env) | 설명 |
+|---|---|
+| `VITE_API_URL` | 백엔드 API 주소. 개발 환경은 `/api` 그대로 둔다 (Vite 프록시). 배포 때 실제 주소로 바꾸고 끝에 `/`는 붙이지 않는다. 브라우저에 노출되므로 비밀값을 넣지 않는다. |
 
 ### 3. DB 만들기
 
@@ -98,11 +103,8 @@ npm run dev
 
 ### 5. 프론트엔드 실행
 
-`frontEnd/.env.example`을 복사해 `frontEnd/.env`를 만든다 (`VITE_API_URL`). 개발 환경은 `/api` 그대로 둔다.
-
 ```bash
 cd frontEnd
-cp .env.example .env
 npm install
 npm run dev
 ```
@@ -139,12 +141,13 @@ basic-project-3team/
 │  ├─ db/                # schema.sql, seed.sql, DB 설정 스크립트
 │  └─ .env.example
 ├─ frontEnd/
-│  └─ src/
-│     ├─ api/            # axios 인스턴스, 인터셉터, 도메인별 API 함수
-│     ├─ components/     # 공통 컴포넌트
-│     ├─ pages/          # 라우트 단위 페이지
-│     ├─ hooks/
-│     └─ routes.ts
+│  ├─ src/
+│  │  ├─ api/            # axios 인스턴스, 인터셉터, 도메인별 API 함수
+│  │  ├─ components/     # 공통 컴포넌트
+│  │  ├─ pages/          # 라우트 단위 페이지
+│  │  ├─ hooks/
+│  │  └─ routes.ts
+│  └─ .env.example
 └─ docs/                 # 요구사항, API·DB 명세, 컨벤션
 ```
 
