@@ -6,9 +6,10 @@ import { getErrorMessage, getFieldErrors } from "../../api/client";
 import { REPLY_CONTENT_MAX, createReply, deleteReply, getReplies, updateReply, type Reply } from "../../api/reply";
 import { useAuth } from "../../hooks/useAuth";
 import { charLength } from "../../hooks/useQuestionForm";
+import AuthorPopover from "../AuthorPopover";
 import ConfirmModal from "../ConfirmModal";
 import FieldError from "../FieldError";
-import { GRADES, formatDate, profilePath } from "../writer";
+import { GRADES, formatDate } from "../writer";
 
 // 서버(reply.controller.js)와 같은 규칙. 통과하면 null
 function validate(content: string) {
@@ -149,12 +150,11 @@ export default function ReplyThread({ answerId, onChanged }: { answerId: number;
           >
             <div className="flex items-start justify-between">
               <div className="flex flex-wrap items-center gap-2">
-                <Link
+                <AuthorPopover
                   className="font-bold text-xs sm:text-sm text-slate-900 hover:underline"
-                  to={profilePath(reply.writer.memberId)}
-                >
-                  {reply.writer.nickname}
-                </Link>
+                  memberId={reply.writer.memberId}
+                  nickname={reply.writer.nickname}
+                />
                 <span className="text-[11px] font-bold" style={{ color: grade.color }} title={`${grade.label} 등급`}>
                   ★
                 </span>
