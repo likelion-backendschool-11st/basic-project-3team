@@ -5,6 +5,7 @@ import AuthProvider from './components/AuthProvider'
 import ErrorBoundary from './components/ErrorBoundary'
 import NotificationProvider from './components/notification/NotificationProvider'
 import NotFound from './pages/NotFound'
+import Ranking from './pages/Ranking'
 
 function ScreenIndex() {
   return (
@@ -35,6 +36,8 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/screens" element={<ScreenIndex />} />
+              {/* #64: Stitch 시안이 없는 화면이라 routes.ts(자동 생성)가 아닌 여기에 둔다 */}
+              <Route path="/ranking" element={<Ranking />} />
               {routes.map(({ path, Component }) => (
                 <Route key={path} path={path} element={<Component />} />
               ))}

@@ -119,6 +119,22 @@ export async function getMyInfo(): Promise<MyInfo> {
   return data.data;
 }
 
+// GET /api/members/ranking — 채택 랭킹 상위 20명, 로그인하지 않아도 된다 (docs/api.md 3장 채택 랭킹)
+export interface RankingItem {
+  rank: number;
+  memberId: number;
+  nickname: string;
+  grade: Grade;
+  acceptedCount: number;
+  acceptRate: number;
+  likeCount: number;
+}
+
+export async function getRanking(): Promise<RankingItem[]> {
+  const { data } = await api.get<ApiResponse<RankingItem[]>>("/members/ranking");
+  return data.data;
+}
+
 export async function getProfile(memberId: number): Promise<Profile> {
   const { data } = await api.get<ApiResponse<Profile>>(`/members/${memberId}`);
   return data.data;
