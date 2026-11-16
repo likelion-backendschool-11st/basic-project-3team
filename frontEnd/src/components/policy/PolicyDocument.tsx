@@ -124,6 +124,16 @@ export default function PolicyDocument({ kind }: { kind: PolicyKind }) {
               <Section id={`${kind}-${index}`} key={section.title} section={section} />
             ))}
           </div>
+          {/* 긴 문서를 끝까지 읽은 뒤 다시 스크롤하지 않아도 되게 맨 위로 올려 준다. */}
+          <div className="mt-10 pt-6 border-t-2 border-dashed border-gray-300 flex justify-center">
+            <button
+              className="px-5 py-2.5 text-sm font-bold bg-white rounded-lg border-[2.5px] border-[#111111] shadow-[3px_3px_0_#111111] hover:bg-[#FFD43B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              ↑ 맨 위로
+            </button>
+          </div>
         </article>
       </main>
       <Footer />
