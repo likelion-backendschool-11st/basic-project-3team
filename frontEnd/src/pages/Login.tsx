@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { useAuth } from "../hooks/useAuth";
+import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 import "./Login.css";
 
 // REQ-LOGIN-007: 로그인 성공 시 이동할 메인 페이지 (전체 질문 목록)
@@ -163,15 +164,8 @@ export default function Login() {
       >
         {/* BEGIN: MainHeader */}
         <header className="w-full sticky top-0 z-50 border-b-2 border-[#111111] bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            {/* Brand Logo */}
-
-            <div className="flex items-center gap-1.5 cursor-pointer">
-              <span className="text-2xl font-black text-[#111111] tracking-tight font-sans">Dev</span>{" "}
-              <span className="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-mono font-bold text-[#111111] shadow-[2px_2px_0_#111111]">
-                in_
-              </span>
-            </div>
+          <div className={HEADER_INNER_CLASS}>
+            <Logo to="/" />
 
             {/* GNB Right Action: Sign-Up Button */}
 

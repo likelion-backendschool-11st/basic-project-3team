@@ -5,6 +5,7 @@ import { findLoginId, type FindLoginIdResult } from "../api/auth";
 import { getErrorMessage } from "../api/client";
 import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindId.css";
+import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -75,13 +76,8 @@ export default function FindId() {
         }}
       >
         <header className="sticky top-0 z-50 w-full bg-white border-b-2 border-[#111111]">
-          <div className="max-w-[1240px] mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between">
-            <Link className="flex items-center gap-1.5" to="/">
-              <span className="text-2xl font-black text-[#111111] tracking-tight font-sans">Dev</span>{" "}
-              <span className="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-mono font-bold text-[#111111] shadow-[2px_2px_0_#111111]">
-                in_
-              </span>
-            </Link>
+          <div className={HEADER_INNER_CLASS}>
+            <Logo to="/" />
             <div className="flex items-center gap-3">
               <Link
                 className="font-label-md text-label-md text-black hover:underline px-3 py-1.5 transition-colors font-bold"

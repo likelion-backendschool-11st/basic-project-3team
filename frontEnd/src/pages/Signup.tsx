@@ -12,6 +12,7 @@ import {
   type DuplicateField,
 } from "../api/member";
 import "./Signup.css";
+import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -243,17 +244,10 @@ export default function Signup() {
       <div className="min-h-screen text-[#1E1E1E] dot-pattern antialiased flex flex-col font-sans selection:bg-[#FACC15]">
         {/* BEGIN: MainHeader */}
         <header
-          className="w-full bg-white border-b-2.5 border-[#1E1E1E] sticky top-0 z-50"
-          style={{ borderBottom: "2.5px solid rgb(17, 17, 17)" }}
+          className="w-full bg-white border-b-2 border-[#111111] sticky top-0 z-50"
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            {/* Logo Container */}{" "}
-            <Link to="/" className="flex items-center gap-1.5 tracking-tight text-[#111111]">
-              <span className="font-black text-xl text-[#111111]">Dev</span>
-              <span className="bg-[#FFD43B] text-[#111111] font-mono font-bold text-sm px-1.5 py-0.5 border-2 border-[#111111] rounded shadow-[2px_2px_0_#111111]">
-                in_
-              </span>
-            </Link>{" "}
+          <div className={HEADER_INNER_CLASS}>
+            <Logo to="/" />
             {/* Header Right CTA */}
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-gray-600 hidden sm:inline">이미 계정이 있으신가요?</span>{" "}
