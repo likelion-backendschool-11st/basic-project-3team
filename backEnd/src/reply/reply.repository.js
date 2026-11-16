@@ -20,7 +20,7 @@ async function findRepliesByAnswerId(answerId) {
     `SELECT r.reply_id AS replyId,
             r.content,
             m.member_id AS writerId,
-            m.nickname AS writerNickname,
+            CASE WHEN m.status = 'WITHDRAWN' THEN '탈퇴한 회원' ELSE m.nickname END AS writerNickname,
             m.bio AS writerBio,
             m.career_years AS writerCareerYears,
             DATE_FORMAT(r.created_at, '%Y-%m-%dT%H:%i:%s') AS createdAt,

@@ -21,7 +21,7 @@ async function findAnswersByQuestionId(questionId, viewerId) {
     `SELECT a.answer_id AS answerId,
             a.content,
             m.member_id AS writerId,
-            m.nickname AS writerNickname,
+            CASE WHEN m.status = 'WITHDRAWN' THEN '탈퇴한 회원' ELSE m.nickname END AS writerNickname,
             m.bio AS writerBio,
             m.career_years AS writerCareerYears,
             a.like_count AS likeCount,

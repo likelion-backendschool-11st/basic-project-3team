@@ -18,7 +18,7 @@ async function findQuestions({ sort, limit, offset }) {
     `SELECT q.question_id AS questionId,
             q.title,
             m.member_id AS writerId,
-            m.nickname AS writerNickname,
+            CASE WHEN m.status = 'WITHDRAWN' THEN '탈퇴한 회원' ELSE m.nickname END AS writerNickname,
             c.category_id AS categoryId,
             c.name AS categoryName,
             q.accepted_answer_id IS NOT NULL AS accepted,

@@ -121,5 +121,14 @@ async function resetPassword(req, res, next) {
   }
 }
 
-// setRefreshCookie는 마이페이지 비밀번호 변경에서 새 Refresh 쿠키를 내려줄 때 함께 쓴다 (쿠키 옵션을 한 곳에서 관리).
-module.exports = { login, reissue, logout, findLoginId, verifyPasswordReset, resetPassword, setRefreshCookie };
+// setRefreshCookie는 마이페이지 비밀번호 변경, clearRefreshCookie는 회원 탈퇴에서 함께 쓴다 (쿠키 옵션을 한 곳에서 관리).
+module.exports = {
+  login,
+  reissue,
+  logout,
+  findLoginId,
+  verifyPasswordReset,
+  resetPassword,
+  setRefreshCookie,
+  clearRefreshCookie,
+};
