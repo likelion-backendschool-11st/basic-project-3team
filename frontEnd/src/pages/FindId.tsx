@@ -6,6 +6,8 @@ import { getErrorMessage } from "../api/client";
 import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindId.css";
 import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
+import AccountLinks from "../components/AccountLinks";
+import Footer from "../components/Footer";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -188,19 +190,8 @@ export default function FindId() {
                 </form>
               </div>
 
-              <div className="mt-8 pt-4 border-t-[2.5px] border-on-background flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-on-surface-variant font-label-sm text-label-sm">
-                <Link className="hover:text-primary hover:underline" to="/find-password">
-                  비밀번호 찾기
-                </Link>{" "}
-                <span className="text-outline-variant font-bold">|</span>{" "}
-                <Link className="hover:text-primary hover:underline" to="/signup">
-                  회원가입
-                </Link>{" "}
-                <span className="text-outline-variant font-bold">|</span>{" "}
-                <Link className="text-on-surface font-bold hover:underline flex items-center gap-0.5" to="/login">
-                  <span>로그인으로 돌아가기</span>{" "}
-                  <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                </Link>
+              <div className="mt-8 pt-4 border-t-[2.5px] border-on-background">
+                <AccountLinks current="find-id" />
               </div>
             </div>
 
@@ -308,15 +299,7 @@ export default function FindId() {
           </div>
         </main>
 
-        <footer className="w-full bg-surface-container border-t-2 border-on-background py-space-lg">
-          <div className="max-w-[1240px] mx-auto px-margin flex flex-col md:flex-row justify-center items-center gap-3">
-            <span className="font-headline-sm text-headline-sm font-bold text-on-surface">Dev [in_]</span>{" "}
-            <span className="hidden md:inline text-outline-variant font-bold">|</span>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              © 2026 Dev in_. High-signal developer technical exchange.
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </div>
   );

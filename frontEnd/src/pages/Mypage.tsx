@@ -27,6 +27,7 @@ import ProfileDetails, { GRADE_LABEL, formatRate } from "../components/ProfileDe
 import { detailPath } from "../components/questionList";
 import { useAuth } from "../hooks/useAuth";
 import "./Mypage.css";
+import Footer from "../components/Footer";
 
 const RECENT_ACCEPTED_SIZE = 5;
 const BADGE_PREVIEW_SIZE = 3;
@@ -567,20 +568,9 @@ export default function Mypage() {
           {user && <MyActivityList answerCount={data?.answerCount} questionCount={data?.questionCount} />}
           {/* END: ActivityTabsAndListSection */}
         </main>
-        {/* END: MainContent */} {/* BEGIN: SimpleFooter */}
-        <footer className="mt-12 bg-white border-t-[2.5px] border-black py-6 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-neutral-600">
-            <div className="flex items-center gap-2">
-              <span className="font-brand font-bold text-sm text-black">Dev in_</span>{" "}
-              <span>{"개발자 지식 공유 & Q&A 커뮤니티 플랫폼"}</span>
-            </div>
-
-            <div>
-              <span>© 2026 Dev in_. All rights reserved.</span>
-            </div>
-          </div>
-        </footer>
-        {/* END: SimpleFooter */} {/* BEGIN: InteractiveTabScript */}
+        {/* END: MainContent */}
+        <Footer />
+        {/* BEGIN: InteractiveTabScript */}
         {/* END: InteractiveTabScript */}
       </div>
     </div>

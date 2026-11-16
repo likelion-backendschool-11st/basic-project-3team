@@ -13,6 +13,7 @@ import {
 } from "../api/member";
 import "./Signup.css";
 import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
+import Footer from "../components/Footer";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -584,11 +585,8 @@ export default function Signup() {
             {/* END: RegistrationFormCard */}
           </div>
         </main>
-        {/* END: MainContent */} {/* BEGIN: Footer */}
-        <footer className="w-full py-4 text-center text-xs text-gray-500 font-medium">
-          {" © 2026 Dev in_ Inc. All rights reserved. "}
-        </footer>
-        {/* END: Footer */}
+        {/* END: MainContent */}
+        <Footer />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { useAuth } from "../hooks/useAuth";
+import Footer from "../components/Footer";
 import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 import "./Login.css";
 
@@ -488,25 +489,8 @@ export default function Login() {
             {/* END: RightLoginFormSection */}
           </div>
         </main>
-        {/* END: MainContent */} {/* BEGIN: MainFooter */}
-        <footer className="w-full border-t-[2.5px] border-black bg-white py-6" data-purpose="simple-footer">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono font-medium text-gray-600">
-            <div className="flex items-center gap-2">
-              <span className="font-black text-black">Dev in_</span>{" "}
-              <span>© 2026 Dev in Ecosystem. All rights reserved.</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Link className="hover:text-black" to="/terms">
-                이용약관
-              </Link>{" "}
-              <Link className="hover:text-black font-bold text-black" to="/privacy">
-                개인정보처리방침
-              </Link>
-            </div>
-          </div>
-        </footer>
-        {/* END: MainFooter */}
+        {/* END: MainContent */}
+        <Footer />
         {error && <LoginFailedDialog error={error} onClose={() => setError(null)} />}
       </div>
     </div>
