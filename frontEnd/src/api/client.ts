@@ -27,8 +27,12 @@ export function getAccessToken() {
   return accessToken;
 }
 
+// 백엔드 API 주소 (frontEnd/.env의 VITE_API_URL). 값이 없거나 비어 있으면 Vite 프록시를 쓰는 /api
+// 끝의 /는 뗀다. "/api/"로 적으면 재발급 주소가 "/api//auth/reissue"가 되어 404가 난다.
+const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, "");
+
 export const api = axios.create({
-  baseURL: "/api",
+  baseURL: API_URL,
   withCredentials: true,
 });
 
@@ -45,7 +49,7 @@ let reissuePromise: Promise<LoginResult> | null = null;
 export function reissue(): Promise<LoginResult> {
   if (!reissuePromise) {
     reissuePromise = axios
-      .post<ApiResponse<LoginResult>>("/api/auth/reissue", null, { withCredentials: true })
+      .post<ApiResponse<LoginResult>>(`${API_URL}/auth/reissue`, null, { withCredentials: true })
       .then(({ data }) => {
         setAccessToken(data.data.accessToken);
         return data.data;
