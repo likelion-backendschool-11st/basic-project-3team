@@ -8,6 +8,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
+        fontFamily: { sans: ['"Noto Sans KR"', "sans-serif"] },
         colors: {
           "cream-bg": "#FFFDF5",
           "neo-yellow": "#FACC15",

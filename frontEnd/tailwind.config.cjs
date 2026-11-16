@@ -4,5 +4,6 @@
 // otherwise their classes are never generated (#33).
 module.exports = {
   content: ['./src/App.tsx', './src/components/**/*.{ts,tsx}', './src/pages/NotFound.tsx', './src/pages/Ranking.tsx'],
+  theme: { extend: { fontFamily: { sans: ['"Noto Sans KR"', 'sans-serif'] } } },
   plugins: [require('@tailwindcss/forms')],
 }

@@ -12,7 +12,7 @@ import "./GradesBadges.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');\n    body {\n      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;\n    }\n  \n\n    .brutal-border {\n      border: 2px solid #0F172A;\n    }\n    .brutal-card {\n      background-color: #FFFFFF;\n      border: 2px solid #0F172A;\n      box-shadow: 4px 4px 0px 0px #0F172A;\n    }";
+  "@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');\n    body {\n      font-family: 'Noto Sans KR', sans-serif;\n    }\n  \n\n    .brutal-border {\n      border: 2px solid #0F172A;\n    }\n    .brutal-card {\n      background-color: #FFFFFF;\n      border: 2px solid #0F172A;\n      box-shadow: 4px 4px 0px 0px #0F172A;\n    }";
 
 // 등급별 메달 색 (시안의 실버 스타일을 등급마다 바꿔 쓴다)
 const MEDAL_STYLE: Record<Grade, { circle: string; icon: string; text: string; bar: string; row: string }> = {
