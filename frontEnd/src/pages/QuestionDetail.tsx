@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { deleteQuestion, getQuestion, readQuestionId, type QuestionDetail as Question } from "../api/question";
 import AnswerSection from "../components/answer/AnswerSection";
+import AuthorPopover from "../components/AuthorPopover";
 import SimilarQuestions from "../components/SimilarQuestions";
 import ConfirmModal from "../components/ConfirmModal";
 import Header from "../components/Header";
@@ -12,7 +13,7 @@ import LikeButton from "../components/LikeButton";
 import Markdown from "../components/markdown/Markdown";
 import ReportDialog from "../components/report/ReportDialog";
 import { tagSearchPath } from "../components/questionList";
-import { GRADES, formatDate, profilePath, writerSummary } from "../components/writer";
+import { GRADES, formatDate, writerSummary } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -234,9 +235,11 @@ export default function QuestionDetail() {
                 <div className="py-4 border-b-thick border-neoBlack flex flex-wrap items-center justify-between gap-y-3 text-sm">
                   <div className="flex flex-wrap items-center gap-2.5">
                     <div className="flex items-center gap-1 font-bold text-neoBlack">
-                      <Link className="hover:underline" to={profilePath(question.writer.memberId)}>
-                        {question.writer.nickname}
-                      </Link>
+                      <AuthorPopover
+                        className="hover:underline"
+                        memberId={question.writer.memberId}
+                        nickname={question.writer.nickname}
+                      />
                       <span
                         className="inline-flex items-center justify-center text-sm"
                         style={{ color: GRADES[question.writer.grade].color }}

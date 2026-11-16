@@ -14,12 +14,13 @@ import {
 import { getErrorMessage, getFieldErrors } from "../../api/client";
 import { charLength } from "../../hooks/useQuestionForm";
 import { useAuth } from "../../hooks/useAuth";
+import AuthorPopover from "../AuthorPopover";
 import ConfirmModal from "../ConfirmModal";
 import LikeButton from "../LikeButton";
 import Markdown from "../markdown/Markdown";
 import FieldError from "../FieldError";
 import ReportDialog from "../report/ReportDialog";
-import { GRADES, formatDate, profilePath, writerSummary } from "../writer";
+import { GRADES, formatDate, writerSummary } from "../writer";
 import ReplyThread from "./ReplyThread";
 
 // 서버(answer.controller.js)와 같은 규칙. 통과하면 null
@@ -221,9 +222,11 @@ export default function AnswerSection({
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <Link className="font-extrabold text-base hover:underline" to={profilePath(answer.writer.memberId)}>
-                      {answer.writer.nickname}
-                    </Link>
+                    <AuthorPopover
+                      className="font-extrabold text-base hover:underline"
+                      memberId={answer.writer.memberId}
+                      nickname={answer.writer.nickname}
+                    />
                     <span
                       className="text-sm"
                       style={{ color: GRADES[answer.writer.grade].color }}
