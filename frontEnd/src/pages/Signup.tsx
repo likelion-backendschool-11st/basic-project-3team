@@ -12,8 +12,9 @@ import {
   type DuplicateField,
 } from "../api/member";
 import "./Signup.css";
-import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
+import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
+import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "../components/headerStyles";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -243,32 +244,13 @@ export default function Signup() {
       <style>{css}</style>
       {completed && <SignupCompleteDialog onConfirm={() => navigate("/login", { replace: true })} />}
       <div className="min-h-screen text-[#1E1E1E] dot-pattern antialiased flex flex-col font-sans selection:bg-[#FACC15]">
-        {/* BEGIN: MainHeader */}
-        <header
-          className="w-full bg-white border-b-2 border-[#111111] sticky top-0 z-50"
-        >
-          <div className={HEADER_INNER_CLASS}>
-            <Logo to="/" />
-            {/* Header Right CTA */}
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-600 hidden sm:inline">이미 계정이 있으신가요?</span>{" "}
-              <Link
-                className="btn-brutal inline-flex items-center gap-1.5 bg-[#FAF9F5] hover:bg-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-lg border-2.5 border-[#1E1E1E] shadow-brutal-sm text-[#1E1E1E]"
-                to="/login"
-                style={{
-                  backgroundColor: "rgb(255, 255, 255)",
-                  border: "2px solid rgb(17, 17, 17)",
-                  boxShadow: "rgb(17, 17, 17) 2px 2px 0px",
-                  borderRadius: "8px",
-                }}
-              >
-                {" 로그인 "}
-                <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-        {/* END: MainHeader */} {/* BEGIN: MainContent */}
+        <AuthHeader>
+          <span className="hidden sm:inline text-xs font-medium text-gray-600">이미 계정이 있으신가요?</span>
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`} to="/login">
+            로그인
+          </Link>
+        </AuthHeader>
+        {/* BEGIN: MainContent */}
         <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex items-center justify-center">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
             {/* BEGIN: LeftInfoPanel */}
