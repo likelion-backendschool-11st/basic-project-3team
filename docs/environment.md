@@ -77,6 +77,7 @@ docs/
  ├─ convention.md        # 코딩 컨벤션
  ├─ claude-rules.md      # Claude 작업 규칙
  ├─ api.md               # API 명세
+ ├─ ui-guide.md          # UI 기준 (색, 버튼, 입력칸, 상태 배지 등)
  └─ retro/               # 스프린트 회고 (sprint1.md ...) — 아직 없음
 ```
 - 백엔드 파일은 도메인 폴더로 나눈다: main, auth, member, question, board(질문 작성·수정·삭제), answer, reply, like, report, admin, notification, tag(태그·카테고리) (예: `src/question/question.routes.js`, `question.controller.js`, `question.service.js`, `question.repository.js`)
