@@ -8,6 +8,7 @@ Claude가 이 저장소에서 작업할 때 따르는 프로젝트 규칙이다.
 - 코딩 컨벤션: @docs/convention.md
 - Claude 작업 규칙: @docs/claude-rules.md
 - API 명세: `docs/api.md` (API를 구현하거나 수정할 때 읽는다)
+- UI 기준: `docs/ui-guide.md` (프론트 화면을 만들거나 고칠 때 읽는다)
 
 ## 프로젝트 개요
 - 서비스명: Dev in
