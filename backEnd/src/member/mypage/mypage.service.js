@@ -6,7 +6,7 @@ const AppError = require('../../utils/AppError');
 const ErrorCode = require('../../utils/errorCode');
 const { toPage } = require('../../utils/page');
 const { BCRYPT_SALT_ROUNDS } = require('../member.constants');
-const { MEMBER_STATUS, GRADES, BADGES } = require('./mypage.constants');
+const { MEMBER_STATUS, GRADES, BADGES, RANKING_SIZE } = require('./mypage.constants');
 
 // UNIQUE 키 이름 → 에러 코드 (backEnd/db/schema.sql의 member 테이블)
 const DUPLICATE_KEY_ERRORS = Object.freeze({
@@ -228,6 +228,20 @@ async function getMyAnswers(memberId, { page, size }) {
   return toPage(content, page, size, total);
 }
 
+// 채택 랭킹 (REQ-RANKING-001). 등급·채택률은 프로필과 같은 함수로 계산한다 (저장하지 않음).
+async function getRanking() {
+  const rows = await mypageRepository.findRanking(RANKING_SIZE);
+  return rows.map((row) => ({
+    rank: row.rank,
+    memberId: row.memberId,
+    nickname: row.nickname,
+    grade: GRADES[findGradeIndex(row.acceptedCount)].grade,
+    acceptedCount: row.acceptedCount,
+    acceptRate: toAcceptRate(row),
+    likeCount: row.likeCount,
+  }));
+}
+
 module.exports = {
   findWritableMember,
   buildProfile,
@@ -241,4 +255,5 @@ module.exports = {
   getAcceptedAnswers,
   getMyQuestions,
   getMyAnswers,
+  getRanking,
 };
