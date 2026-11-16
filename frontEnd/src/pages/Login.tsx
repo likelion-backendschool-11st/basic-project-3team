@@ -204,7 +204,7 @@ export default function Login() {
                   {" 전 세계 개발자들과"}
                   <br />
 
-                  <span className="bg-[#FFD43B] px-2 py-0.5 border-[2px] border-black inline-block mt-1 brutal-shadow-sm">
+                  <span className="bg-[#FFD43B] px-2 py-0.5 border-[2px] border-black inline-block mt-3 brutal-shadow-sm">
                     실시간으로 연결되는
                   </span>
                   {" 공간 "}
