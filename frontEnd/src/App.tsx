@@ -6,6 +6,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 import NotificationProvider from './components/notification/NotificationProvider'
 import NotFound from './pages/NotFound'
 import Ranking from './pages/Ranking'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
 
 function ScreenIndex() {
   return (
@@ -38,6 +40,9 @@ export default function App() {
               <Route path="/screens" element={<ScreenIndex />} />
               {/* #64: Stitch 시안이 없는 화면이라 routes.ts(자동 생성)가 아닌 여기에 둔다 */}
               <Route path="/ranking" element={<Ranking />} />
+              {/* #158: 이용약관·개인정보처리방침 (Stitch 시안 없음) */}
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
               {routes.map(({ path, Component }) => (
                 <Route key={path} path={path} element={<Component />} />
               ))}
