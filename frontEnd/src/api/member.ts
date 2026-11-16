@@ -1,4 +1,10 @@
-import { api, type ApiResponse } from "./client";
+import { api, setAccessToken, type ApiResponse } from "./client";
+
+// DELETE /api/members/me — 회원 탈퇴 (REQ-MYPAGE-009). 서버가 Refresh 쿠키를 지우므로 이 브라우저의 토큰도 지운다.
+export async function withdraw(password: string): Promise<void> {
+  await api.delete("/members/me", { data: { password } });
+  setAccessToken(null);
+}
 
 export interface SignupRequest {
   loginId: string;

@@ -1,4 +1,5 @@
 const memberService = require('./member.service');
+const { clearRefreshCookie } = require('../auth/auth.controller');
 const AppError = require('../utils/AppError');
 const ErrorCode = require('../utils/errorCode');
 const { success } = require('../utils/response');
@@ -74,4 +75,21 @@ async function checkNickname(req, res, next) {
   }
 }
 
-module.exports = { signup, checkLoginId, checkPhone, checkNickname };
+// 비밀번호는 형식 검사 없이 입력 여부만 본다 (틀리면 Service에서 400 PASSWORD_MISMATCH).
+async function withdraw(req, res, next) {
+  try {
+    const { password } = req.body ?? {};
+    if (typeof password !== 'string' || password === '') {
+      throw new AppError(ErrorCode.INVALID_INPUT, {
+        errors: [{ field: 'password', reason: '비밀번호를 입력해주세요.' }],
+      });
+    }
+    await memberService.withdraw(req.user.memberId, password);
+    clearRefreshCookie(res);
+    return success(res);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+module.exports = { signup, checkLoginId, checkPhone, checkNickname, withdraw };

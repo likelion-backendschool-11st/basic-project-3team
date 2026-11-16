@@ -64,6 +64,7 @@
 - 경력을 등록하지 않았으면 `careerYears`는 `null`, `techStacks`는 빈 배열이다. 프론트는 이때 닉네임만 표시한다.
 - `acceptRate`는 채택된 답변 수 ÷ 전체 답변 수 × 100, 소수점 첫째 자리까지. 답변이 없으면 `0.0` (REQ-MYPAGE-006).
 - `grade`는 `BRONZE`, `SILVER`, `GOLD`, `PLATINUM` 중 하나다. 조건은 3장 내 등급·뱃지 조회를 따른다.
+- 탈퇴한 회원이 쓴 글은 `nickname`이 `"탈퇴한 회원"`으로 온다 (REQ-MYPAGE-010). 관리자 신고 목록의 신고자·작성자 닉네임도 같다.
 - 프로필 사진 업로드는 이번 범위에서 제외한다. 헤더의 프로필 사진 자리(REQ-MAIN-004)에는 프론트가 기본 이미지를 표시한다.
 
 ### 입력값 규칙
@@ -202,6 +203,7 @@
 | 채택 내역 | GET | /api/members/me/accepted-answers?page=0 | 회원 |
 | 내가 쓴 질문 목록 | GET | /api/members/me/questions?page=0 | 회원 |
 | 내가 쓴 답변 목록 | GET | /api/members/me/answers?page=0 | 회원 |
+| 회원 탈퇴 | DELETE | /api/members/me | 회원 |
 
 - 마이페이지 수정 API(PATCH `/me/profile`, `/me/private`, PUT `/me/categories`)는 성공하면 `data: null`을 돌려준다. 프론트는 저장 후 필요한 값을 다시 조회한다.
 - 정지(`BANNED`) 회원은 조회 API는 쓸 수 있고, 수정 API는 403 `MEMBER_BANNED`. 탈퇴(`WITHDRAWN`) 회원은 `/me/**` 전체가 403 `MEMBER_WITHDRAWN`.
@@ -269,6 +271,20 @@
 - 새 비밀번호 확인 값 비교는 프론트에서 한다.
 - 전화번호를 바꾸면 중복을 다시 확인하고, 중복이면 409 `DUPLICATE_PHONE`.
 - `newPassword`를 바꾸면 Refresh Token을 새로 발급해 교체하고 `Set-Cookie`로 내려준다. 지금 기기는 로그인이 유지되고, 다른 기기는 Access Token이 만료된 뒤(최대 30분) 로그아웃된다 (REQ-FIND-005와 같은 취지).
+
+### 회원 탈퇴 (REQ-MYPAGE-009, 010)
+요청 — 비밀번호를 다시 확인한다.
+```json
+{ "password": "devin_1234" }
+```
+응답 (`data`) — `null`. Refresh 쿠키를 지운다. 되돌릴 수 없다.
+- 비밀번호를 보내지 않으면 400 `INVALID_INPUT`, 틀리면 400 `PASSWORD_MISMATCH`.
+- 정지 회원은 403 `MEMBER_BANNED` (탈퇴 후 같은 전화번호로 다시 가입해 정지를 피하지 못하게), 관리자 계정은 403 `FORBIDDEN`, 이미 탈퇴했으면 403 `MEMBER_WITHDRAWN`.
+- 한 트랜잭션으로 처리한다.
+  - `member`: 상태를 `WITHDRAWN`으로 바꾸고 아이디·전화번호·닉네임을 `wd#{memberId}`, `W{memberId}`, `탈퇴#{memberId}`로 바꾼다. 가입 규칙에 없는 문자라 실제 회원 값과 겹치지 않고, 원래 값으로 다시 가입할 수 있다. 비밀번호 해시는 로그인할 수 없는 값으로 덮어쓰고, 소개글·경력은 지우고 알림은 끈다.
+  - 관심 카테고리, 기술 스택, Refresh Token, 받은 알림을 삭제한다.
+  - 작성한 질문·답변·답글, 좋아요, 신고 내역은 남긴다.
+- 이미 발급된 Access Token은 만료(최대 30분) 전까지 남지만, `/me/**`와 쓰기 API는 403 `MEMBER_WITHDRAWN`으로 막힌다 (docs/auth.md 회원 상태).
 
 ### 관심 카테고리·알림 설정 (REQ-MYPAGE-004)
 조회 응답 (`data`) / 변경 요청 본문
