@@ -2,7 +2,8 @@
 import "./Ask.css";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { CATEGORIES, QUESTION_RULES as RULES, createQuestion } from "../api/question";
+import { QUESTION_RULES as RULES, createQuestion } from "../api/question";
+import { useCategories } from "../hooks/useTagData";
 import FieldError from "../components/FieldError";
 import Header from "../components/Header";
 import Markdown from "../components/markdown/Markdown";
@@ -37,6 +38,7 @@ export default function Ask() {
   // #62: 툴바(B, I, 코드 블록, 링크, 이미지)는 내용칸에 마크다운 기호를 넣고, 미리보기는 상세 화면과 같은 모양으로 보여 준다.
   const toolbar = useMarkdownToolbar(values.content, (content) => change("content", content));
   const [preview, setPreview] = useState(false);
+  const categories = useCategories();
   // 직접 쓴 글이 있을 때 템플릿을 끄면 지우기 전에 확인한다.
   const [confirmTemplateOff, setConfirmTemplateOff] = useState(false);
 
@@ -65,7 +67,8 @@ export default function Ask() {
     e.preventDefault();
     submit(async (request) => {
       const { questionId } = await createQuestion(request);
-      navigate(`/question-detail?questionId=${questionId}`); // REQ-QUESTION-001: 등록 후 상세 페이지로 이동 (목록 화면과 같은 주소)
+      // REQ-QUESTION-001: 등록 후 상세 페이지로 이동. replace로 가서 뒤로가기에 빈 작성 폼이 다시 나오지 않게 한다.
+      navigate(`/question-detail?questionId=${questionId}`, { replace: true });
     });
   }
 
@@ -155,7 +158,7 @@ export default function Ask() {
                     }}
                   >
                     <option value="">카테고리를 선택하세요</option>
-                    {CATEGORIES.map(({ categoryId: id, name }) => (
+                    {categories.map(({ categoryId: id, name }) => (
                       <option key={id} value={id}>
                         {name}
                       </option>

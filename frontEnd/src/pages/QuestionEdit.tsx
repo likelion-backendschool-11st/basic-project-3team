@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import {
-  CATEGORIES,
   QUESTION_RULES as RULES,
   getQuestion,
   readQuestionId,
@@ -17,6 +16,7 @@ import Markdown from "../components/markdown/Markdown";
 import { useMarkdownToolbar } from "../hooks/useMarkdownToolbar";
 import RecommendedTags from "../components/tag/RecommendedTags";
 import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
+import { useCategories } from "../hooks/useTagData";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -58,6 +58,7 @@ export default function QuestionEdit() {
   // #62: 툴바(B, I, 코드 블록, 링크, 이미지)는 내용칸에 마크다운 기호를 넣고, 미리보기는 상세 화면과 같은 모양으로 보여 준다.
   const toolbar = useMarkdownToolbar(values.content, (content) => change("content", content));
   const [preview, setPreview] = useState(false);
+  const categories = useCategories();
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
   // 불러온 원래 값. 바뀐 것이 없으면 요청하지 않는다 (내용 그대로인데 수정일만 바뀌는 것 방지).
   const original = useRef<QuestionRequest | null>(null);
@@ -199,7 +200,7 @@ export default function QuestionEdit() {
                     onChange={(e) => change("categoryId", e.target.value)}
                   >
                     <option value="">카테고리를 선택하세요</option>
-                    {CATEGORIES.map(({ categoryId: id, name }) => (
+                    {categories.map(({ categoryId: id, name }) => (
                       <option key={id} value={id}>
                         {name}
                       </option>
