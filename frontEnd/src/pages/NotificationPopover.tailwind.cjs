@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 알림 팝오버 (7번)". Scoped to #page-notification-popover so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-notification-popover",
   content: ["./src/pages/NotificationPopover.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -8,7 +8,6 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily,
         colors: {
           brand: "#111827",
           wireframeBg: "#ffffff",

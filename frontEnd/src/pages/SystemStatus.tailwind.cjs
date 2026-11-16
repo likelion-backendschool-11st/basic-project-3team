@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 시스템 상태 및 예외 화면 (29번)". Scoped to #page-system-status so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-system-status",
   content: ["./src/pages/SystemStatus.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -8,7 +8,6 @@ module.exports = {
   ...{
     theme: {
       extend: {
-        fontFamily,
         colors: {
           cream: "#FFFDF5",
           "neo-yellow": "#FDE047",

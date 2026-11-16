@@ -1,6 +1,6 @@
 // Generated from Stitch screen "Dev in_ 삭제 및 채택 확인 모달 (27번)". Scoped to #page-delete-accept-modal so it can't clash with other screens.
-const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
+  presets: [require("../../tailwind.preset.cjs")],
   important: "#page-delete-accept-modal",
   content: ["./src/pages/DeleteAcceptModal.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
@@ -18,7 +18,6 @@ module.exports = {
             gray: "#F3F4F6",
           },
         },
-        fontFamily,
         boxShadow: {
           "brutal-sm": "3px 3px 0 #111111",
           brutal: "5px 5px 0 #111111",
