@@ -5,9 +5,10 @@ import { findLoginId, type FindLoginIdResult } from "../api/auth";
 import { getErrorMessage } from "../api/client";
 import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindId.css";
-import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 import AccountLinks from "../components/AccountLinks";
+import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
+import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "../components/headerStyles";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -77,25 +78,14 @@ export default function FindId() {
           backgroundSize: "18px 18px",
         }}
       >
-        <header className="sticky top-0 z-50 w-full bg-white border-b-2 border-[#111111]">
-          <div className={HEADER_INNER_CLASS}>
-            <Logo to="/" />
-            <div className="flex items-center gap-3">
-              <Link
-                className="font-label-md text-label-md text-black hover:underline px-3 py-1.5 transition-colors font-bold"
-                to="/login"
-              >
-                로그인
-              </Link>
-              <Link
-                className="font-label-md text-label-md bg-[#FFD43B] text-black border-2 border-black px-3.5 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all font-bold"
-                to="/signup"
-              >
-                회원가입
-              </Link>
-            </div>
-          </div>
-        </header>
+        <AuthHeader>
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`} to="/login">
+            로그인
+          </Link>
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`} to="/signup">
+            회원가입
+          </Link>
+        </AuthHeader>
 
         <main className="flex-grow max-w-[1240px] w-full mx-auto px-margin-mobile md:px-margin py-space-xl">
           <div className="text-center mb-8">

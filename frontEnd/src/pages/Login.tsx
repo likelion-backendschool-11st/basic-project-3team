@@ -4,8 +4,9 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { useAuth } from "../hooks/useAuth";
+import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
-import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
+import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "../components/headerStyles";
 import "./Login.css";
 
 // REQ-LOGIN-007: 로그인 성공 시 이동할 메인 페이지 (전체 질문 목록)
@@ -163,34 +164,17 @@ export default function Login() {
           backgroundSize: "18px 18px",
         }}
       >
-        {/* BEGIN: MainHeader */}
-        <header className="w-full sticky top-0 z-50 border-b-2 border-[#111111] bg-white">
-          <div className={HEADER_INNER_CLASS}>
-            <Logo to="/" />
-
-            {/* GNB Right Action: Sign-Up Button */}
-
-            <div className="flex items-center gap-3">
-              {/* 로그인하지 않아도 질문 게시판은 둘러볼 수 있다 (REQ-HEADER-002) */}
-              <Link
-                className="brutal-btn inline-flex items-center bg-[#2563EB] text-white font-bold text-sm px-4 py-2 border-[2.5px] border-black rounded-lg brutal-shadow-sm hover:bg-blue-700"
-                to={MAIN_PATH}
-              >
-                질문 게시판 둘러보기
-              </Link>
-              <span className="hidden sm:inline-block text-xs font-mono font-medium text-gray-600">
-                아직 회원이 아니신가요?
-              </span>{" "}
-              <Link
-                className="brutal-btn inline-flex items-center gap-2 bg-white text-black font-bold text-sm px-4 py-2 border-[2.5px] border-black rounded-lg brutal-shadow-sm hover:bg-[#FFD43B]"
-                to="/signup"
-              >
-                <span>회원가입</span> <span className="font-mono text-base">→</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-        {/* END: MainHeader */} {/* BEGIN: MainContent */}
+        <AuthHeader>
+          {/* 로그인하지 않아도 질문 게시판은 둘러볼 수 있다 (REQ-HEADER-002) */}
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.blue}`} to={MAIN_PATH}>
+            질문 게시판 둘러보기
+          </Link>
+          <span className="hidden sm:inline text-xs font-medium text-gray-600">아직 회원이 아니신가요?</span>
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`} to="/signup">
+            회원가입
+          </Link>
+        </AuthHeader>
+        {/* BEGIN: MainContent */}
         <main className="flex-grow flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
           <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
             {/* BEGIN: LeftInfoSection */} {/* Left side: Platform feature showcase, live-code card, and key metrics */}

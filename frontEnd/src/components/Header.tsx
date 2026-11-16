@@ -4,17 +4,13 @@ import { useAuth } from "../hooks/useAuth";
 import { useLoginPrompt } from "../hooks/useLoginPrompt";
 import Logo, { HEADER_INNER_CLASS } from "./Logo";
 import { ADMIN_REPORTS_PATH } from "./admin/adminLabels";
+import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "./headerStyles";
 import NotificationBell from "./notification/NotificationBell";
 import SearchBar from "./search/SearchBar";
 
 const MAIN_PATH = "/questions";
 
-const buttonBase =
-  "h-10 px-4 border-2 border-[#111111] text-sm font-bold shadow-[2px_2px_0_#111111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all whitespace-nowrap";
 // #159: 랭킹 버튼. 랭킹 페이지에 있을 때는 노란 바탕
-const rankingButton = `${buttonBase} inline-flex items-center gap-1`;
-const RANKING_ACTIVE = "bg-[#FFD43B] hover:bg-yellow-400";
-const RANKING_IDLE = "bg-white hover:bg-gray-100";
 
 // 닉네임을 누르면 뜨는 프로필 팝오버 (REQ-MAIN-002, 003)
 function ProfileMenu({ nickname }: { nickname: string }) {
@@ -45,7 +41,7 @@ function ProfileMenu({ nickname }: { nickname: string }) {
   return (
     <div className="relative" ref={menuRef}>
       <button
-        className={`${buttonBase} bg-[#FFD43B] rounded-[10px] flex items-center gap-1.5`}
+        className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`}
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -97,13 +93,15 @@ export default function Header() {
           {/* #64: 채택 랭킹은 로그인하지 않아도 본다. inline-flex라야 h-10이 적용돼 질문하기와 높이가 같다. */}
           {/* #159: 랭킹 페이지에서는 노란 바탕으로 현재 위치를 보여 준다 (NavLink가 aria-current="page"를 붙인다). */}
           <NavLink
-            className={({ isActive }) => `${rankingButton} ${isActive ? RANKING_ACTIVE : RANKING_IDLE}`}
+            className={({ isActive }) =>
+              `${HEADER_BUTTON_CLASS} ${isActive ? HEADER_BUTTON_COLOR.yellow : HEADER_BUTTON_COLOR.white}`
+            }
             to="/ranking"
           >
             <span aria-hidden="true">🏆</span>랭킹
           </NavLink>
           <button
-            className={`${buttonBase} bg-[#2563EB] text-white hover:bg-blue-700`}
+            className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.blue}`}
             type="button"
             onClick={() => (user ? navigate("/ask") : openLoginPrompt("질문을 작성하려면 로그인이 필요해요."))}
           >
@@ -118,10 +116,10 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link className={`${buttonBase} py-2 bg-white hover:bg-gray-100`} to="/login">
+              <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`} to="/login">
                 로그인
               </Link>
-              <Link className={`${buttonBase} py-2 bg-[#FFD43B] hover:bg-yellow-400`} to="/signup">
+              <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`} to="/signup">
                 회원가입
               </Link>
             </>

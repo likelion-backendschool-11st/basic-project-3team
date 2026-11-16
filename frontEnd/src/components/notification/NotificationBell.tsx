@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { NotificationType } from "../../api/notification";
 import { useNotifications } from "../../hooks/notificationContext";
+import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "../headerStyles";
 import { detailPath } from "../questionList";
 
 // 알림 종류별 머리말과 색 (Stitch "알림 팝오버 (7번)")
@@ -22,8 +23,7 @@ function formatRelative(createdAt: string, now = Date.now()) {
   return createdAt.slice(0, 10).replaceAll("-", ".");
 }
 
-const headerButton =
-  "relative h-10 px-3 bg-white border-2 border-[#111111] text-sm font-bold shadow-[2px_2px_0_#111111] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all whitespace-nowrap flex items-center gap-1.5";
+const headerButton = `relative ${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`;
 
 // 헤더 알림 버튼 + 알림 팝오버 (REQ-MAIN-005, #70). 로그인한 상태에서만 헤더가 그린다.
 export default function NotificationBell() {

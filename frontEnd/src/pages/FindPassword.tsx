@@ -6,9 +6,10 @@ import { resetPassword, verifyPasswordReset } from "../api/auth";
 import { getErrorMessage } from "../api/client";
 import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindPassword.css";
-import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 import AccountLinks from "../components/AccountLinks";
+import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
+import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "../components/headerStyles";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -178,25 +179,14 @@ export default function FindPassword() {
           backgroundSize: "18px 18px",
         }}
       >
-        <header className="w-full sticky top-0 z-50 bg-white border-b-2 border-[#111111]">
-          <div className={HEADER_INNER_CLASS}>
-            <Logo to="/" />
-            <div className="flex items-center gap-2.5">
-              <Link
-                className="px-3.5 py-1.5 text-xs font-bold bg-[#FFFDF5] brutal-border shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-                to="/login"
-              >
-                로그인
-              </Link>{" "}
-              <Link
-                className="px-3.5 py-1.5 text-xs font-bold bg-[#FFDE59] brutal-border shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-                to="/signup"
-              >
-                회원가입
-              </Link>
-            </div>
-          </div>
-        </header>
+        <AuthHeader>
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`} to="/login">
+            로그인
+          </Link>
+          <Link className={`${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`} to="/signup">
+            회원가입
+          </Link>
+        </AuthHeader>
 
         <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-10 flex flex-col justify-center">
           <div className="text-center mb-9">
