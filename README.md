@@ -39,7 +39,7 @@
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, React Router, axios, socket.io-client, react-markdown (remark-gfm, rehype-highlight) |
 | Backend | Node.js, Express 5, mysql2 (SQL 직접 작성), jsonwebtoken, bcrypt, cookie-parser, socket.io, dotenv, nodemon |
 | DB | MySQL |
-| 협업 도구 | GitHub (Issues, Pull Requests, Projects), Postman, ?? (예: 소통 채널) |
+| 협업 도구 | GitHub (Issues, Pull Requests, Projects), Postman, Discord, KakaoTalk |
 
 ## 개발 환경 버전
 
@@ -166,19 +166,19 @@ basic-project-3team/
 
 | 이름 | GitHub | 역할 |
 |---|---|---|
-| ?? (팀장) | [@4ksnnvbk5y-max](https://github.com/4ksnnvbk5y-max) | ?? |
-| ?? | [@innoo47](https://github.com/innoo47) | ?? |
-| ?? | [@kimbeaver127](https://github.com/kimbeaver127) | ?? |
-| ?? | [@io1014](https://github.com/io1014) | ?? |
+| 박인호(팀장) | [@innoo47](https://github.com/innoo47) | 메인, 검색 페이지 |
+| 김수현 | [@kimbeaver127](https://github.com/kimbeaver127) | 마이페이지 |
+| 박정호 | [@4ksnnvbk5y-max](https://github.com/4ksnnvbk5y-max) | 질문 + 답변CRUD |
+| 정일오 | [@io1014](https://github.com/io1014) | 회원가입, 로그인 |
 
 ## 팀 그라운드 룰
 
 | 항목 | 내용 |
 |---|---|
-| 코어 타임 | ?? (예: 평일 10:00 ~ 18:00) |
-| 연락 채널 | ?? (예: Discord 팀 채널) |
-| 답장 기한 | ?? (예: 코어 타임 중 1시간 안) |
-| 지각·결석 공유 | ?? (예: 수업 시작 전까지 팀 채널에 공유) |
+| 코어 타임 | 평일 09:00 ~ 19:00 |
+| 연락 채널 | Discord, KakaoTalk |
+| 답장 기한 | 코어 타임 중 1시간 안 |
+| 지각·결석 공유 | 수업 시작 전까지 팀 채널에 공유 |
 
 - 막히는 문제는 하루 안에 팀장에게, 이틀 넘게 막히면 강사님께 알린다.
 - 매일 10분 데일리 스크럼을 한다.
