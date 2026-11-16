@@ -3,6 +3,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "./NicknameMenuDropdown.css";
+import Footer from "../components/Footer";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -208,13 +209,8 @@ export default function NicknameMenuDropdown() {
             {/* END: QuestionListPlaceholder */}
           </div>
         </main>
-        {/* END: MainContentArea */} {/* BEGIN: SiteFooter */}
-        <footer className="w-full border-t border-neutral-200 mt-auto py-6 bg-white" data-purpose="site-footer">
-          <div className="max-w-7xl mx-auto px-4 text-center text-xs text-neutral-400 font-mono">
-            {" Dev in_ Platform © 2024. All rights reserved. "}
-          </div>
-        </footer>
-        {/* END: SiteFooter */}
+        {/* END: MainContentArea */}
+        <Footer />
       </div>
     </div>
   );

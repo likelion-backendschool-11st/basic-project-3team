@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
 import { useAuth } from "../hooks/useAuth";
+import Footer from "../components/Footer";
 import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 import "./Login.css";
 
@@ -112,7 +113,7 @@ function LoginFailedDialog({ error, onClose }: { error: LoginError; onClose: () 
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "/* Background micro dot-grid pattern */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#121212 0.75px, transparent 0.75px);\n      background-size: 16px 16px;\n      color: #121212;\n      font-family: 'Noto Sans KR', sans-serif;\n    }\n\n    /* Neo-Brutal Hard Shadows */\n    .brutal-shadow {\n      box-shadow: 4px 4px 0 #121212;\n    }\n\n    .brutal-shadow-sm {\n      box-shadow: 2.5px 2.5px 0 #121212;\n    }\n\n    .brutal-shadow-lg {\n      box-shadow: 6px 6px 0 #121212;\n    }\n\n    /* Interactive button effects */\n    .brutal-btn {\n      transition: all 0.12s ease-in-out;\n    }\n\n    .brutal-btn:hover {\n      transform: translate(-1.5px, -1.5px);\n      box-shadow: 5.5px 5.5px 0 #121212;\n    }\n\n    .brutal-btn:active {\n      transform: translate(2px, 2px);\n      box-shadow: 1px 1px 0 #121212;\n    }\n\n    /* Custom input focus ring */\n    .brutal-input:focus {\n      outline: none;\n      box-shadow: 3px 3px 0 #121212;\n      background-color: #FFFFFF;\n    }";
+  "/* Background micro dot-grid pattern */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#121212 0.75px, transparent 0.75px);\n      background-size: 16px 16px;\n      color: #121212;\n    }\n\n    /* Neo-Brutal Hard Shadows */\n    .brutal-shadow {\n      box-shadow: 4px 4px 0 #121212;\n    }\n\n    .brutal-shadow-sm {\n      box-shadow: 2.5px 2.5px 0 #121212;\n    }\n\n    .brutal-shadow-lg {\n      box-shadow: 6px 6px 0 #121212;\n    }\n\n    /* Interactive button effects */\n    .brutal-btn {\n      transition: all 0.12s ease-in-out;\n    }\n\n    .brutal-btn:hover {\n      transform: translate(-1.5px, -1.5px);\n      box-shadow: 5.5px 5.5px 0 #121212;\n    }\n\n    .brutal-btn:active {\n      transform: translate(2px, 2px);\n      box-shadow: 1px 1px 0 #121212;\n    }\n\n    /* Custom input focus ring */\n    .brutal-input:focus {\n      outline: none;\n      box-shadow: 3px 3px 0 #121212;\n      background-color: #FFFFFF;\n    }";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -488,25 +489,8 @@ export default function Login() {
             {/* END: RightLoginFormSection */}
           </div>
         </main>
-        {/* END: MainContent */} {/* BEGIN: MainFooter */}
-        <footer className="w-full border-t-[2.5px] border-black bg-white py-6" data-purpose="simple-footer">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono font-medium text-gray-600">
-            <div className="flex items-center gap-2">
-              <span className="font-black text-black">Dev in_</span>{" "}
-              <span>© 2026 Dev in Ecosystem. All rights reserved.</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Link className="hover:text-black" to="/terms">
-                이용약관
-              </Link>{" "}
-              <Link className="hover:text-black font-bold text-black" to="/privacy">
-                개인정보처리방침
-              </Link>
-            </div>
-          </div>
-        </footer>
-        {/* END: MainFooter */}
+        {/* END: MainContent */}
+        <Footer />
         {error && <LoginFailedDialog error={error} onClose={() => setError(null)} />}
       </div>
     </div>

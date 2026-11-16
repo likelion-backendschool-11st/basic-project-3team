@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 답글 목록 및 작성 (25번)". Scoped to #page-replies so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-replies",
   content: ["./src/pages/Replies.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -18,10 +19,7 @@ module.exports = {
             grayLight: "#F3F4F6",
           },
         },
-        fontFamily: {
-          sans: ["Inter", "system-ui", "sans-serif"],
-          mono: ["JetBrains Mono", "monospace"],
-        },
+        fontFamily,
         boxShadow: {
           brutal: "4px 4px 0px 0px #000000",
           "brutal-sm": "2.5px 2.5px 0px 0px #000000",

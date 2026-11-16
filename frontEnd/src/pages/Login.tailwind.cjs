@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 로그인". Scoped to #page-login so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-login",
   content: ["./src/pages/Login.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -17,10 +18,7 @@ module.exports = {
             subtle: "#F4F0EA",
           },
         },
-        fontFamily: {
-          sans: ['"Noto Sans KR"', "sans-serif"],
-          mono: ['"JetBrains Mono"', "monospace"],
-        },
+        fontFamily,
       },
     },
   },

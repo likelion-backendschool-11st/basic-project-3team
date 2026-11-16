@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 질문하기 (20번)". Scoped to #page-ask so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-ask",
   // 공통 컴포넌트(Header·검색창·FieldError 등)의 클래스도 이 화면 CSS에 만든다.
@@ -8,6 +9,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
+        fontFamily,
         colors: {
           brand: {
             blue: "#2563EB",

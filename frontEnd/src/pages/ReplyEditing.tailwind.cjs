@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 답변/답글 수정 중 (26번)". Scoped to #page-reply-editing so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-reply-editing",
   content: ["./src/pages/ReplyEditing.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -19,10 +20,7 @@ module.exports = {
             dark: "#111827",
           },
         },
-        fontFamily: {
-          sans: ["Pretendard", "Plus Jakarta Sans", "sans-serif"],
-          mono: ["Fira Code", "monospace"],
-        },
+        fontFamily,
         boxShadow: {
           brutal: "4px 4px 0px 0px #000000",
           "brutal-sm": "2.5px 2.5px 0px 0px #000000",

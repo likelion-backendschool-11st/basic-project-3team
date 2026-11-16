@@ -27,6 +27,7 @@ import ProfileDetails, { GRADE_LABEL, formatRate } from "../components/ProfileDe
 import { detailPath } from "../components/questionList";
 import { useAuth } from "../hooks/useAuth";
 import "./Mypage.css";
+import Footer from "../components/Footer";
 
 const RECENT_ACCEPTED_SIZE = 5;
 const BADGE_PREVIEW_SIZE = 3;
@@ -76,7 +77,7 @@ async function loadMypage(): Promise<MypageData> {
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "body {\n      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;\n      background-color: #f7f5f0;\n      background-image: radial-gradient(#d1cebe 1.25px, transparent 1.25px);\n      background-size: 20px 20px;\n    }\n    .font-brand {\n      font-family: 'Plus Jakarta Sans', sans-serif;\n    }\n  \n\n    /* Neo-brutalism borders & solid shadow treatments */\n    .neo-border {\n      border: 2.5px solid #111111;\n    }\n    .neo-border-thin {\n      border: 1.5px solid #111111;\n    }\n    .neo-box-shadow {\n      box-shadow: 5px 5px 0px #111111;\n    }\n    .neo-box-shadow-sm {\n      box-shadow: 3px 3px 0px #111111;\n    }\n    .neo-box-shadow-active {\n      box-shadow: 0px 0px 0px #111111;\n      transform: translate(3px, 3px);\n    }\n    .badge-locked {\n      background-image: repeating-linear-gradient(45deg, #e5e7eb, #e5e7eb 5px, #f3f4f6 5px, #f3f4f6 10px);\n    }";
+  "body {\n      background-color: #f7f5f0;\n      background-image: radial-gradient(#d1cebe 1.25px, transparent 1.25px);\n      background-size: 20px 20px;\n    }\n  \n\n    /* Neo-brutalism borders & solid shadow treatments */\n    .neo-border {\n      border: 2.5px solid #111111;\n    }\n    .neo-border-thin {\n      border: 1.5px solid #111111;\n    }\n    .neo-box-shadow {\n      box-shadow: 5px 5px 0px #111111;\n    }\n    .neo-box-shadow-sm {\n      box-shadow: 3px 3px 0px #111111;\n    }\n    .neo-box-shadow-active {\n      box-shadow: 0px 0px 0px #111111;\n      transform: translate(3px, 3px);\n    }\n    .badge-locked {\n      background-image: repeating-linear-gradient(45deg, #e5e7eb, #e5e7eb 5px, #f3f4f6 5px, #f3f4f6 10px);\n    }";
 
 type ActivityTab = "questions" | "answers";
 const PAGE_SIZE = 10;
@@ -567,20 +568,9 @@ export default function Mypage() {
           {user && <MyActivityList answerCount={data?.answerCount} questionCount={data?.questionCount} />}
           {/* END: ActivityTabsAndListSection */}
         </main>
-        {/* END: MainContent */} {/* BEGIN: SimpleFooter */}
-        <footer className="mt-12 bg-white border-t-[2.5px] border-black py-6 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-neutral-600">
-            <div className="flex items-center gap-2">
-              <span className="font-brand font-bold text-sm text-black">Dev in_</span>{" "}
-              <span>{"개발자 지식 공유 & Q&A 커뮤니티 플랫폼"}</span>
-            </div>
-
-            <div>
-              <span>© 2026 Dev in_. All rights reserved.</span>
-            </div>
-          </div>
-        </footer>
-        {/* END: SimpleFooter */} {/* BEGIN: InteractiveTabScript */}
+        {/* END: MainContent */}
+        <Footer />
+        {/* BEGIN: InteractiveTabScript */}
         {/* END: InteractiveTabScript */}
       </div>
     </div>

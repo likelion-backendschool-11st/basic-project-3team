@@ -7,10 +7,12 @@ import { getErrorMessage } from "../api/client";
 import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindPassword.css";
 import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
+import AccountLinks from "../components/AccountLinks";
+import Footer from "../components/Footer";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  "body {\n      font-family: 'Noto Sans KR', sans-serif;\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#111111 0.75px, transparent 0.75px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n    .font-mono {\n      font-family: 'JetBrains Mono', monospace;\n    }\n    .brutal-border {\n      border: 2.5px solid #111111;\n    }";
+  "body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#111111 0.75px, transparent 0.75px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n    .brutal-border {\n      border: 2.5px solid #111111;\n    }";
 
 const INPUT_CLASS =
   "w-full px-3.5 py-2.5 bg-white brutal-border rounded-md text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-brutal-sm transition-all disabled:bg-neutral-100 disabled:text-neutral-500";
@@ -282,19 +284,7 @@ export default function FindPassword() {
               </div>
 
               <div className="mt-6 pt-4 border-t-[1.5px] border-neutral-300 text-center">
-                <p className="text-[11px] font-semibold text-neutral-600 flex items-center justify-center gap-1.5 flex-wrap">
-                  <Link className="hover:text-black hover:underline" to="/find-id">
-                    아이디 찾기
-                  </Link>{" "}
-                  <span className="text-neutral-400">|</span>{" "}
-                  <Link className="hover:text-black hover:underline" to="/signup">
-                    회원가입
-                  </Link>{" "}
-                  <span className="text-neutral-400">|</span>{" "}
-                  <Link className="hover:text-black hover:underline inline-flex items-center gap-0.5" to="/login">
-                    로그인으로 돌아가기 →
-                  </Link>
-                </p>
+                <AccountLinks current="find-password" />
               </div>
             </section>
 
@@ -426,9 +416,7 @@ export default function FindPassword() {
           </div>
         </main>
 
-        <footer className="w-full bg-[#FFFDF5] border-t-[2.5px] border-black py-4 px-4 text-center mt-12">
-          <p className="text-xs font-bold text-neutral-600">© 2026 Dev in_. All rights reserved.</p>
-        </footer>
+        <Footer />
       </div>
     </div>
   );

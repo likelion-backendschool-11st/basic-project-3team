@@ -1,4 +1,5 @@
 // Generated from Stitch screen "Dev in_ 회원가입 완료 모달 (16번)". Scoped to #page-signup-complete-modal so it can't clash with other screens.
+const { fontFamily } = require("../../tailwind.fonts.cjs");
 module.exports = {
   important: "#page-signup-complete-modal",
   content: ["./src/pages/SignupCompleteModal.tsx", "./src/components/**/*.{ts,tsx}"],
@@ -7,6 +8,7 @@ module.exports = {
   ...{
     theme: {
       extend: {
+        fontFamily,
         colors: {
           brand: {
             yellow: "#FACC15",
