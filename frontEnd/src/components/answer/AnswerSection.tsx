@@ -20,7 +20,7 @@ import LikeButton from "../LikeButton";
 import Markdown from "../markdown/Markdown";
 import FieldError from "../FieldError";
 import ReportDialog from "../report/ReportDialog";
-import { GRADES, formatDate, writerSummary } from "../writer";
+import { GRADES, formatDateTime, writerSummary } from "../writer";
 import ReplyThread from "./ReplyThread";
 
 // 서버(answer.controller.js)와 같은 규칙. 통과하면 null
@@ -242,7 +242,7 @@ export default function AnswerSection({
                         <span className="text-gray-400 mx-1">|</span>
                       </>
                     )}
-                    <time dateTime={answer.createdAt}>{formatDate(answer.createdAt)}</time>
+                    <time dateTime={answer.createdAt}>{formatDateTime(answer.createdAt)}</time>
                   </p>
                 </div>
 

@@ -13,7 +13,7 @@ import LikeButton from "../components/LikeButton";
 import Markdown from "../components/markdown/Markdown";
 import ReportDialog from "../components/report/ReportDialog";
 import { tagSearchPath } from "../components/questionList";
-import { GRADES, formatDate, writerSummary } from "../components/writer";
+import { GRADES, formatDateTime, writerSummary } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
@@ -261,7 +261,7 @@ export default function QuestionDetail() {
                   {/* Post Stats: Date & Views */}
 
                   <div className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-gray-500">
-                    <time dateTime={question.createdAt}>{formatDate(question.createdAt)}</time>
+                    <time dateTime={question.createdAt}>{formatDateTime(question.createdAt)}</time>
                     <span className="text-gray-300">·</span>
                     <span>조회 {question.viewCount}</span>
                   </div>

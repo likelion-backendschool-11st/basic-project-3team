@@ -9,7 +9,7 @@ import { charLength } from "../../hooks/useQuestionForm";
 import AuthorPopover from "../AuthorPopover";
 import ConfirmModal from "../ConfirmModal";
 import FieldError from "../FieldError";
-import { GRADES, formatDate } from "../writer";
+import { GRADES, formatDateTime } from "../writer";
 
 // 서버(reply.controller.js)와 같은 규칙. 통과하면 null
 function validate(content: string) {
@@ -164,7 +164,7 @@ export default function ReplyThread({ answerId, onChanged }: { answerId: number;
                   </span>
                 )}
                 <time className="text-xs text-slate-400" dateTime={reply.createdAt}>
-                  {formatDate(reply.createdAt)}
+                  {formatDateTime(reply.createdAt)}
                 </time>
               </div>
 
