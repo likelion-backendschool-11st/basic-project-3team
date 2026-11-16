@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import { io } from "socket.io-client";
 import { getAccessToken, getErrorMessage, reissue } from "../../api/client";
 import {
+  deleteAllNotifications,
   getNotifications,
   getUnreadCount,
   readAllNotifications,
@@ -151,9 +152,16 @@ export default function NotificationProvider({ children }: { children: ReactNode
     setUnreadCount(0);
   }, []);
 
+  // 서버에서 내 알림을 모두 지운 뒤 화면도 비운다. 실패하면 그대로 두고 에러를 넘긴다.
+  const deleteAll = useCallback(async () => {
+    await deleteAllNotifications();
+    setItems([]);
+    setUnreadCount(0);
+  }, []);
+
   const value = useMemo(
-    () => ({ items, unreadCount, loading, error, refresh, markRead, markAllRead }),
-    [items, unreadCount, loading, error, refresh, markRead, markAllRead],
+    () => ({ items, unreadCount, loading, error, refresh, markRead, markAllRead, deleteAll }),
+    [items, unreadCount, loading, error, refresh, markRead, markAllRead, deleteAll],
   );
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 }

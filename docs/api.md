@@ -676,6 +676,7 @@
 | 안 읽은 알림 수 | GET | /api/notifications/unread-count | 회원 |
 | 알림 읽음 처리 | PATCH | /api/notifications/{notificationId}/read | 회원 |
 | 전체 읽음 처리 | PATCH | /api/notifications/read-all | 회원 |
+| 전체 삭제 | DELETE | /api/notifications | 회원 |
 
 알림 종류 (`type`)
 | 값 | 받는 사람 | 근거 |
@@ -703,6 +704,7 @@
   - `ANSWER_ACCEPTED`: `'{질문 제목}'에 단 내 답변이 채택되었습니다.`
   - `CATEGORY_QUESTION`: `관심 카테고리 '{카테고리}'에 새 질문이 올라왔습니다: '{질문 제목}'`
 - 알림은 질문 작성·답변 작성·채택이 저장된 뒤 만든다. 알림 저장이 실패해도 원래 요청은 성공으로 응답한다.
+- 전체 삭제는 로그인한 회원 본인의 알림을 읽음 여부와 관계없이 모두 실제로 지운다 (다른 회원의 알림은 지우지 않는다).
 
 응답 (`data`)
 | API | 응답 |
@@ -710,6 +712,7 @@
 | 안 읽은 알림 수 | `{ "unreadCount": 3 }` |
 | 알림 읽음 처리 | `{ "notificationId": 8, "read": true }` |
 | 전체 읽음 처리 | `{ "updatedCount": 2 }` (이번에 읽음으로 바뀐 수) |
+| 전체 삭제 | `{ "deletedCount": 5 }` (이번에 지운 수. 지울 알림이 없으면 0) |
 
 ### 실시간 전송 (socket.io)
 - 연결: 클라이언트가 `auth: { token: accessToken }`으로 접속하면 서버가 토큰을 검증하고 `member:{memberId}` 방에 넣는다. 토큰이 잘못되면 연결을 거부한다 (`connect_error`의 `message`: `UNAUTHORIZED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`).

@@ -9,6 +9,8 @@ router.use(auth);
 router.get('/', notificationController.getNotifications);
 router.get('/unread-count', notificationController.getUnreadCount);
 router.patch('/read-all', notificationController.readAllNotifications);
+// 내 알림 전체 삭제 (#152)
+router.delete('/', notificationController.deleteAllNotifications);
 router.patch('/:notificationId/read', notificationController.readNotification);
 
 module.exports = router;

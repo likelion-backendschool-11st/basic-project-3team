@@ -36,3 +36,9 @@ export async function readAllNotifications(): Promise<number> {
   const { data } = await api.patch<ApiResponse<{ updatedCount: number }>>("/notifications/read-all");
   return data.data.updatedCount;
 }
+
+// DELETE /api/notifications — 내 알림 전체 삭제 (#152). 지운 개수를 돌려준다 (없으면 0).
+export async function deleteAllNotifications(): Promise<number> {
+  const { data } = await api.delete<ApiResponse<{ deletedCount: number }>>("/notifications");
+  return data.data.deletedCount;
+}

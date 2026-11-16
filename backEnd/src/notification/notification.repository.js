@@ -53,6 +53,12 @@ async function markAllRead(memberId) {
   return result.affectedRows;
 }
 
+// 회원의 알림을 모두 실제로 지운다. 다른 테이블이 참조하지 않아 soft delete를 쓰지 않는다 (docs/04-db.md). 지운 행 수
+async function deleteAllByMember(memberId) {
+  const [result] = await pool.query('DELETE FROM notification WHERE member_id = ?', [memberId]);
+  return result.affectedRows;
+}
+
 // 알림 여러 건을 한 번에 저장하고, 저장된 행을 그대로 돌려준다 (실시간 전송용).
 async function insertNotifications(items) {
   if (items.length === 0) {
@@ -123,6 +129,7 @@ module.exports = {
   findNotificationOwner,
   markRead,
   markAllRead,
+  deleteAllByMember,
   insertNotifications,
   findQuestionForNotification,
   findAnswerWriterId,
