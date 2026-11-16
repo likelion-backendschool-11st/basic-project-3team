@@ -572,7 +572,7 @@ export default function ProfileEdit() {
                   취소
                 </button>
                 <button
-                  className="neo-btn bg-slate-300 hover:bg-slate-400 text-gray-900 font-bold px-8 py-2.5 rounded text-sm sm:text-base min-w-[100px] disabled:opacity-60 disabled:cursor-wait"
+                  className="neo-btn bg-[#2563EB] hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded text-sm sm:text-base min-w-[100px] disabled:opacity-60 disabled:cursor-wait"
                   data-purpose="save-btn"
                   disabled={submitting}
                   type="submit"
