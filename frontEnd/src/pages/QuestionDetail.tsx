@@ -15,6 +15,7 @@ import ReportDialog from "../components/report/ReportDialog";
 import { tagSearchPath } from "../components/questionList";
 import { GRADES, formatDateTime, writerSummary } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
+import { useLoginPrompt } from "../hooks/useLoginPrompt";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -40,6 +41,7 @@ const NOT_FOUND_REDIRECT_MS = 3000;
 
 export default function QuestionDetail() {
   const navigate = useNavigate();
+  const openLoginPrompt = useLoginPrompt();
   const { user, initializing } = useAuth();
   const [searchParams] = useSearchParams();
   const questionId = readQuestionId(searchParams.get("questionId"));
@@ -307,7 +309,7 @@ export default function QuestionDetail() {
                     <button
                       className="neo-btn inline-flex items-center px-4 py-2 bg-white border-thick border-neoBlack rounded-xl shadow-brutal text-sm font-bold text-gray-700 hover:bg-gray-100"
                       type="button"
-                      onClick={() => (user ? setReportOpen(true) : navigate("/login"))}
+                      onClick={() => (user ? setReportOpen(true) : openLoginPrompt("신고하려면 로그인이 필요해요."))}
                     >
                       신고
                     </button>

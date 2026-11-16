@@ -1,7 +1,7 @@
 // 질문 상세 화면의 답변 영역 (#26): 목록·작성·수정·삭제·채택. 디자인은 Answers(24번) 화면을 따른다.
 // QuestionDetail.tailwind.cjs의 테마(border-thick, neoBlack 등)로 스타일이 만들어진다.
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   ANSWER_RULES as RULES,
   acceptAnswer,
@@ -14,6 +14,7 @@ import {
 import { getErrorMessage, getFieldErrors } from "../../api/client";
 import { charLength } from "../../hooks/useQuestionForm";
 import { useAuth } from "../../hooks/useAuth";
+import { useLoginPrompt } from "../../hooks/useLoginPrompt";
 import AuthorPopover from "../AuthorPopover";
 import ConfirmModal from "../ConfirmModal";
 import LikeButton from "../LikeButton";
@@ -66,7 +67,7 @@ export default function AnswerSection({
   questionAccepted: boolean;
   onAccepted: () => void;
 }) {
-  const navigate = useNavigate();
+  const openLoginPrompt = useLoginPrompt();
   const { user, initializing } = useAuth();
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [reloadKey, setReloadKey] = useState(0);
@@ -367,7 +368,7 @@ export default function AnswerSection({
                     <button
                       className="bg-white hover:bg-gray-100 border-thick border-neoBlack px-2.5 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-brutal-sm"
                       type="button"
-                      onClick={() => (user ? setReportAnswerId(answer.answerId) : navigate("/login"))}
+                      onClick={() => (user ? setReportAnswerId(answer.answerId) : openLoginPrompt("신고하려면 로그인이 필요해요."))}
                     >
                       신고
                     </button>

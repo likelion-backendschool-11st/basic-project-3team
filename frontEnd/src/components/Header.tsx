@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useLoginPrompt } from "../hooks/useLoginPrompt";
 import Logo, { HEADER_INNER_CLASS } from "./Logo";
 import { ADMIN_REPORTS_PATH } from "./admin/adminLabels";
 import NotificationBell from "./notification/NotificationBell";
@@ -83,6 +84,7 @@ function ProfileMenu({ nickname }: { nickname: string }) {
 export default function Header() {
   const navigate = useNavigate();
   const { user, initializing } = useAuth();
+  const openLoginPrompt = useLoginPrompt();
 
   return (
     <header className="w-full bg-white border-b-2 sticky top-0 z-40 border-[#111111]" data-purpose="global-header">
@@ -103,7 +105,7 @@ export default function Header() {
           <button
             className={`${buttonBase} bg-[#2563EB] text-white hover:bg-blue-700`}
             type="button"
-            onClick={() => navigate(user ? "/ask" : "/login")}
+            onClick={() => (user ? navigate("/ask") : openLoginPrompt("질문을 작성하려면 로그인이 필요해요."))}
           >
             질문하기
           </button>
