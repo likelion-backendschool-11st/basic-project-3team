@@ -380,7 +380,7 @@ export default function AnswerSection({
                 {/* 답글이 있으면 "답글 n", 없으면 "답글 달기". 누르면 펼치기/접기 (REQ-ANSWER-009) */}
                 <button
                   aria-expanded={openReplies.has(answer.answerId)}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-[#FFDE59] hover:bg-yellow-300 border-thick border-neoBlack rounded-lg shadow-brutal-sm text-xs font-extrabold text-black"
+                  className="flex items-center gap-1.5 px-3 py-1 bg-[#FFD43B] hover:bg-yellow-300 border-thick border-neoBlack rounded-lg shadow-brutal-sm text-xs font-extrabold text-black"
                   type="button"
                   onClick={() => toggleReplies(answer.answerId)}
                 >

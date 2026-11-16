@@ -576,7 +576,7 @@ export default function Mypage() {
             </div>
 
             <div>
-              <span>© 2025 Dev in_. All rights reserved.</span>
+              <span>© 2026 Dev in_. All rights reserved.</span>
             </div>
           </div>
         </footer>

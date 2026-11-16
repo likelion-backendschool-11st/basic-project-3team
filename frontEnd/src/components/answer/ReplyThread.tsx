@@ -235,7 +235,7 @@ export default function ReplyThread({ answerId, onChanged }: { answerId: number;
                     취소
                   </button>
                   <button
-                    className="px-3 py-2 bg-[#FFDE59] hover:bg-yellow-300 border-thick border-neoBlack rounded-lg text-xs font-extrabold shadow-brutal-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 bg-[#FFD43B] hover:bg-yellow-300 border-thick border-neoBlack rounded-lg text-xs font-extrabold shadow-brutal-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={editing.saving || editing.content.trim() === ""}
                     type="button"
                     onClick={submitUpdate}
@@ -281,7 +281,7 @@ export default function ReplyThread({ answerId, onChanged }: { answerId: number;
               />
             </div>
             <button
-              className="px-5 py-2.5 bg-[#FFDE59] text-black font-extrabold text-xs sm:text-sm border-thick border-neoBlack rounded-lg shadow-brutal-sm hover:bg-yellow-300 self-end sm:self-auto shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 bg-[#FFD43B] text-black font-extrabold text-xs sm:text-sm border-thick border-neoBlack rounded-lg shadow-brutal-sm hover:bg-yellow-300 self-end sm:self-auto shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={submitting || content.trim() === ""}
               type="button"
               onClick={submitCreate}
