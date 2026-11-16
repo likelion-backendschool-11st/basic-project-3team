@@ -592,7 +592,7 @@ export default function Signup() {
         </main>
         {/* END: MainContent */} {/* BEGIN: Footer */}
         <footer className="w-full py-4 text-center text-xs text-gray-500 font-medium">
-          {" © 2025 Dev in_ Inc. All rights reserved. "}
+          {" © 2026 Dev in_ Inc. All rights reserved. "}
         </footer>
         {/* END: Footer */}
       </div>

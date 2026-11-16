@@ -488,7 +488,7 @@ export default function Login() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono font-medium text-gray-600">
             <div className="flex items-center gap-2">
               <span className="font-black text-black">Dev in_</span>{" "}
-              <span>© 2025 Dev in Ecosystem. All rights reserved.</span>
+              <span>© 2026 Dev in Ecosystem. All rights reserved.</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -497,9 +497,6 @@ export default function Login() {
               </a>{" "}
               <a className="hover:text-black font-bold text-black" href="#privacy">
                 개인정보처리방침
-              </a>{" "}
-              <a className="hover:text-black" href="/system-status">
-                시스템상태
               </a>
             </div>
           </div>

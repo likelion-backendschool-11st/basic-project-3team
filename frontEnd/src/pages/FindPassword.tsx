@@ -429,7 +429,7 @@ export default function FindPassword() {
         </main>
 
         <footer className="w-full bg-[#FFFDF5] border-t-[2.5px] border-black py-4 px-4 text-center mt-12">
-          <p className="text-xs font-bold text-neutral-600">© 2025 Dev in_. All rights reserved.</p>
+          <p className="text-xs font-bold text-neutral-600">© 2026 Dev in_. All rights reserved.</p>
         </footer>
       </div>
     </div>
