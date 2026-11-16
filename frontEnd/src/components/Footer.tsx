@@ -19,8 +19,6 @@ export default function Footer() {
           <Link className="hover:text-black hover:underline" to="/privacy">
             개인정보처리방침
           </Link>
-          <span>·</span>
-          <span>문의하기</span>
         </div>
       </div>
     </footer>
