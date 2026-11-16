@@ -170,6 +170,13 @@ export default function Login() {
             {/* GNB Right Action: Sign-Up Button */}
 
             <div className="flex items-center gap-3">
+              {/* 로그인하지 않아도 질문 게시판은 둘러볼 수 있다 (REQ-HEADER-002) */}
+              <Link
+                className="brutal-btn inline-flex items-center bg-[#2563EB] text-white font-bold text-sm px-4 py-2 border-[2.5px] border-black rounded-lg brutal-shadow-sm hover:bg-blue-700"
+                to={MAIN_PATH}
+              >
+                질문 게시판 둘러보기
+              </Link>
               <span className="hidden sm:inline-block text-xs font-mono font-medium text-gray-600">
                 아직 회원이 아니신가요?
               </span>{" "}
