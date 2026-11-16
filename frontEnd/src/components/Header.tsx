@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Logo, { HEADER_INNER_CLASS } from "./Logo";
 import { ADMIN_REPORTS_PATH } from "./admin/adminLabels";
 import NotificationBell from "./notification/NotificationBell";
 import SearchBar from "./search/SearchBar";
@@ -80,13 +81,8 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white border-b-2 sticky top-0 z-40 border-[#111111]" data-purpose="global-header">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        <Link to={MAIN_PATH} className="flex items-center gap-1.5 select-none" aria-label="Dev in_ 메인으로">
-          <span className="text-2xl font-black text-[#111111] tracking-tight">Dev</span>
-          <span className="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-['JetBrains_Mono',monospace] font-bold text-[#111111] shadow-[2px_2px_0_#111111]">
-            in_
-          </span>
-        </Link>
+      <div className={HEADER_INNER_CLASS}>
+        <Logo to={MAIN_PATH} />
 
         <SearchBar />
 

@@ -6,6 +6,7 @@ import { resetPassword, verifyPasswordReset } from "../api/auth";
 import { getErrorMessage } from "../api/client";
 import { INPUT_PATTERNS, INPUT_RULES, formatPhoneInput, toPhoneDigits } from "../api/member";
 import "./FindPassword.css";
+import Logo, { HEADER_INNER_CLASS } from "../components/Logo";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
@@ -175,14 +176,9 @@ export default function FindPassword() {
           backgroundSize: "18px 18px",
         }}
       >
-        <header className="w-full px-4 sm:px-8 py-3.5 sticky top-0 z-50 bg-white border-b-2 border-[#111111]">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <Link className="flex items-center gap-1.5" to="/">
-              <span className="text-2xl font-black text-[#111111] tracking-tight font-sans">Dev</span>
-              <span className="bg-[#FFD43B] border-2 border-[#111111] px-1.5 py-0.5 rounded text-lg font-mono font-bold text-[#111111] shadow-[2px_2px_0_#111111]">
-                in_
-              </span>
-            </Link>
+        <header className="w-full sticky top-0 z-50 bg-white border-b-2 border-[#111111]">
+          <div className={HEADER_INNER_CLASS}>
+            <Logo to="/" />
             <div className="flex items-center gap-2.5">
               <Link
                 className="px-3.5 py-1.5 text-xs font-bold bg-[#FFFDF5] brutal-border shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
