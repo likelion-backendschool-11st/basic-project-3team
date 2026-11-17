@@ -2,6 +2,7 @@ import { useEffect, useState, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage, getFieldErrors } from "../api/client";
 import { QUESTION_RULES as RULES, type QuestionRequest } from "../api/question";
+import { formatNumber } from "../components/writer";
 import { useAuth } from "./useAuth";
 
 export type QuestionField = "title" | "content" | "categoryId" | "tags";
@@ -34,10 +35,11 @@ function validate({ title, content, categoryId, tags }: QuestionValues, { isBlan
   else if (titleLength > RULES.titleMax) errors.title = `제목은 ${RULES.titleMax}자 이하로 입력해주세요.`;
   if (charLength(content.trim()) < RULES.contentMin) errors.content = `내용은 ${RULES.contentMin}자 이상 입력해주세요.`;
   else if (charLength(content) > RULES.contentMax)
-    errors.content = `내용은 ${RULES.contentMax.toLocaleString()}자 이하로 입력해주세요.`;
+    errors.content = `내용은 ${formatNumber(RULES.contentMax)}자 이하로 입력해 주세요.`;
   else if (isBlankContent?.(content)) errors.content = "템플릿의 각 항목을 채워주세요.";
   if (categoryId === "") errors.categoryId = "카테고리를 1개 선택해주세요.";
-  if (tags.length > RULES.maxTags) errors.tags = `태그는 최대 ${RULES.maxTags}개까지 선택할 수 있습니다.`;
+  if (tags.length > RULES.maxTags)
+    errors.tags = `태그는 최대 ${RULES.maxTags}개까지 고를 수 있어요. 다른 태그를 지우고 골라 주세요.`;
   return errors;
 }
 
@@ -80,7 +82,10 @@ export function useQuestionForm(options: QuestionFormOptions = {}) {
   function addTag(tag: string) {
     const { tags } = values;
     if (tags.length >= RULES.maxTags && !tags.includes(tag)) {
-      setErrors((prev) => ({ ...prev, tags: `태그는 최대 ${RULES.maxTags}개까지 선택할 수 있습니다.` }));
+      setErrors((prev) => ({
+        ...prev,
+        tags: `태그는 최대 ${RULES.maxTags}개까지 고를 수 있어요. 다른 태그를 지우고 골라 주세요.`,
+      }));
       return false;
     }
     if (!tags.includes(tag)) setValues((prev) => ({ ...prev, tags: [...prev.tags, tag] }));
