@@ -9,7 +9,7 @@ export const HEADER_INNER_CLASS = "max-w-6xl mx-auto px-4 sm:px-6 h-16 flex item
 // 모든 화면이 같이 쓰는 로고 (#156)
 export default function Logo({ to }: { to: string }) {
   // 이스터에그: `cd ..`이면 3초 동안 "out_", `devin`이면 한 글자씩 다시 타이핑한다. 평소에는 그대로다.
-  const { word, shown, blink } = useLogoEasterEgg();
+  const { word, shown, blink, hop } = useLogoEasterEgg();
   // 타이핑 중 아직 안 친 글자는 자리만 남기고 숨겨, 헤더가 좌우로 움직이지 않게 한다.
   const hide = (index: number) => (index >= shown ? "invisible" : "");
   const typing = shown < LOGO_TYPE_STEPS;
@@ -24,8 +24,10 @@ export default function Logo({ to }: { to: string }) {
             ))
           : "Dev"}
       </span>
+      {/* 글자가 바뀔 때마다(key) 상자를 새로 그려 폴짝 애니메이션을 다시 돌린다 */}
       <span
-        className={`bg-devin-yellow border-devin border-devin-ink px-1.5 py-0.5 rounded text-lg font-mono font-bold text-devin-ink shadow-devin-sm ${hide(3)}`}
+        key={word}
+        className={`bg-devin-yellow border-devin border-devin-ink px-1.5 py-0.5 rounded text-lg font-mono font-bold text-devin-ink shadow-devin-sm ${hide(3)} ${hop ? "egg-logo-hop" : ""}`}
       >
         {typing
           ? [...word].map((char, index) => (

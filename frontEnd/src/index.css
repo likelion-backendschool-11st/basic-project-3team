@@ -31,6 +31,12 @@ html {
 }
 
 /* 알림창: 헤더 아래에서 위에서 아래로 살짝 내려오기 */
+/* 로고 상자 위로 폴짝 (cd .. = 상위 폴더로 이동) */
+@keyframes egg-logo-hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+}
+
 @keyframes egg-toast-down {
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -40,13 +46,15 @@ html {
 .egg-shake-search { animation: egg-shake-search 0.4s ease-in-out; }
 .egg-flash-border { animation: egg-flash-border 0.8s ease-in-out; }
 .egg-toast { animation: egg-toast-down 0.25s ease-out; }
+.egg-logo-hop { animation: egg-logo-hop 0.4s ease-out; }
 
 /* 움직임 줄이기 설정: 움직임 없이 알림만 보여준다 */
 @media (prefers-reduced-motion: reduce) {
   .egg-cursor,
   .egg-shake-search,
   .egg-flash-border,
-  .egg-toast {
+  .egg-toast,
+  .egg-logo-hop {
     animation: none;
   }
 }
