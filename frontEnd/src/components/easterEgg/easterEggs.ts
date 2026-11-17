@@ -1,5 +1,5 @@
 // 개발자용 이스터에그: 헤더 검색창에 아래 검색어를 정확히 입력하면 검색은 그대로 하고 알림·효과를 더한다.
-export type EasterEggEffect = "none" | "shakeSearch" | "flashBorder" | "logoOut" | "logoType";
+export type EasterEggEffect = "none" | "shakeSearch" | "flashBorder" | "logoOut" | "logoType" | "logoHello";
 
 export interface EasterEgg {
   // 로고·검색창이 움직이는 이스터에그는 그 효과가 잘 보이게 알림을 띄우지 않는다.
@@ -12,7 +12,7 @@ export interface EasterEgg {
 // 키는 앞뒤 공백을 지우고 소문자로 바꾼 검색어
 const EASTER_EGGS: Record<string, EasterEgg> = {
   "try catch": { effect: "shakeSearch" },
-  "system.out.println": { message: "Hello, World! 👋", effect: "none" },
+  "system.out.println": { effect: "logoHello" },
   "git push --force": { message: "⚠️ 팀원들이 당신을 찾고 있습니다…", effect: "flashBorder", toastAt: "center" },
   "cd ..": { effect: "logoOut" },
 };
@@ -24,15 +24,25 @@ const DEVIN_EGG: EasterEgg = { effect: "logoType" };
 export const EASTER_EGG_EVENT = "devin:easter-egg";
 
 export const LOGO_OUT_MS = 3000;
-// 로고 다시 타이핑: "D" → "De" → "Dev" → "Dev i" → "Dev in" → "Dev in_" (글자당 0.15초), 끝나면 커서 3초 깜빡임
+// 로고 타이핑: 글자당 0.15초씩 한 글자씩 치고, 끝나면 "_"를 커서처럼 깜빡인 뒤 원래 로고로 돌아온다.
+// devin: "D" → "De" → "Dev" → "Dev i" → "Dev in" → "Dev in_", 커서 3초
+// hello(System.out.println): 로고 대신 "Hello, World!_", 커서 2초
 export const LOGO_TYPE_STEPS = 6;
 export const LOGO_TYPE_STEP_MS = 150;
-export const LOGO_BLINK_MS = 3000;
+export type LogoTypingKind = "devin" | "hello";
+export const LOGO_TYPINGS: Record<LogoTypingKind, { text: string | null; steps: number; blinkMs: number }> = {
+  devin: { text: null, steps: LOGO_TYPE_STEPS, blinkMs: 3000 },
+  hello: { text: "Hello, World!", steps: "Hello, World!".length + 1, blinkMs: 2000 },
+};
 // 검색 결과 화면으로 넘어가며 헤더가 새로 그려져도 새 검색창이 흔들리게, 이 시간 안에 생긴 검색창은 흔든다.
 const SEARCH_SHAKE_WINDOW_MS = 1000;
 
 // 화면이 바뀌면 Header(로고·검색창)가 새로 그려지므로 상태를 모듈에 둔다.
-export const easterEggState = { logoOutUntil: 0, logoTypeStart: 0, searchShakeUntil: 0 };
+export const easterEggState: {
+  logoOutUntil: number;
+  logoTyping: { kind: LogoTypingKind; start: number } | null;
+  searchShakeUntil: number;
+} = { logoOutUntil: 0, logoTyping: null, searchShakeUntil: 0 };
 
 export function findEasterEgg(input: string): EasterEgg | undefined {
   const keyword = input.trim().toLowerCase();
@@ -46,15 +56,16 @@ export function prefersReducedMotion() {
 
 export function runEasterEgg(egg: EasterEgg) {
   const now = Date.now();
-  // 로고 효과 두 개는 나중 것만 보여준다.
+  // 로고 효과는 나중 것만 보여준다.
   if (egg.effect === "logoOut") {
     easterEggState.logoOutUntil = now + LOGO_OUT_MS;
-    easterEggState.logoTypeStart = 0;
+    easterEggState.logoTyping = null;
   }
-  if (egg.effect === "logoType") {
-    easterEggState.logoTypeStart = now;
+  if (egg.effect === "logoType" || egg.effect === "logoHello") {
+    easterEggState.logoTyping = { kind: egg.effect === "logoType" ? "devin" : "hello", start: now };
     easterEggState.logoOutUntil = 0;
   }
+  if (egg.effect === "logoHello") console.log("Hello, World!");
   if (egg.effect === "shakeSearch" && !prefersReducedMotion()) {
     easterEggState.searchShakeUntil = now + SEARCH_SHAKE_WINDOW_MS;
   }
