@@ -62,8 +62,9 @@ export default function SearchBar() {
 
   const isTagInput = text.trim().startsWith("#");
 
+  // #147: 휴대폰 폭에서는 Header가 펼친 한 줄을 꽉 채운다.
   return (
-    <div className="relative flex-1 max-w-[460px] mx-2 sm:mx-6" ref={boxRef} onKeyDown={handleKeyDown}>
+    <div className="relative flex-1 sm:max-w-[460px] sm:mx-6" ref={boxRef} onKeyDown={handleKeyDown}>
       <form className="relative flex items-center" role="search" onSubmit={handleSubmit}>
         <input
           className="w-full h-[40px] pl-3.5 pr-12 py-2 bg-white border-2 border-black rounded-[8px] text-sm text-[#111111] placeholder:text-[#888888] focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0_#111111] transition-all"

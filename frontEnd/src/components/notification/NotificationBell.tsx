@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { NotificationType } from "../../api/notification";
 import { useNotifications } from "../../hooks/notificationContext";
-import { HEADER_BUTTON_CLASS, HEADER_BUTTON_COLOR } from "../headerStyles";
+import { HEADER_BUTTON_COLOR, HEADER_ICON_BUTTON_CLASS } from "../headerStyles";
 import { detailPath } from "../questionList";
 
 // 알림 종류별 머리말과 색 (Stitch "알림 팝오버 (7번)")
@@ -23,7 +23,7 @@ function formatRelative(createdAt: string, now = Date.now()) {
   return createdAt.slice(0, 10).replaceAll("-", ".");
 }
 
-const headerButton = `relative ${HEADER_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`;
+const headerButton = `relative ${HEADER_ICON_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`;
 
 // 헤더 알림 버튼 + 알림 팝오버 (REQ-MAIN-005, #70). 로그인한 상태에서만 헤더가 그린다.
 export default function NotificationBell() {
@@ -94,8 +94,10 @@ export default function NotificationBell() {
 
   const badge = unreadCount > 99 ? "99+" : String(unreadCount);
 
+  // #147: 휴대폰 폭에서는 알림 버튼이 오른쪽 끝이 아니라 팝오버가 화면 왼쪽으로 잘린다.
+  // sm 미만에서는 기준을 헤더로 옮겨 헤더 좌우 여백(16px)에 맞춘다.
   return (
-    <div className="relative" ref={boxRef}>
+    <div className="sm:relative" ref={boxRef}>
       <button
         className={headerButton}
         type="button"
@@ -104,9 +106,12 @@ export default function NotificationBell() {
         aria-label={unreadCount > 0 ? `알림, 안 읽은 알림 ${unreadCount}개` : "알림"}
         onClick={toggle}
       >
-        알림
+        <span className="lg:hidden" aria-hidden="true">
+          🔔
+        </span>
+        <span className="hidden lg:inline">알림</span>
         {unreadCount > 0 && (
-          <span className="text-xs bg-[#E11D48] text-white px-1.5 py-0.5 border border-[#111111] leading-none font-bold rounded-full">
+          <span className="absolute -top-2 -right-2 lg:static text-xs bg-[#E11D48] text-white px-1.5 py-0.5 border border-[#111111] leading-none font-bold rounded-full">
             {badge}
           </span>
         )}
@@ -114,7 +119,7 @@ export default function NotificationBell() {
 
       {open && (
         <div
-          className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-2rem)] bg-white border-2 border-black shadow-[4px_4px_0_#111111] z-50"
+          className="absolute left-4 right-4 sm:left-auto sm:right-0 mt-2 sm:w-[360px] sm:max-w-[calc(100vw-2rem)] bg-white border-2 border-black shadow-[4px_4px_0_#111111] z-50"
           role="dialog"
           aria-label="알림 목록"
           data-purpose="notification-dropdown-panel"

@@ -3,7 +3,7 @@ module.exports = {
   presets: [require("../../tailwind.preset.cjs")],
   important: "#page-question-detail",
   // 공통 컴포넌트(Header·검색창·FieldError 등)의 클래스도 이 화면 CSS에 만든다.
-  content: ["./src/pages/QuestionDetail.tsx", "./src/components/**/*.tsx"],
+  content: ["./src/pages/QuestionDetail.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
   ...{
