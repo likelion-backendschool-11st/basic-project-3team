@@ -48,7 +48,7 @@
 |---|---|
 | 화면 | 프론트 Vercel. 모든 주소를 `index.html`로 보낸다 (React Router, `frontEnd/vercel.json`) |
 | `/api` | 프론트 Vercel이 백엔드 주소로 넘긴다 (`frontEnd/vercel.json`의 rewrites). 브라우저에는 같은 주소라 CORS가 필요 없고 Refresh 쿠키(`SameSite=Strict`)도 그대로 오간다 |
-| 실시간 알림 | 동작하지 않는다. socket.io는 연결을 계속 유지해야 하는데 Vercel 서버리스 함수는 요청이 끝나면 멈춘다. 연결이 끊긴 동안 30초마다 안 읽은 알림 수를 다시 불러오는 예비 조회로 대신한다 |
+| 실시간 알림 | 동작하지 않는다. socket.io는 연결을 계속 유지해야 하는데 Vercel 서버리스 함수는 요청이 끝나면 멈춘다. 그래서 배포에서는 소켓을 열지 않고(`VITE_SOCKET_URL`이 비어 있을 때), 탭이 보이는 동안 10초마다 안 읽은 알림 수를 다시 불러온다. 다른 탭에 갔다 돌아오면 바로 한 번 불러온다 |
 
 - 프론트 환경변수: `VITE_API_URL=/api`, `VITE_SOCKET_URL`은 비워 둔다. `VITE_` 값은 브라우저에 노출되므로 비밀값을 넣지 않는다. 바꾼 뒤에는 Redeploy해야 반영된다.
 - 백엔드 환경변수: `.env.example`의 값(DB 접속 정보, `JWT_SECRET`, `JWT_REFRESH_SECRET`)에 더해 `NODE_ENV=production`(Refresh 쿠키에 `Secure` 적용). `/api`는 Vercel을 거쳐 오므로 `CORS_ORIGIN`은 비워 둬도 된다.

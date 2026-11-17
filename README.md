@@ -13,7 +13,7 @@
 | API (백엔드) | https://basic-project-3team.vercel.app/api |
 
 - 프론트·백엔드 모두 Vercel에 배포했다. 배포 구성은 `docs/environment.md`의 "배포" 절을 따른다.
-- 백엔드가 Vercel 서버리스 함수라 실시간 알림(socket.io)은 동작하지 않고, 알림 수는 30초마다 다시 불러온다.
+- 백엔드가 Vercel 서버리스 함수라 실시간 알림(socket.io)은 동작하지 않고, 알림 수는 탭이 보이는 동안 10초마다 다시 불러온다.
 
 ## 화면
 
