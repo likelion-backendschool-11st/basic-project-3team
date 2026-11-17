@@ -1,27 +1,60 @@
 import { useEffect, useState, type RefObject } from "react";
-import { EASTER_EGG_EVENT, easterEggState, playAnimation } from "./easterEggs";
+import {
+  EASTER_EGG_EVENT,
+  easterEggState,
+  LOGO_BLINK_MS,
+  LOGO_TYPE_STEP_MS,
+  LOGO_TYPE_STEPS,
+  playAnimation,
+} from "./easterEggs";
 
-// 로고: `cd ..` 이스터에그가 실행되면 3초 동안 true. 화면이 바뀌어 로고가 새로 그려져도 남은 시간만큼 이어진다.
-export function useLogoOut() {
-  const [out, setOut] = useState(() => Date.now() < easterEggState.logoOutUntil);
+// 로고 이스터에그 상태. word: 상자 안 글자, shown: 보이는 글자 수("Dev in_" 6자 중), blink: "_" 깜빡임
+export interface LogoState {
+  word: "in" | "out";
+  shown: number;
+  blink: boolean;
+  active: boolean;
+}
+
+const NORMAL_LOGO: LogoState = { word: "in", shown: LOGO_TYPE_STEPS, blink: false, active: false };
+const TYPE_DONE_MS = LOGO_TYPE_STEP_MS * (LOGO_TYPE_STEPS - 1);
+
+function readLogo(now: number): LogoState {
+  if (now < easterEggState.logoOutUntil) return { word: "out", shown: LOGO_TYPE_STEPS, blink: true, active: true };
+  const elapsed = now - easterEggState.logoTypeStart;
+  if (elapsed < TYPE_DONE_MS + LOGO_BLINK_MS) {
+    const shown = Math.min(LOGO_TYPE_STEPS, Math.floor(elapsed / LOGO_TYPE_STEP_MS) + 1);
+    return { word: "in", shown, blink: elapsed >= TYPE_DONE_MS, active: true };
+  }
+  return NORMAL_LOGO;
+}
+
+function sameLogo(a: LogoState, b: LogoState) {
+  return a.word === b.word && a.shown === b.shown && a.blink === b.blink && a.active === b.active;
+}
+
+// 로고: `cd ..`(3초 "out_"), `devin`(다시 타이핑 + 커서 깜빡임) 이스터에그 상태.
+// 화면이 바뀌어 로고가 새로 그려져도 시작 시각을 기준으로 이어진다.
+export function useLogoEasterEgg() {
+  const [logo, setLogo] = useState(() => readLogo(Date.now()));
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    function sync() {
+    function tick() {
       clearTimeout(timer);
-      const left = easterEggState.logoOutUntil - Date.now();
-      setOut(left > 0);
-      if (left > 0) timer = setTimeout(() => setOut(false), left);
+      const next = readLogo(Date.now());
+      setLogo((prev) => (sameLogo(prev, next) ? prev : next));
+      if (next.active) timer = setTimeout(tick, 50);
     }
-    sync();
-    window.addEventListener(EASTER_EGG_EVENT, sync);
+    tick();
+    window.addEventListener(EASTER_EGG_EVENT, tick);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener(EASTER_EGG_EVENT, sync);
+      window.removeEventListener(EASTER_EGG_EVENT, tick);
     };
   }, []);
 
-  return out;
+  return logo;
 }
 
 // 검색창: `try catch` 이스터에그가 실행되면 좌우로 흔든다. 검색 결과 화면에서 새로 그려진 검색창도 흔든다.

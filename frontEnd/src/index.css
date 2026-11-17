@@ -11,7 +11,7 @@ html {
 
 /* 이스터에그 (components/easterEgg). 화면별 Tailwind 설정과 상관없이 모든 화면에 적용되게 일반 CSS로 둔다. */
 
-/* 로고 "_": 터미널 커서처럼 1초마다 켜짐/꺼짐 (서서히 흐려지지 않게 steps) */
+/* 로고 "_": devin·cd .. 이스터에그 때만 터미널 커서처럼 1초마다 켜짐/꺼짐 (서서히 흐려지지 않게 steps) */
 @keyframes egg-cursor-blink {
   0%, 50% { opacity: 1; }
   50.01%, 100% { opacity: 0; }
