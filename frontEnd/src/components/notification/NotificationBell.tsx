@@ -3,17 +3,22 @@ import { useNavigate } from "react-router-dom";
 import type { NotificationType } from "../../api/notification";
 import { useNotifications } from "../../hooks/notificationContext";
 import { HEADER_BUTTON_COLOR, HEADER_ICON_BUTTON_CLASS } from "../headerStyles";
+import ListStatus from "../ListStatus";
 import { detailPath } from "../questionList";
+import { BUTTON, FOCUS, MENU, NOTICE, tabCountClass } from "../uiStyles";
 import { formatRelative } from "../writer";
 
-// 알림 종류별 머리말과 색 (Stitch "알림 팝오버 (7번)")
-const TYPE_STYLE: Record<NotificationType, { label: string; color: string; unreadBg: string }> = {
-  ANSWER_CREATED: { label: "[답변]", color: "text-[#2563EB]", unreadBg: "bg-blue-50/60 border-[#2563EB]" },
-  ANSWER_ACCEPTED: { label: "[채택]", color: "text-[#D4A017]", unreadBg: "bg-amber-50/60 border-[#D4A017]" },
-  CATEGORY_QUESTION: { label: "[관심]", color: "text-[#0B5D1E]", unreadBg: "bg-green-50/60 border-[#0B5D1E]" },
+// 알림 종류별 아이콘과 머리말 (ui-guide.md 9절: 색 대신 아이콘으로 구분한다)
+const TYPE_STYLE: Record<NotificationType, { label: string; icon: string }> = {
+  ANSWER_CREATED: { label: "답변", icon: "chat_bubble" },
+  ANSWER_ACCEPTED: { label: "채택", icon: "check_circle" },
+  CATEGORY_QUESTION: { label: "관심", icon: "bookmark" },
 };
 
 const headerButton = `relative ${HEADER_ICON_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`;
+// 안 읽은 알림 수 (헤더 버튼 위 빨간 원). 휴대폰 폭에서는 아이콘 버튼 오른쪽 위에 겹쳐 둔다.
+const BADGE =
+  "absolute -top-2 -right-2 lg:static inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full border-[1.5px] border-devin-ink bg-devin-red text-white text-[11px] font-extrabold leading-none tabular-nums";
 
 // 헤더 알림 버튼 + 알림 팝오버 (REQ-MAIN-005, #70). 로그인한 상태에서만 헤더가 그린다.
 export default function NotificationBell() {
@@ -64,7 +69,7 @@ export default function NotificationBell() {
     try {
       await markAllRead();
     } catch {
-      setActionError("모두 읽음 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      setActionError("모두 읽음으로 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.");
     }
   }
 
@@ -76,7 +81,7 @@ export default function NotificationBell() {
     try {
       await deleteAll();
     } catch {
-      setActionError("모두 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      setActionError("알림을 지우지 못했어요. 잠시 후 다시 시도해 주세요.");
     } finally {
       setDeleting(false);
     }
@@ -96,36 +101,32 @@ export default function NotificationBell() {
         aria-label={unreadCount > 0 ? `알림, 안 읽은 알림 ${unreadCount}개` : "알림"}
         onClick={toggle}
       >
-        <span className="lg:hidden" aria-hidden="true">
-          🔔
+        <span className={`lg:hidden ${MENU.icon}`} aria-hidden="true">
+          notifications
         </span>
         <span className="hidden lg:inline">알림</span>
         {unreadCount > 0 && (
-          <span className="absolute -top-2 -right-2 lg:static text-xs bg-[#E11D48] text-white px-1.5 py-0.5 border border-[#111111] leading-none font-bold rounded-full">
+          <span className={BADGE} aria-hidden="true">
             {badge}
           </span>
         )}
       </button>
 
+      {/* 알림 팝오버: 메뉴와 같은 모양 (ui-guide.md 12절) */}
       {open && (
         <div
-          className="absolute left-4 right-4 sm:left-auto sm:right-0 mt-2 sm:w-[360px] sm:max-w-[calc(100vw-2rem)] bg-white border-2 border-black shadow-[4px_4px_0_#111111] z-50"
+          className={`${MENU.panel} absolute left-4 right-4 sm:left-auto sm:right-0 mt-2 sm:w-[360px] sm:max-w-[calc(100vw-2rem)] z-50`}
           role="dialog"
           aria-label="알림 목록"
           data-purpose="notification-dropdown-panel"
         >
-          <div className="flex items-center justify-between px-4 py-3 border-b-2 border-black">
-            <div className="flex items-baseline gap-2">
-              <h2 className="font-black text-sm tracking-tight">알림</h2>
-              <span className="text-xs text-gray-600 font-medium flex items-center gap-1">
-                새 알림
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#E11D48] text-white leading-none">
-                  {unreadCount}
-                </span>
-              </span>
-            </div>
+          <div className="flex items-center justify-between gap-2 px-2.5 py-1.5">
+            <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-devin-ink">
+              새 알림
+              <span className={tabCountClass(false)}>{unreadCount}</span>
+            </h2>
             <button
-              className="px-2 py-0.5 text-[11px] font-bold border-2 border-black bg-white hover:bg-gray-100 shadow-[2px_2px_0_#111111] disabled:opacity-40 disabled:shadow-none"
+              className={`${BUTTON.text} text-xs`}
               type="button"
               disabled={unreadCount === 0}
               onClick={handleReadAll}
@@ -135,56 +136,75 @@ export default function NotificationBell() {
           </div>
 
           {actionError && (
-            <p className="px-4 py-2 text-xs font-bold text-[#E11D48] border-b border-gray-200">{actionError}</p>
+            <p className={`${NOTICE.error} mx-1 mb-1 text-xs`} role="alert">
+              {actionError}
+            </p>
           )}
 
-          <ul className="divide-y divide-gray-200 text-left max-h-[380px] overflow-y-auto" aria-busy={loading}>
-            {error && <li className="p-4 text-xs font-bold text-[#E11D48]">{error}</li>}
+          <div className={MENU.divider} role="separator" />
+
+          <ul className="text-left max-h-[380px] overflow-y-auto" aria-busy={loading}>
+            {error && (
+              <li>
+                <ListStatus kind="error">{error}</ListStatus>
+              </li>
+            )}
             {!error && loading && items.length === 0 && (
-              <li className="p-4 text-xs text-gray-500">알림을 불러오는 중입니다...</li>
+              <li>
+                <ListStatus kind="loading">알림을 불러오는 중이에요.</ListStatus>
+              </li>
             )}
             {!error && !loading && items.length === 0 && (
-              <li className="p-6 text-center text-xs text-gray-500">아직 받은 알림이 없습니다.</li>
+              <li>
+                <ListStatus kind="empty">아직 받은 알림이 없어요.</ListStatus>
+              </li>
             )}
             {items.map((n) => {
               const style = TYPE_STYLE[n.type];
               return (
                 <li key={n.notificationId}>
+                  {/* 안 읽은 알림은 크림 바탕 + 굵은 글자, 읽은 알림은 회색 글자 */}
                   <button
-                    className={`w-full text-left p-3.5 transition-colors border-l-4 ${
-                      n.read ? "bg-white border-transparent hover:bg-gray-50" : `${style.unreadBg} hover:brightness-95`
+                    className={`flex w-full items-start gap-2 p-2.5 rounded-lg text-left transition-colors hover:bg-devin-yellow ${FOCUS} ${
+                      n.read ? "text-devin-gray" : "bg-devin-bg text-devin-ink"
                     }`}
                     type="button"
                     onClick={() => openNotification(n.notificationId, n.questionId)}
                   >
-                    <span className="flex items-start gap-2 mb-1">
-                      <span
-                        aria-label={n.read ? "읽음" : "읽지 않음"}
-                        className={`inline-block w-2 h-2 rounded-full mt-1 shrink-0 ${n.read ? "bg-gray-300" : "bg-[#E11D48]"}`}
-                      />
-                      <span className={`text-xs leading-snug ${n.read ? "text-gray-600" : "font-bold text-gray-900"}`}>
-                        <span className={`${style.color} font-black`}>{style.label}</span> {n.message}
+                    <span className={`${MENU.icon} mt-px`} aria-hidden="true">
+                      {style.icon}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className={`block text-xs leading-snug ${n.read ? "" : "font-bold"}`}>
+                        <span className="font-extrabold">[{style.label}]</span> {n.message}
+                      </span>
+                      <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-devin-gray">
+                        {!n.read && <span className="font-extrabold text-devin-ink">새 알림 ·</span>}
+                        {formatRelative(n.createdAt)}
                       </span>
                     </span>
-                    <span className="block text-[11px] text-gray-400 pl-4">{formatRelative(n.createdAt)}</span>
                   </button>
                 </li>
               );
             })}
           </ul>
 
-          {/* #152: 목록 아래 한 줄. 지울 알림이 없으면 줄째로 숨긴다. */}
+          {/* #152: 목록 아래 위험 항목. 지울 알림이 없으면 숨긴다. */}
           {items.length > 0 && (
-            <div className="flex justify-end px-4 py-2 border-t-2 border-black">
+            <>
+              <div className={MENU.divider} role="separator" />
               <button
-                className="text-[11px] font-bold text-gray-500 hover:text-[#E11D48] disabled:opacity-60 disabled:hover:text-gray-500"
+                className={`${MENU.item} ${MENU.danger}`}
                 type="button"
                 disabled={deleting}
                 onClick={handleDeleteAll}
               >
+                <span className={MENU.icon} aria-hidden="true">
+                  delete
+                </span>
                 {deleting ? "삭제 중..." : "모두 삭제"}
               </button>
-            </div>
+            </>
           )}
         </div>
       )}

@@ -1,5 +1,9 @@
+import { Link } from "react-router-dom";
 import type { Profile } from "../api/mypage";
 import GradeIcon from "./GradeIcon";
+import { tagSearchPath } from "./questionList";
+import { FOCUS, TAG } from "./uiStyles";
+import { formatPercent } from "./writer";
 
 // careerYears: null = 미등록, 0 = 신입 (docs/api.md 입력값 규칙)
 export function formatCareer(careerYears: number | null) {
@@ -7,71 +11,58 @@ export function formatCareer(careerYears: number | null) {
   return careerYears === 0 ? "신입" : `${careerYears}년차`;
 }
 
-// 채택률은 소수점 첫째 자리까지, 답변이 없으면 0% (REQ-MYPAGE-006)
-export function formatRate(rate: number) {
-  return `${rate.toFixed(1).replace(/\.0$/, "")}%`;
-}
+const EMPTY = <span className="text-devin-gray-light">미등록</span>;
+const ROW = "flex items-center";
+const LABEL = "w-24 font-bold text-devin-gray shrink-0";
 
-const TAG_COLORS = [
-  "bg-amber-100 text-amber-900",
-  "bg-emerald-100 text-emerald-900",
-  "bg-sky-100 text-sky-900",
-  "bg-rose-100 text-rose-900",
-  "bg-violet-100 text-violet-900",
-];
-
-const EMPTY = <span className="font-medium text-neutral-400">미등록</span>;
-
-// 프로필 항목 목록 (REQ-MYPAGE-001). 마이페이지와 다른 회원 프로필에서 함께 쓴다.
+// 프로필 항목 목록 (REQ-MYPAGE-001). 색·태그는 docs/ui-guide.md 공통 값을 쓴다 (#190).
 export default function ProfileDetails({ profile, showGrade = false }: { profile: Profile; showGrade?: boolean }) {
   const career = formatCareer(profile.careerYears);
   return (
-    <dl className="space-y-3 text-sm" data-purpose="profile-details">
-      <div className="flex items-center">
-        <dt className="w-24 font-bold text-neutral-500 shrink-0">닉네임</dt>
-        <dd className="font-extrabold text-neutral-900" data-field="nickname">
+    <dl className="space-y-3 text-sm text-devin-ink" data-purpose="profile-details">
+      <div className={ROW}>
+        <dt className={LABEL}>닉네임</dt>
+        <dd className="font-extrabold" data-field="nickname">
           {profile.nickname}
         </dd>
       </div>
-      <div className="flex items-center">
-        <dt className="w-24 font-bold text-neutral-500 shrink-0">경력</dt>
-        <dd className="font-bold text-neutral-800" data-field="career">
+      <div className={ROW}>
+        <dt className={LABEL}>경력</dt>
+        <dd className="font-bold" data-field="career">
           {career ?? EMPTY}
         </dd>
       </div>
-      <div className="flex items-center">
-        <dt className="w-24 font-bold text-neutral-500 shrink-0">기술 스택</dt>
+      <div className="flex items-start">
+        <dt className={`${LABEL} leading-[22px]`}>기술 스택</dt>
         <dd className="flex flex-wrap gap-1.5" data-field="techStacks">
           {profile.techStacks.length === 0
             ? EMPTY
-            : profile.techStacks.map((name, i) => (
-                <span
-                  className={`${TAG_COLORS[i % TAG_COLORS.length]} neo-border-thin text-xs font-bold px-2 py-0.5`}
-                  key={name}
-                >
+            : profile.techStacks.map((name) => (
+                // 태그는 누르면 그 태그로 검색한다 (ui-guide.md 7절)
+                <Link className={`${TAG} ${FOCUS}`} key={name} to={tagSearchPath(name)}>
                   {name}
-                </span>
+                </Link>
               ))}
         </dd>
       </div>
-      <div className="flex items-start pt-1">
-        <dt className="w-24 font-bold text-neutral-500 shrink-0">소개글</dt>
-        <dd className="font-medium text-neutral-700 leading-snug whitespace-pre-line break-all" data-field="bio">
+      <div className="flex items-start">
+        <dt className={LABEL}>소개글</dt>
+        <dd className="leading-snug whitespace-pre-line break-all" data-field="bio">
           {profile.bio ?? EMPTY}
         </dd>
       </div>
       {showGrade && (
         <>
-          <div className="flex items-center">
-            <dt className="w-24 font-bold text-neutral-500 shrink-0">등급</dt>
-            <dd className="font-extrabold text-neutral-800" data-field="grade">
+          <div className={ROW}>
+            <dt className={LABEL}>등급</dt>
+            <dd data-field="grade">
               <GradeIcon grade={profile.grade} withLabel />
             </dd>
           </div>
-          <div className="flex items-center">
-            <dt className="w-24 font-bold text-neutral-500 shrink-0">채택률</dt>
-            <dd className="font-black text-indigo-600" data-field="acceptRate">
-              {formatRate(profile.acceptRate)}
+          <div className={ROW}>
+            <dt className={LABEL}>채택률</dt>
+            <dd className="font-black tabular-nums" data-field="acceptRate">
+              {formatPercent(profile.acceptRate)}
             </dd>
           </div>
         </>

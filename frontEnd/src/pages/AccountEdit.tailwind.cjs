@@ -5,27 +5,4 @@ module.exports = {
   content: ["./src/pages/AccountEdit.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
-  ...{
-    theme: {
-      extend: {
-        colors: {
-          cream: "#FFFDF5",
-          "neo-black": "#111111",
-          "neo-yellow": "#FACC15",
-          "neo-blue": "#3B82F6",
-          "neo-card": "#F4F1EA",
-          "neo-disabled": "#E7E2D6",
-          "neo-hint": "#6B7280",
-        },
-        boxShadow: {
-          brutal: "5px 5px 0px #111111",
-          "brutal-sm": "3px 3px 0px #111111",
-          "brutal-pressed": "1px 1px 0px #111111",
-        },
-        borderWidth: {
-          2.5: "2.5px",
-        },
-      },
-    },
-  },
 };
