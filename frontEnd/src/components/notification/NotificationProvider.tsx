@@ -22,6 +22,10 @@ const REFETCH_DEDUPE_MS = 1_000;
 const SOCKET_AUTH_ERRORS = new Set(["UNAUTHORIZED", "INVALID_TOKEN", "TOKEN_EXPIRED"]);
 // 재발급 후에도 계속 거절되면(서버 설정 문제 등) 무한 반복하지 않도록 연속 재시도 횟수를 제한한다
 const MAX_AUTH_RETRIES = 3;
+// 실시간 알림을 접속할 백엔드 주소 (frontEnd/.env의 VITE_SOCKET_URL, #75).
+// 비어 있으면 지금 화면과 같은 주소로 접속한다 (개발 환경의 Vite 프록시).
+// Vercel은 WebSocket을 백엔드로 넘기지 않으므로 배포에서는 백엔드 주소를 넣는다.
+const SOCKET_URL = (import.meta.env.VITE_SOCKET_URL || "").replace(/\/+$/, "") || undefined;
 
 // 알림 상태와 실시간 연결을 앱 전체에서 하나만 유지한다 (#70, docs/api.md 9장).
 // 헤더는 화면마다 새로 그려지므로, 연결을 여기(AuthProvider 안)에 두어 화면을 옮겨도 끊기지 않게 한다.
@@ -82,7 +86,7 @@ export default function NotificationProvider({ children }: { children: ReactNode
     startPolling();
 
     // auth를 함수로 넘겨, 다시 접속할 때마다 그때의 Access Token을 쓴다 (재발급 후 재연결).
-    const socket = io({
+    const socket = io(SOCKET_URL, {
       auth: (cb) => cb({ token: getAccessToken() }),
       transports: ["websocket"],
     });
