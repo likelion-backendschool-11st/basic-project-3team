@@ -14,7 +14,8 @@ export default function EasterEggToast() {
   useEffect(() => {
     function handleEgg(event: Event) {
       const egg = (event as CustomEvent<EasterEgg>).detail;
-      setToast((prev) => ({ id: (prev?.id ?? 0) + 1, message: egg.message }));
+      const { message } = egg;
+      if (message) setToast((prev) => ({ id: (prev?.id ?? 0) + 1, message }));
       if (egg.effect === "flashBorder" && !prefersReducedMotion()) setFlashId((id) => id + 1);
     }
     window.addEventListener(EASTER_EGG_EVENT, handleEgg);

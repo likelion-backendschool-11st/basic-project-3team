@@ -2,7 +2,8 @@
 export type EasterEggEffect = "none" | "shakeSearch" | "flashBorder" | "logoOut" | "logoType";
 
 export interface EasterEgg {
-  message: string;
+  // 로고가 바뀌는 이스터에그는 로고가 잘 보이게 알림을 띄우지 않는다.
+  message?: string;
   effect: EasterEggEffect;
 }
 
@@ -11,11 +12,11 @@ const EASTER_EGGS: Record<string, EasterEgg> = {
   "try catch": { message: "🧤 예외를 잡았습니다! 아무 일도 없었던 걸로…", effect: "shakeSearch" },
   "system.out.println": { message: "Hello, World! 👋", effect: "none" },
   "git push --force": { message: "⚠️ 팀원들이 당신을 찾고 있습니다…", effect: "flashBorder" },
-  "cd ..": { message: "🚪 Dev in_에서 나가시게요? 3초 뒤에 다시 들어옵니다", effect: "logoOut" },
+  "cd ..": { effect: "logoOut" },
 };
 
 // `dev in`, `devin`은 띄어쓰기도 무시한다.
-const DEVIN_EGG: EasterEgg = { message: "👋 저를 찾으셨군요? 반가워요!", effect: "logoType" };
+const DEVIN_EGG: EasterEgg = { effect: "logoType" };
 
 // 알림창·로고·검색창이 이 이벤트를 각각 받는다.
 export const EASTER_EGG_EVENT = "devin:easter-egg";
