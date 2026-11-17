@@ -27,6 +27,16 @@ module.exports = {
         borderWidth: {
           2.5: "2.5px",
         },
+        // 코드 창 이스터에그: ●와 name 줄이 0.3초 동안 살짝 나타난다.
+        keyframes: {
+          "fade-in": {
+            from: { opacity: "0", transform: "translateY(-2px)" },
+            to: { opacity: "1", transform: "translateY(0)" },
+          },
+        },
+        animation: {
+          "fade-in": "fade-in 0.3s ease-out",
+        },
       },
     },
   },

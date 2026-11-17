@@ -127,6 +127,14 @@ function SignupCompleteDialog({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
+// 코드 창 이스터에그의 name 값: 12자가 넘으면 자른다.
+const CODE_NICKNAME_MAX = 12;
+
+function codeNickname(nickname: string) {
+  const chars = [...nickname];
+  return chars.length > CODE_NICKNAME_MAX ? `${chars.slice(0, CODE_NICKNAME_MAX).join("")}...` : nickname;
+}
+
 export default function Signup() {
   const navigate = useNavigate();
   const [values, setValues] = useState<Record<Field, string>>({
@@ -143,6 +151,8 @@ export default function Signup() {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
+  // 이스터에그: 코드 창의 초록 동그라미를 누르면 코드에 닉네임 줄이 나타난다. 새로고침하면 다시 잠긴다.
+  const [codeUnlocked, setCodeUnlocked] = useState(false);
 
   const formatValid = (field: DuplicateField | "password") =>
     PATTERNS[field].test(toRequestValue(field, values[field]));
@@ -300,8 +310,25 @@ export default function Signup() {
                     <div className="flex items-center space-x-1.5">
                       <span className="w-3 h-3 rounded-full bg-[#EF4444] border border-[#1E1E1E]"></span>{" "}
                       <span className="w-3 h-3 rounded-full bg-[#F59E0B] border border-[#1E1E1E]"></span>{" "}
-                      <span className="w-3 h-3 rounded-full bg-[#10B981] border border-[#1E1E1E]"></span>{" "}
-                      <span className="ml-2 text-xs font-mono font-medium text-gray-400">register.init.ts</span>
+                      <span
+                        className="w-3 h-3 rounded-full bg-[#10B981] border border-[#1E1E1E] cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        aria-label="코드 창 열기"
+                        onClick={() => setCodeUnlocked(true)}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter" && e.key !== " ") return;
+                          e.preventDefault();
+                          setCodeUnlocked(true);
+                        }}
+                      ></span>{" "}
+                      <span className="ml-2 text-xs font-mono font-medium text-gray-400">
+                        register.init.ts
+                        {/* VS Code의 저장 안 된 파일 표시 */}
+                        {codeUnlocked && (
+                          <span className="ml-1.5 text-[10px] text-white motion-safe:animate-fade-in">●</span>
+                        )}
+                      </span>
                     </div>
 
                     <span className="text-xs font-mono font-bold text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded border border-blue-800">
@@ -338,6 +365,19 @@ export default function Signup() {
                       <span className="text-blue-400">join</span>
                       {"({"}
                     </div>
+
+                    {/* 이스터에그: 닉네임 입력값과 실시간 연결 */}
+                    {codeUnlocked && (
+                      <div className="ml-8 text-emerald-300 motion-safe:animate-fade-in">
+                        {"name: "}
+                        {values.nickname ? (
+                          <span className="text-yellow-300">'{codeNickname(values.nickname)}'</span>
+                        ) : (
+                          <span className="text-gray-500">undefined</span>
+                        )}
+                        ,
+                      </div>
+                    )}
 
                     <div className="ml-8 text-emerald-300">
                       {"region: "}
