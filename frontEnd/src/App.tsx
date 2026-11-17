@@ -14,16 +14,12 @@ import LoginPromptProvider from './components/LoginPromptProvider'
 // 로그인하지 않아도 볼 수 있는 화면. 나머지(질문 작성·마이페이지·관리자 등)는 로그인 화면으로 보낸다.
 const PUBLIC_PATHS = new Set([
   '/login',
-  '/login-failed-modal',
   '/signup',
-  '/signup-complete-modal',
   '/find-id',
   '/find-password',
-  '/system-status',
   '/questions',
   '/question-detail',
   '/search-results',
-  '/tag-search-results',
 ])
 
 function ScreenIndex() {
