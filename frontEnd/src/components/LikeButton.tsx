@@ -5,7 +5,6 @@ import { getErrorCode, getErrorMessage } from "../api/client";
 import { setLike, type LikeTarget } from "../api/like";
 import { useAuth } from "../hooks/useAuth";
 import { useLoginPrompt } from "../hooks/useLoginPrompt";
-import { formatNumber } from "./writer";
 
 const MESSAGE_SHOW_MS = 2500;
 
@@ -63,28 +62,20 @@ export default function LikeButton({
 
   return (
     <span className="inline-flex items-center gap-2">
-      {/* 비활성(본인 글·처리 중) 모양은 쓰는 곳의 buttonClass가 맡는다 */}
       <button
         aria-label={state.liked ? "좋아요 취소" : "좋아요"}
         aria-pressed={state.liked}
-        className={className}
+        className={`${className} disabled:cursor-not-allowed ${isMine ? "opacity-60" : ""}`}
         disabled={isMine || busy}
-        title={isMine ? "본인 글에는 좋아요를 누를 수 없어요" : undefined}
+        title={isMine ? "본인 글에는 좋아요를 누를 수 없습니다" : undefined}
         type="button"
         onClick={toggle}
       >
-        {/* 누른 상태는 채운 하트로 구분한다. 빨강은 위험·오류에만 쓰므로 색은 바꾸지 않는다 (ui-guide.md 1절) */}
-        <span
-          aria-hidden="true"
-          className="material-symbols-outlined text-[18px] leading-none"
-          style={state.liked ? { fontVariationSettings: "'FILL' 1" } : undefined}
-        >
-          favorite
-        </span>
-        <span className="tabular-nums">좋아요 {formatNumber(state.likeCount)}</span>
+        <span className="text-rose-500">{state.liked ? "♥" : "♡"}</span>
+        <span>좋아요 {state.likeCount}</span>
       </button>
       {message && (
-        <span className="text-xs font-bold text-devin-red" role="alert">
+        <span className="text-xs font-bold text-rose-600" role="alert">
           {message}
         </span>
       )}
