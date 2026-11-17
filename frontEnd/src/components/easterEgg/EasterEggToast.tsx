@@ -38,13 +38,13 @@ export default function EasterEggToast() {
         />
       )}
       <div
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-max max-w-[calc(100vw-2rem)] pointer-events-none"
+        className="fixed bottom-[15vh] left-1/2 -translate-x-1/2 z-[100] w-max max-w-[calc(100vw-2rem)] pointer-events-none"
         role="status"
       >
         {toast && (
           <p
             key={toast.id}
-            className="egg-toast bg-black text-green-400 font-mono text-sm text-center px-4 py-2.5 rounded border-2 border-black shadow-lg"
+            className="egg-toast bg-black text-green-400 font-mono text-base sm:text-lg font-bold text-center px-6 py-4 rounded-lg border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,0.35)]"
           >
             {toast.message}
           </p>
