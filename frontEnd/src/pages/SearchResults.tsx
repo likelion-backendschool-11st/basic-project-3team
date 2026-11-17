@@ -13,6 +13,7 @@ import ListStatus from "../components/ListStatus";
 import Pagination from "../components/Pagination";
 import QuestionListItem from "../components/QuestionListItem";
 import SortTabs from "../components/SortTabs";
+import { SORT_TABS } from "../components/questionList";
 import {
   ACCEPTED_OPTIONS,
   MAX_TAGS,
@@ -27,7 +28,7 @@ import "./SearchResults.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  '/* Subtle dot grid pattern matching the requested neo-brutalist feel */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 24px 24px;\n      color: #111111;\n    }\n  \n\n    .border-neo {\n      border: 2.5px solid #111111;\n    }\n    .border-neo-b {\n      border-bottom: 2.5px solid #111111;\n    }';
+  "/* Subtle dot grid pattern matching the requested neo-brutalist feel */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 24px 24px;\n      color: #111111;\n    }\n  \n\n    .border-neo {\n      border: 2.5px solid #111111;\n    }\n    .border-neo-b {\n      border-bottom: 2.5px solid #111111;\n    }";
 
 type LoadState =
   { status: "loading" } | { status: "error"; message: string } | { status: "done"; data: Page<Question> };
@@ -255,7 +256,7 @@ export default function SearchResults() {
           </section>
 
           <div className="flex justify-end pb-3.5">
-            <SortTabs value={condition.sort} onChange={(sort) => update({ sort })} />
+            <SortTabs tabs={SORT_TABS} value={condition.sort} onChange={(sort) => update({ sort })} label="정렬" />
           </div>
 
           <section

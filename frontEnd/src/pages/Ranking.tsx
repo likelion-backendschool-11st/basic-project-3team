@@ -7,7 +7,7 @@ import AuthorPopover from "../components/AuthorPopover";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ListStatus from "../components/ListStatus";
-import { GRADES } from "../components/writer";
+import { GRADES } from "../components/gradeBadge";
 
 // 앞에서 3명은 시상대 카드로, 나머지는 줄로 보여 준다 (#159). 동점이라 rank가 같아도 앞 3명만 카드다.
 const PODIUM_SIZE = 3;

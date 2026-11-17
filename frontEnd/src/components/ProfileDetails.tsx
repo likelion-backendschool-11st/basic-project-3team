@@ -1,11 +1,5 @@
-import type { Grade, Profile } from "../api/mypage";
-
-export const GRADE_LABEL: Record<Grade, string> = {
-  BRONZE: "🥉 브론즈",
-  SILVER: "🥈 실버",
-  GOLD: "🥇 골드",
-  PLATINUM: "💎 플래티넘",
-};
+import type { Profile } from "../api/mypage";
+import GradeIcon from "./GradeIcon";
 
 // careerYears: null = 미등록, 0 = 신입 (docs/api.md 입력값 규칙)
 export function formatCareer(careerYears: number | null) {
@@ -71,7 +65,7 @@ export default function ProfileDetails({ profile, showGrade = false }: { profile
           <div className="flex items-center">
             <dt className="w-24 font-bold text-neutral-500 shrink-0">등급</dt>
             <dd className="font-extrabold text-neutral-800" data-field="grade">
-              {GRADE_LABEL[profile.grade]}
+              <GradeIcon grade={profile.grade} withLabel />
             </dd>
           </div>
           <div className="flex items-center">

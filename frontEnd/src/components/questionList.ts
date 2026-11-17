@@ -31,11 +31,6 @@ export function tagSearchPath(tag: string) {
   return `/search-results?tags=${encodeURIComponent(tag)}`;
 }
 
-// "2026-11-08T10:00:00" → "2026.11.08"
-export function formatDate(createdAt: string) {
-  return createdAt.slice(0, 10).replaceAll("-", ".");
-}
-
 // 1234 → "1.2k"
 export function formatCount(count: number) {
   return count >= 1000 ? `${(count / 1000).toFixed(1).replace(/\.0$/, "")}k` : String(count);

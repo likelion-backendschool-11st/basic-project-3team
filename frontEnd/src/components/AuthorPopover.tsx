@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { getErrorCode } from "../api/client";
 import { getProfile, type Profile } from "../api/mypage";
 import { useAuth } from "../hooks/useAuth";
-import { GRADES } from "./writer";
+import { GRADES } from "./gradeBadge";
 
 // 같은 회원을 다시 열면 이전 결과를 쓴다 (새로고침하면 비워진다). 실패한 결과는 넣지 않는다.
 const profileCache = new Map<number, Profile>();

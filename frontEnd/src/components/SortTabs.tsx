@@ -1,28 +1,65 @@
-import type { QuestionSort } from "../api/question";
-import { SORT_TABS } from "./questionList";
+import { useRef, type KeyboardEvent } from "react";
+import { tabClass, tabCountClass } from "./uiStyles";
+import { formatNumber } from "./writer";
 
-// 정렬 탭: 최신순 / 조회수순 / 답변순 / 좋아요순
-export default function SortTabs({ value, onChange }: { value: QuestionSort; onChange: (sort: QuestionSort) => void }) {
+export interface TabItem<T extends string> {
+  value: T;
+  label: string;
+  // 있으면 탭 이름 옆에 작은 숫자 상자로 보여 준다 ("내 답변 3")
+  count?: number;
+}
+
+// 공통 탭 (docs/ui-guide.md 12절): 정렬(최신순·조회수순 등), 마이페이지 탭.
+// 예: <SortTabs tabs={SORT_TABS} value={sort} onChange={setSort} label="정렬" />
+// 좌우 화살표 키로 옆 탭으로 옮긴다.
+export default function SortTabs<T extends string>({
+  tabs,
+  value,
+  onChange,
+  label,
+}: {
+  tabs: readonly TabItem<T>[];
+  value: T;
+  onChange: (value: T) => void;
+  label: string;
+}) {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const index = tabs.findIndex((tab) => tab.value === value);
+    const step = event.key === "ArrowRight" ? 1 : -1;
+    const next = (index + step + tabs.length) % tabs.length;
+    onChange(tabs[next].value);
+    listRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+  }
+
   return (
     <div
-      className="flex items-center border-[2.5px] border-[#111111] bg-white p-0.5 shadow-[2px_2px_0_#111111]"
+      ref={listRef}
+      className="flex flex-wrap items-center gap-1.5"
       role="tablist"
-      aria-label="정렬"
+      aria-label={label}
+      onKeyDown={handleKeyDown}
     >
-      {SORT_TABS.map((tab) => (
-        <button
-          key={tab.value}
-          className={`px-3.5 py-1.5 text-xs font-bold transition-colors ${
-            tab.value === value ? "bg-[#111111] text-white" : "text-gray-700 hover:bg-gray-100"
-          }`}
-          type="button"
-          role="tab"
-          aria-selected={tab.value === value}
-          onClick={() => onChange(tab.value)}
-        >
-          {tab.label}
-        </button>
-      ))}
+      {tabs.map((tab) => {
+        const selected = tab.value === value;
+        return (
+          <button
+            key={tab.value}
+            className={tabClass(selected)}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            tabIndex={selected ? 0 : -1}
+            onClick={() => onChange(tab.value)}
+          >
+            {tab.label}
+            {tab.count !== undefined && <span className={tabCountClass(selected)}>{formatNumber(tab.count)}</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }

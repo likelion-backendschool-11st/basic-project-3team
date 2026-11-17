@@ -13,7 +13,8 @@ import LikeButton from "../components/LikeButton";
 import Markdown from "../components/markdown/Markdown";
 import ReportDialog from "../components/report/ReportDialog";
 import { tagSearchPath } from "../components/questionList";
-import { GRADES, formatDateTime, writerSummary } from "../components/writer";
+import { GRADES } from "../components/gradeBadge";
+import { formatDateTime, writerSummary } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
 import { useLoginPrompt } from "../hooks/useLoginPrompt";
 

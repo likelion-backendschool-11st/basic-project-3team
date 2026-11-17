@@ -45,6 +45,8 @@ module.exports = {
           "green-soft": "#DCFCE7",
           "red-soft": "#FFF1F3",
           tag: "#F1F0EB",
+          // 표 줄 사이, 메뉴 구분선 (12절)
+          line: "#E7E4DA",
           disabled: "#ECEAE3",
           dot: "#D9D4C3",
         },

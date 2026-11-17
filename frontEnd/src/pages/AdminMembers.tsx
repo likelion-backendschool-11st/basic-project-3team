@@ -8,10 +8,11 @@ import { getErrorMessage } from "../api/client";
 import type { Page } from "../api/question";
 import AdminLayout from "../components/admin/AdminLayout";
 import { MEMBER_STATUS_LABEL } from "../components/admin/adminLabels";
-import ConfirmModal from "../components/admin/ConfirmModal";
+import ConfirmModal from "../components/ConfirmModal";
 import ListStatus from "../components/ListStatus";
 import Pagination from "../components/Pagination";
-import { formatDate, PAGE_SIZE, parsePage } from "../components/questionList";
+import { PAGE_SIZE, parsePage } from "../components/questionList";
+import { formatDate } from "../components/writer";
 import "./AdminMembers.css";
 
 const KEYWORD_MAX = 20;
@@ -184,7 +185,10 @@ export default function AdminMembers() {
                   const statusLabel = MEMBER_STATUS_LABEL[member.status];
                   const isAdmin = member.role === "ROLE_ADMIN";
                   return (
-                    <tr key={member.memberId} className="hover:bg-amber-50/50 divide-x-2 divide-[#121212] whitespace-nowrap">
+                    <tr
+                      key={member.memberId}
+                      className="hover:bg-amber-50/50 divide-x-2 divide-[#121212] whitespace-nowrap"
+                    >
                       <td className="py-3 px-4 font-bold">
                         {member.nickname}
                         {isAdmin && <span className="ml-1.5 text-[11px] font-bold text-[#2563EB]">관리자</span>}
@@ -239,11 +243,12 @@ export default function AdminMembers() {
           <ConfirmModal
             title={modal.next === "BANNED" ? "회원 정지" : "회원 정지 해제"}
             confirmLabel={modal.next === "BANNED" ? "정지" : "해제"}
-            danger={modal.next === "BANNED"}
+            tone={modal.next === "BANNED" ? "danger" : "primary"}
+            retryable
             busy={modal.busy}
             error={modal.error}
             onConfirm={confirmChange}
-            onClose={() => setModal(null)}
+            onCancel={() => setModal(null)}
           >
             <div className="border-l-4 border-[#111111] bg-gray-50 rounded-md px-3.5 py-2.5">
               <p className="font-bold text-black">

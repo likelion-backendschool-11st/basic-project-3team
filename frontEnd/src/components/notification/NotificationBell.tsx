@@ -4,6 +4,7 @@ import type { NotificationType } from "../../api/notification";
 import { useNotifications } from "../../hooks/notificationContext";
 import { HEADER_BUTTON_COLOR, HEADER_ICON_BUTTON_CLASS } from "../headerStyles";
 import { detailPath } from "../questionList";
+import { formatRelative } from "../writer";
 
 // 알림 종류별 머리말과 색 (Stitch "알림 팝오버 (7번)")
 const TYPE_STYLE: Record<NotificationType, { label: string; color: string; unreadBg: string }> = {
@@ -11,17 +12,6 @@ const TYPE_STYLE: Record<NotificationType, { label: string; color: string; unrea
   ANSWER_ACCEPTED: { label: "[채택]", color: "text-[#D4A017]", unreadBg: "bg-amber-50/60 border-[#D4A017]" },
   CATEGORY_QUESTION: { label: "[관심]", color: "text-[#0B5D1E]", unreadBg: "bg-green-50/60 border-[#0B5D1E]" },
 };
-
-// "2026-11-13T17:20:00" → "5분 전" / 하루가 지나면 "2026.11.12"
-function formatRelative(createdAt: string, now = Date.now()) {
-  const diff = Math.max(0, now - new Date(createdAt).getTime());
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "방금 전";
-  if (minutes < 60) return `${minutes}분 전`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}시간 전`;
-  return createdAt.slice(0, 10).replaceAll("-", ".");
-}
 
 const headerButton = `relative ${HEADER_ICON_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`;
 

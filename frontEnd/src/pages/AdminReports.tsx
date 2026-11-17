@@ -17,10 +17,11 @@ import { getErrorMessage } from "../api/client";
 import type { Page } from "../api/question";
 import AdminLayout from "../components/admin/AdminLayout";
 import { REPORT_REASON_LABEL, REPORT_STATUS_LABEL, TARGET_TYPE_LABEL } from "../components/admin/adminLabels";
-import ConfirmModal from "../components/admin/ConfirmModal";
+import ConfirmModal from "../components/ConfirmModal";
 import ListStatus from "../components/ListStatus";
 import Pagination from "../components/Pagination";
-import { detailPath, formatDate, PAGE_SIZE, parsePage } from "../components/questionList";
+import { detailPath, PAGE_SIZE, parsePage } from "../components/questionList";
+import { formatDate } from "../components/writer";
 import "./AdminReports.css";
 
 const TYPE_TABS: { value: ReportTargetType | "all"; label: string }[] = [
@@ -251,7 +252,10 @@ export default function AdminReports() {
                 {data.content.map((report) => {
                   const statusLabel = REPORT_STATUS_LABEL[report.status];
                   return (
-                    <tr key={report.reportId} className="hover:bg-yellow-50 divide-x-2 divide-[#121212] whitespace-nowrap">
+                    <tr
+                      key={report.reportId}
+                      className="hover:bg-yellow-50 divide-x-2 divide-[#121212] whitespace-nowrap"
+                    >
                       <td className="py-2 px-3 text-center font-bold">{TARGET_TYPE_LABEL[report.targetType]}</td>
                       {/* w-full max-w-0: 다른 칸을 먼저 채우고 남은 폭만 써서, 긴 제목은 표를 넓히지 않고 … 로 자른다 */}
                       <td
@@ -343,7 +347,7 @@ export default function AdminReports() {
         {modal?.kind === "view" && (
           <ConfirmModal
             title={`신고 상세 · ${TARGET_TYPE_LABEL[modal.report.targetType]}`}
-            onClose={() => setModal(null)}
+            onCancel={() => setModal(null)}
           >
             {modal.error && <p className="font-bold text-[#E11D48]">{modal.error}</p>}
             {!modal.error && !modal.detail && <p>불러오는 중입니다...</p>}
@@ -399,11 +403,12 @@ export default function AdminReports() {
           <ConfirmModal
             title={ACTION_TEXT[modal.action].title}
             confirmLabel={ACTION_TEXT[modal.action].label}
-            danger={modal.action === "DELETE_TARGET"}
+            tone={modal.action === "DELETE_TARGET" ? "danger" : "primary"}
+            retryable
             busy={modal.busy}
             error={modal.error}
             onConfirm={confirmProcess}
-            onClose={() => setModal(null)}
+            onCancel={() => setModal(null)}
           >
             <p className="font-bold text-black">{targetLabel(modal.report)}</p>
             {modal.action === "DELETE_TARGET" ? (

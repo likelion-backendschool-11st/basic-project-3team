@@ -9,7 +9,8 @@ import { charLength } from "../../hooks/useQuestionForm";
 import AuthorPopover from "../AuthorPopover";
 import ConfirmModal from "../ConfirmModal";
 import FieldError from "../FieldError";
-import { GRADES, formatDateTime } from "../writer";
+import { GRADES } from "../gradeBadge";
+import { formatDateTime } from "../writer";
 
 // 서버(reply.controller.js)와 같은 규칙. 통과하면 null
 function validate(content: string) {
