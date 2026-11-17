@@ -5,5 +5,4 @@ module.exports = {
   content: ["./src/pages/Questions.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
-  ...{},
 };

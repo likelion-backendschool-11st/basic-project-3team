@@ -11,11 +11,9 @@ import Pagination from "../components/Pagination";
 import QuestionListItem from "../components/QuestionListItem";
 import SortTabs from "../components/SortTabs";
 import { PAGE_SIZE, parsePage, parseSort, SORT_TABS } from "../components/questionList";
+import { buttonClass, CARD, PAGE_BACKGROUND } from "../components/uiStyles";
+import { formatNumber } from "../components/writer";
 import "./Questions.css";
-
-// Page-local styles from the Stitch <head>; mounted only while this page is shown.
-const css =
-  "/* Base canvas styling with cream background and subtle dot pattern */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n\n    /* Standard Neo-brutalism borders and shadows */\n    .neo-border {\n      border: 2.5px solid #111111;\n    }\n    \n    .neo-border-b {\n      border-bottom: 2.5px solid #111111;\n    }\n\n    .neo-shadow {\n      box-shadow: 3px 3px 0px #111111;\n    }\n\n    .neo-shadow-sm {\n      box-shadow: 2px 2px 0px #111111;\n    }\n\n    .neo-shadow-active:active {\n      transform: translate(2px, 2px);\n      box-shadow: 0px 0px 0px #111111;\n    }";
 
 type LoadState =
   { status: "loading" } | { status: "error"; message: string } | { status: "done"; data: Page<Question> };
@@ -57,26 +55,20 @@ export default function Questions() {
 
   return (
     <div id="page-questions">
-      <style>{css}</style>
-      <div
-        className="min-h-screen flex flex-col justify-between antialiased"
-        style={{
-          backgroundColor: "rgb(255, 253, 245)",
-          backgroundImage: "radial-gradient(rgb(217, 212, 195) 1.2px, transparent 1.2px)",
-          backgroundSize: "18px 18px",
-        }}
-      >
+      <div className={`min-h-screen flex flex-col justify-between antialiased text-devin-ink ${PAGE_BACKGROUND}`}>
         <Header />
 
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+        <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
           <div
             className="flex flex-col sm:flex-row items-start sm:items-end justify-between pb-3.5 gap-4"
             data-purpose="question-list-header"
           >
             <div className="flex items-baseline gap-2">
-              <h1 className="text-2xl font-black tracking-tight text-gray-950">전체 질문</h1>
+              <h1 className="text-2xl font-black">전체 질문</h1>
               {data && (
-                <span className="text-sm font-semibold text-gray-500">{data.totalElements.toLocaleString()}개</span>
+                <span className="text-sm font-semibold text-devin-gray tabular-nums">
+                  {formatNumber(data.totalElements)}개
+                </span>
               )}
             </div>
 
@@ -84,25 +76,33 @@ export default function Questions() {
           </div>
 
           <div
-            className="neo-border bg-white neo-shadow divide-y-2 divide-neutral-900"
+            className={`${CARD} overflow-hidden divide-y-2 divide-devin-ink`}
             data-purpose="question-items-container"
             aria-busy={state.status === "loading"}
           >
-            {state.status === "loading" && <ListStatus>질문을 불러오는 중입니다...</ListStatus>}
+            {state.status === "loading" && <ListStatus kind="loading">질문을 불러오는 중이에요.</ListStatus>}
             {state.status === "error" && (
-              <ListStatus>
-                <p className="text-[#E11D48]">{state.message}</p>
-                <button
-                  className="mt-4 h-9 px-4 bg-white border-2 border-[#111111] text-sm font-bold neo-shadow-sm neo-shadow-active"
-                  type="button"
-                  onClick={() => setRetryKey((key) => key + 1)}
-                >
-                  다시 시도
-                </button>
+              <ListStatus
+                kind="error"
+                action={
+                  <button
+                    className={buttonClass("secondary", "sm")}
+                    type="button"
+                    onClick={() => setRetryKey((key) => key + 1)}
+                  >
+                    다시 시도
+                  </button>
+                }
+              >
+                {state.message}
               </ListStatus>
             )}
             {data && data.content.length === 0 && (
-              <ListStatus>{page > 1 ? "이 페이지에는 질문이 없습니다." : "아직 등록된 질문이 없습니다."}</ListStatus>
+              <ListStatus kind="empty">
+                {page > 1
+                  ? "이 페이지에는 질문이 없어요. 앞 페이지로 돌아가 주세요."
+                  : "아직 질문이 없어요. 첫 질문을 남겨 보세요."}
+              </ListStatus>
             )}
             {data?.content.map((question) => (
               <QuestionListItem key={question.questionId} question={question} />

@@ -2,19 +2,13 @@
 import ErrorView from "../components/ErrorView";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import { PAGE_BACKGROUND } from "../components/uiStyles";
 
 export default function NotFound() {
   return (
-    <div
-      className="min-h-screen flex flex-col justify-between antialiased"
-      style={{
-        backgroundColor: "rgb(255, 253, 245)",
-        backgroundImage: "radial-gradient(rgb(217, 212, 195) 1.2px, transparent 1.2px)",
-        backgroundSize: "18px 18px",
-      }}
-    >
+    <div className={`min-h-screen flex flex-col justify-between antialiased ${PAGE_BACKGROUND}`}>
       <Header />
-      <main className="flex-1 w-full max-w-xl mx-auto px-4 py-16">
+      <main className="flex-1 w-full max-w-devin-narrow mx-auto px-4 py-16">
         <ErrorView kind="notFound" />
       </main>
       <Footer />

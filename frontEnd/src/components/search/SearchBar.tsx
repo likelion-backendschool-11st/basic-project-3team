@@ -4,6 +4,7 @@ import type { SearchScope } from "../../api/question";
 import { useRecentSearches } from "../../hooks/useRecentSearches";
 import { usePopularTags } from "../../hooks/useTagData";
 import PopularTags from "../tag/PopularTags";
+import { CHIP, FOCUS, INPUT, MENU, NOTICE } from "../uiStyles";
 import { buildSearchUrl, MAX_KEYWORD_LENGTH, SCOPES, SEARCH_PATH } from "./searchCondition";
 
 // 헤더 검색창 + 검색 드롭다운 (REQ-MAIN-009, REQ-SEARCH-001)
@@ -62,12 +63,16 @@ export default function SearchBar() {
 
   const isTagInput = text.trim().startsWith("#");
 
+  // 드롭다운 한 줄: 휴대폰 폭에서는 이름을 위에, sm 이상에서는 왼쪽에 둔다.
+  const row = "flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4";
+  const rowLabel = "text-xs font-extrabold text-devin-ink sm:w-20 sm:pt-1.5 shrink-0";
+
   // #147: 휴대폰 폭에서는 Header가 펼친 한 줄을 꽉 채운다.
   return (
-    <div className="relative flex-1 sm:max-w-[460px] sm:mx-6" ref={boxRef} onKeyDown={handleKeyDown}>
+    <div className="relative flex-1 sm:max-w-devin-narrow sm:mx-6" ref={boxRef} onKeyDown={handleKeyDown}>
       <form className="relative flex items-center" role="search" onSubmit={handleSubmit}>
         <input
-          className="w-full h-[40px] pl-3.5 pr-12 py-2 bg-white border-2 border-black rounded-[8px] text-sm text-[#111111] placeholder:text-[#888888] focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0_#111111] transition-all"
+          className={`${INPUT.base} pr-12`}
           placeholder="검색어를 입력하세요"
           type="search"
           aria-label="질문 검색"
@@ -83,32 +88,41 @@ export default function SearchBar() {
           }}
         />
         <button
-          className="absolute right-1.5 h-7 px-2 text-xs font-bold bg-[#111111] text-white rounded-[5px]"
+          className={`absolute right-1 inline-flex items-center justify-center w-8 h-8 rounded-lg text-devin-ink hover:bg-devin-yellow ${FOCUS}`}
           type="submit"
+          aria-label="검색"
         >
-          검색
+          <span className="material-symbols-outlined text-[20px] leading-none" aria-hidden="true">
+            search
+          </span>
         </button>
       </form>
 
       {open && (
         <div
           id="search-dropdown"
-          className="absolute left-0 top-[46px] w-full bg-white border-2 border-black rounded-[8px] shadow-[4px_4px_0_#111111] p-5 z-50 text-sm"
+          className={`${MENU.panel} absolute left-0 top-12 w-full p-4 z-50 space-y-3 text-sm`}
           data-purpose="search-layer-popover"
         >
-          {emptyWarning && <p className="mb-3 text-xs font-bold text-[#E11D48]">검색어를 입력해주세요.</p>}
+          {emptyWarning && (
+            <p className={NOTICE.error} role="alert">
+              <span className="material-symbols-outlined text-[18px] leading-5" aria-hidden="true">
+                error
+              </span>
+              검색어를 입력해 주세요.
+            </p>
+          )}
 
-          <fieldset className="flex items-center gap-6 pb-3" disabled={isTagInput}>
+          <fieldset className={row} disabled={isTagInput}>
             <legend className="sr-only">검색 범위</legend>
-            <span className="font-bold text-neutral-900 w-20 flex-shrink-0">검색 범위</span>
-            <div className={`flex items-center gap-5 flex-wrap ${isTagInput ? "opacity-40" : ""}`}>
+            <span className={rowLabel} aria-hidden="true">
+              검색 범위
+            </span>
+            <div className={`flex items-center gap-4 flex-wrap ${isTagInput ? "opacity-[.45]" : ""}`}>
               {SCOPES.map((option) => (
-                <label
-                  key={option.value}
-                  className="flex items-center gap-2 cursor-pointer font-medium text-neutral-800"
-                >
+                <label key={option.value} className="flex items-center gap-2 h-8 cursor-pointer font-medium">
                   <input
-                    className="w-4 h-4 text-black border-2 border-black focus:ring-black focus:ring-offset-0 focus:ring-1"
+                    className={`w-4 h-4 text-devin-ink border-devin border-devin-ink focus:ring-0 focus:ring-offset-0 ${FOCUS}`}
                     name="search-scope"
                     type="radio"
                     value={option.value}
@@ -123,35 +137,38 @@ export default function SearchBar() {
 
           {/* 인기 태그 (GET /api/tags/popular). 누르면 그 태그로 바로 검색한다. 불러오지 못하면 줄째 숨긴다. */}
           {popularTags.length > 0 && (
-            <div className="flex items-start gap-6 py-2">
-              <span className="font-bold text-neutral-900 w-20 flex-shrink-0">인기 태그</span>
+            <div className={row}>
+              <span className={rowLabel}>인기 태그</span>
               <PopularTags limit={6} onSelect={(tag) => search(`#${tag}`, "all")} />
             </div>
           )}
 
-          <div className="border-t border-neutral-200 my-3"></div>
+          <div className={MENU.divider} role="separator" />
 
-          <div className="flex items-start gap-6 py-1">
-            <span className="font-bold text-neutral-900 w-20 flex-shrink-0">최근 검색어</span>
+          <div className={row}>
+            <span className={rowLabel}>최근 검색어</span>
             {recent.items.length === 0 ? (
-              <span className="text-neutral-400">최근 검색어가 없습니다.</span>
+              <span className="text-devin-gray sm:pt-1">최근 검색어가 없어요.</span>
             ) : (
-              <ul
-                className="flex items-center gap-x-4 gap-y-1 flex-wrap text-neutral-800"
-                data-purpose="recent-keywords"
-              >
+              <ul className="flex items-center gap-2 flex-wrap" data-purpose="recent-keywords">
                 {recent.items.map((item) => (
-                  <li key={item} className="flex items-center gap-1">
-                    <button className="hover:underline font-mono" type="button" onClick={() => search(item, "all")}>
+                  <li key={item} className={CHIP.removable}>
+                    <button
+                      className={`hover:underline rounded ${FOCUS}`}
+                      type="button"
+                      onClick={() => search(item, "all")}
+                    >
                       {item}
                     </button>
                     <button
-                      className="text-neutral-400 hover:text-black font-bold p-0.5"
+                      className={CHIP.remove}
                       type="button"
-                      aria-label={`${item} 삭제`}
+                      aria-label={`${item} 지우기`}
                       onClick={() => recent.remove(item)}
                     >
-                      ✕
+                      <span className="material-symbols-outlined text-[15px] leading-none" aria-hidden="true">
+                        close
+                      </span>
                     </button>
                   </li>
                 ))}
@@ -159,10 +176,12 @@ export default function SearchBar() {
             )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center text-xs text-neutral-500">
-            <span className="text-neutral-400 mr-1.5 font-mono">ℹ</span>
-            #태그명으로 입력하면 태그 검색으로 전환 (예: #react #jpa)
-          </div>
+          <p className="flex items-center gap-1.5 pt-3 border-t border-devin-line text-xs text-devin-gray">
+            <span className="material-symbols-outlined text-[15px] leading-none" aria-hidden="true">
+              info
+            </span>
+            #태그명으로 입력하면 태그 검색으로 바뀌어요 (예: #react #jpa)
+          </p>
         </div>
       )}
     </div>

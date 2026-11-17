@@ -4,6 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import ErrorView from "../ErrorView";
 import Footer from "../Footer";
 import Header from "../Header";
+import { BUTTON, PAGE_BACKGROUND } from "../uiStyles";
 import { ADMIN_MEMBERS_PATH, ADMIN_REPORTS_PATH } from "./adminLabels";
 
 const MENU = [
@@ -23,40 +24,30 @@ export default function AdminLayout({ title, children }: { title: string; childr
   }, [initializing, user, navigate]);
 
   return (
-    <div
-      className="text-[#121212] antialiased min-h-screen flex flex-col"
-      style={{
-        backgroundColor: "rgb(255, 253, 245)",
-        backgroundImage: "radial-gradient(rgb(217, 212, 195) 1.2px, transparent 1.2px)",
-        backgroundSize: "18px 18px",
-      }}
-    >
+    <div className={`text-devin-ink antialiased min-h-screen flex flex-col ${PAGE_BACKGROUND}`}>
       <Header />
       {initializing || !user ? (
         <main className="flex-1" aria-busy="true" />
       ) : !isAdmin ? (
-        <main className="flex-1 w-full max-w-xl mx-auto px-4 py-16">
+        <main className="flex-1 w-full max-w-devin-narrow mx-auto px-4 py-16">
           <ErrorView
             kind="server"
-            title="관리자만 볼 수 있는 페이지입니다"
-            description="관리자 계정으로 로그인한 뒤 다시 시도해주세요."
+            title="관리자만 볼 수 있는 페이지예요"
+            description="관리자 계정으로 로그인한 뒤 다시 시도해 주세요."
           />
         </main>
       ) : (
-        <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col md:flex-row gap-6">
-          <aside className="w-full md:w-56 shrink-0" data-purpose="admin-sidebar">
-            <h2 className="mb-3 px-1 text-xs font-bold uppercase tracking-wider text-neutral-600">관리자 메뉴</h2>
-            <nav className="flex flex-col gap-2" aria-label="관리자 메뉴">
+        <div className="max-w-6xl w-full mx-auto px-4 py-6 flex-1 flex flex-col lg:flex-row gap-6">
+          <aside className="w-full lg:w-56 shrink-0" data-purpose="admin-sidebar">
+            <h2 className="mb-2 px-1 text-xs font-extrabold text-devin-gray">관리자 메뉴</h2>
+            {/* 고른 메뉴는 검정 (탭과 같은 규칙, ui-guide.md 12절). 휴대폰 폭에서는 가로로 놓는다. */}
+            <nav className="flex flex-row lg:flex-col gap-2" aria-label="관리자 메뉴">
               {MENU.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) =>
-                    `px-3 py-2.5 border-2 border-[#121212] text-sm tracking-tight transition-all ${
-                      isActive
-                        ? "bg-[#FFD43B] font-black shadow-[3px_3px_0_#121212]"
-                        : "bg-white font-bold shadow-[2px_2px_0_#121212] hover:bg-neutral-100"
-                    }`
+                    `${BUTTON.base} ${BUTTON.size.md} lg:justify-start ${isActive ? "bg-devin-ink text-white" : BUTTON.variant.secondary}`
                   }
                 >
                   {item.label}
@@ -65,7 +56,7 @@ export default function AdminLayout({ title, children }: { title: string; childr
             </nav>
           </aside>
           <main className="flex-1 flex flex-col min-w-0">
-            <h1 className="mb-4 text-2xl font-black tracking-tight">{title}</h1>
+            <h1 className="mb-4 text-2xl font-black">{title}</h1>
             {children}
           </main>
         </div>

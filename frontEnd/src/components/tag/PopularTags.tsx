@@ -1,4 +1,6 @@
 import { usePopularTags } from "../../hooks/useTagData";
+import { chipClass } from "../uiStyles";
+import { formatNumber } from "../writer";
 
 interface Props {
   onSelect: (name: string) => void;
@@ -8,6 +10,7 @@ interface Props {
 }
 
 // 인기 태그 버튼 목록 (GET /api/tags/popular). 불러오지 못하면 아무것도 그리지 않는다.
+// 고를 수 있는 칩 (docs/ui-guide.md 7절)
 export default function PopularTags({ onSelect, limit = 8, selected = [] }: Props) {
   const tags = usePopularTags(limit);
   if (tags.length === 0) return null;
@@ -18,15 +21,13 @@ export default function PopularTags({ onSelect, limit = 8, selected = [] }: Prop
         return (
           <button
             key={tag.tagId}
-            className={`px-2.5 py-1 text-xs font-semibold border border-black transition-colors ${
-              isSelected ? "bg-black text-white" : "bg-white hover:bg-black hover:text-white"
-            }`}
+            className={chipClass(isSelected)}
             type="button"
             aria-pressed={isSelected}
-            title={`질문 ${tag.questionCount}개`}
+            title={`질문 ${formatNumber(tag.questionCount)}개`}
             onClick={() => onSelect(tag.name)}
           >
-            #{tag.name}
+            {tag.name}
           </button>
         );
       })}

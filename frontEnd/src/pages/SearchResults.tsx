@@ -14,6 +14,8 @@ import Pagination from "../components/Pagination";
 import QuestionListItem from "../components/QuestionListItem";
 import SortTabs from "../components/SortTabs";
 import { SORT_TABS } from "../components/questionList";
+import { buttonClass, CARD, CHIP, chipClass, FOCUS, INPUT, PAGE_BACKGROUND } from "../components/uiStyles";
+import { formatNumber } from "../components/writer";
 import {
   ACCEPTED_OPTIONS,
   MAX_TAGS,
@@ -26,26 +28,20 @@ import {
 } from "../components/search/searchCondition";
 import "./SearchResults.css";
 
-// Page-local styles from the Stitch <head>; mounted only while this page is shown.
-const css =
-  "/* Subtle dot grid pattern matching the requested neo-brutalist feel */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 24px 24px;\n      color: #111111;\n    }\n  \n\n    .border-neo {\n      border: 2.5px solid #111111;\n    }\n    .border-neo-b {\n      border-bottom: 2.5px solid #111111;\n    }";
-
 type LoadState =
   { status: "loading" } | { status: "error"; message: string } | { status: "done"; data: Page<Question> };
 
-const chipClass = (selected: boolean) =>
-  `px-2.5 py-1 text-xs font-bold border-2 border-[#111111] transition-colors ${
-    selected ? "bg-[#111111] text-white" : "bg-white hover:bg-[#FFD43B]"
-  }`;
-
+// 검색 조건 한 줄: 휴대폰 폭에서는 이름을 위에, sm 이상에서는 왼쪽에 둔다.
 function FilterRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 py-2.5">
-      <span className="font-bold text-sm text-neutral-900 w-20 flex-shrink-0">{label}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3">
+      <span className="text-xs font-extrabold text-devin-ink sm:w-20 shrink-0">{label}</span>
       <div className="flex items-center gap-2 flex-wrap min-w-0">{children}</div>
     </div>
   );
 }
+
+const ICON = "material-symbols-outlined text-[15px] leading-none";
 
 export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,7 +81,7 @@ export default function SearchResults() {
     const tag = normalizeTag(raw);
     if (!tag || condition.tags.includes(tag)) return;
     if (condition.tags.length >= MAX_TAGS) {
-      setTagWarning(`태그는 최대 ${MAX_TAGS}개까지 고를 수 있습니다.`);
+      setTagWarning(`태그는 최대 ${MAX_TAGS}개까지 고를 수 있어요. 다른 태그를 지우고 골라 주세요.`);
       return;
     }
     setTagWarning("");
@@ -117,38 +113,29 @@ export default function SearchResults() {
 
   return (
     <div id="page-search-results">
-      <style>{css}</style>
-      <div
-        className="min-h-screen flex flex-col justify-between"
-        style={{
-          backgroundColor: "rgb(255, 253, 245)",
-          backgroundImage: "radial-gradient(rgb(217, 212, 195) 1.2px, transparent 1.2px)",
-          backgroundSize: "18px 18px",
-        }}
-      >
+      <div className={`min-h-screen flex flex-col justify-between text-devin-ink ${PAGE_BACKGROUND}`}>
         <Header />
 
-        <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+        <main className="max-w-6xl w-full mx-auto px-4 py-6 flex-1">
           <div className="flex items-baseline gap-2 pb-4 min-w-0">
-            <h1 className="text-2xl font-black tracking-tight text-[#111111] break-all">
-              {keyword ? `‘${keyword}’ 검색 결과` : "검색 결과"}
-            </h1>
-            {data && <span className="text-base font-bold text-gray-600">{data.totalElements.toLocaleString()}개</span>}
+            <h1 className="text-2xl font-black break-all">{keyword ? `‘${keyword}’ 검색 결과` : "검색 결과"}</h1>
+            {data && (
+              <span className="text-sm font-semibold text-devin-gray tabular-nums">
+                {formatNumber(data.totalElements)}개
+              </span>
+            )}
           </div>
 
           {/* 검색 조건 (REQ-SEARCH-002~004) */}
-          <section
-            className="border-neo bg-white shadow-[3px_3px_0_#111111] px-5 py-3 mb-5 divide-y divide-neutral-200"
-            aria-label="검색 조건"
-          >
+          <section className={`${CARD} px-4 py-1 mb-6 divide-y divide-devin-line`} aria-label="검색 조건">
             <FilterRow label="검색 범위">
               {SCOPES.map((option) => (
                 <label
                   key={option.value}
-                  className={`flex items-center gap-1.5 text-sm font-bold mr-3 ${keyword ? "cursor-pointer" : "opacity-40"}`}
+                  className={`flex items-center gap-2 h-8 text-sm font-medium mr-2 ${keyword ? "cursor-pointer" : "opacity-[.45]"}`}
                 >
                   <input
-                    className="w-4 h-4 text-black border-2 border-black focus:ring-0"
+                    className={`w-4 h-4 text-devin-ink border-devin border-devin-ink focus:ring-0 focus:ring-offset-0 ${FOCUS}`}
                     name="search-results-scope"
                     type="radio"
                     disabled={!keyword}
@@ -158,7 +145,7 @@ export default function SearchResults() {
                   <span>{option.label}</span>
                 </label>
               ))}
-              {!keyword && <span className="text-xs text-gray-500">검색어를 입력하면 고를 수 있습니다.</span>}
+              {!keyword && <span className="text-xs text-devin-gray">검색어를 입력하면 고를 수 있어요.</span>}
             </FilterRow>
 
             <FilterRow label="카테고리">
@@ -185,18 +172,17 @@ export default function SearchResults() {
 
             <FilterRow label="태그">
               {condition.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 pl-2.5 pr-1 py-0.5 text-xs font-bold bg-[#FFD43B] border-2 border-[#111111]"
-                >
+                <span key={tag} className={CHIP.removable}>
                   {tag}
                   <button
-                    className="px-1 font-black hover:text-[#E11D48]"
+                    className={CHIP.remove}
                     type="button"
-                    aria-label={`${tag} 태그 해제`}
+                    aria-label={`${tag} 태그 지우기`}
                     onClick={() => removeTag(tag)}
                   >
-                    ✕
+                    <span className={ICON} aria-hidden="true">
+                      close
+                    </span>
                   </button>
                 </span>
               ))}
@@ -206,30 +192,34 @@ export default function SearchResults() {
                 disabled={condition.tags.length >= MAX_TAGS}
                 placeholder="태그 검색 후 Enter"
               />
-              {tagWarning && <span className="text-xs font-bold text-[#E11D48]">{tagWarning}</span>}
+              {tagWarning && <span className={INPUT.errorText}>{tagWarning}</span>}
               {condition.tags.length > 1 && (
-                <span className="text-xs text-gray-500">선택한 태그가 모두 달린 질문만 보여줍니다.</span>
+                <span className="text-xs text-devin-gray">선택한 태그가 모두 달린 질문만 보여 줘요.</span>
               )}
             </FilterRow>
 
             <FilterRow label="작성일">
-              <input
-                className="h-8 px-2 text-xs border-2 border-[#111111] focus:outline-none"
-                type="date"
-                aria-label="시작일"
-                max={condition.endDate || undefined}
-                value={condition.startDate}
-                onChange={(event) => update({ startDate: event.target.value })}
-              />
+              <div className="w-40">
+                <input
+                  className={INPUT.base}
+                  type="date"
+                  aria-label="시작일"
+                  max={condition.endDate || undefined}
+                  value={condition.startDate}
+                  onChange={(event) => update({ startDate: event.target.value })}
+                />
+              </div>
               <span className="text-sm font-bold">~</span>
-              <input
-                className="h-8 px-2 text-xs border-2 border-[#111111] focus:outline-none"
-                type="date"
-                aria-label="종료일"
-                min={condition.startDate || undefined}
-                value={condition.endDate}
-                onChange={(event) => update({ endDate: event.target.value })}
-              />
+              <div className="w-40">
+                <input
+                  className={INPUT.base}
+                  type="date"
+                  aria-label="종료일"
+                  min={condition.startDate || undefined}
+                  value={condition.endDate}
+                  onChange={(event) => update({ endDate: event.target.value })}
+                />
+              </div>
             </FilterRow>
 
             <FilterRow label="채택 여부">
@@ -244,67 +234,81 @@ export default function SearchResults() {
                   {option.label}
                 </button>
               ))}
+            </FilterRow>
+
+            <div className="flex justify-end py-3">
               <button
-                className="ml-auto h-8 px-3 text-xs font-bold bg-white border-2 border-[#111111] shadow-[2px_2px_0_#111111] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-40 disabled:shadow-none"
+                className={buttonClass("secondary", "sm")}
                 type="button"
                 disabled={!hasFilters}
                 onClick={resetFilters}
               >
+                <span className={ICON} aria-hidden="true">
+                  restart_alt
+                </span>
                 조건 초기화
               </button>
-            </FilterRow>
+            </div>
           </section>
 
-          <div className="flex justify-end pb-3.5">
+          <div className="flex justify-end pb-3">
             <SortTabs tabs={SORT_TABS} value={condition.sort} onChange={(sort) => update({ sort })} label="정렬" />
           </div>
 
           <section
             aria-label="검색 결과 목록"
             aria-busy={state.status === "loading"}
-            className="border-neo bg-white shadow-[3px_3px_0_#111111] divide-y-2 divide-neutral-900"
+            className={`${CARD} overflow-hidden divide-y-2 divide-devin-ink`}
           >
-            {state.status === "loading" && <ListStatus>검색 중입니다...</ListStatus>}
+            {state.status === "loading" && <ListStatus kind="loading">검색하는 중이에요.</ListStatus>}
             {state.status === "error" && (
-              <ListStatus>
-                <p className="text-[#E11D48]">{state.message}</p>
-                <button
-                  className="mt-4 h-9 px-4 bg-white border-2 border-[#111111] text-sm font-bold shadow-[2px_2px_0_#111111]"
-                  type="button"
-                  onClick={() => setRetryKey((key) => key + 1)}
-                >
-                  다시 시도
-                </button>
+              <ListStatus
+                kind="error"
+                action={
+                  <button
+                    className={buttonClass("secondary", "sm")}
+                    type="button"
+                    onClick={() => setRetryKey((key) => key + 1)}
+                  >
+                    다시 시도
+                  </button>
+                }
+              >
+                {state.message}
               </ListStatus>
             )}
             {data && data.content.length === 0 && (
-              <ListStatus>
-                <p className="text-base font-black text-[#111111]">검색 결과가 없습니다.</p>
-                <p className="mt-1 text-xs text-gray-500">
+              <ListStatus
+                kind="empty"
+                action={
+                  condition.page === 1 && (
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="text-xs font-bold text-devin-gray">인기 태그로 찾아보기</span>
+                      {/* 인기 태그를 누르면 다른 조건 없이 그 태그로만 다시 찾는다. */}
+                      <PopularTags
+                        limit={6}
+                        onSelect={(tag) =>
+                          update({
+                            keyword: "",
+                            scope: "all",
+                            categoryId: null,
+                            tags: [tag],
+                            startDate: "",
+                            endDate: "",
+                            accepted: "all",
+                          })
+                        }
+                      />
+                    </div>
+                  )
+                }
+              >
+                <p className="text-base font-extrabold text-devin-ink">검색 결과가 없어요.</p>
+                <p className="mt-1 text-xs">
                   {condition.page > 1
-                    ? "이 페이지에는 결과가 없습니다."
-                    : "다른 검색어로 찾아보거나 조건을 줄여보세요."}
+                    ? "이 페이지에는 결과가 없어요. 앞 페이지로 돌아가 주세요."
+                    : "다른 검색어로 찾아보거나 조건을 줄여 보세요."}
                 </p>
-                {condition.page === 1 && (
-                  <div className="mt-5 flex flex-col items-center gap-2">
-                    <span className="text-xs font-bold text-gray-600">인기 태그로 찾아보기</span>
-                    {/* 인기 태그를 누르면 다른 조건 없이 그 태그로만 다시 찾는다. */}
-                    <PopularTags
-                      limit={6}
-                      onSelect={(tag) =>
-                        update({
-                          keyword: "",
-                          scope: "all",
-                          categoryId: null,
-                          tags: [tag],
-                          startDate: "",
-                          endDate: "",
-                          accepted: "all",
-                        })
-                      }
-                    />
-                  </div>
-                )}
               </ListStatus>
             )}
             {data?.content.map((question) => (
