@@ -2,14 +2,14 @@
 export type EasterEggEffect = "none" | "shakeSearch" | "flashBorder" | "logoOut" | "logoType";
 
 export interface EasterEgg {
-  // 로고가 바뀌는 이스터에그는 로고가 잘 보이게 알림을 띄우지 않는다.
+  // 로고·검색창이 움직이는 이스터에그는 그 효과가 잘 보이게 알림을 띄우지 않는다.
   message?: string;
   effect: EasterEggEffect;
 }
 
 // 키는 앞뒤 공백을 지우고 소문자로 바꾼 검색어
 const EASTER_EGGS: Record<string, EasterEgg> = {
-  "try catch": { message: "🧤 예외를 잡았습니다! 아무 일도 없었던 걸로…", effect: "shakeSearch" },
+  "try catch": { effect: "shakeSearch" },
   "system.out.println": { message: "Hello, World! 👋", effect: "none" },
   "git push --force": { message: "⚠️ 팀원들이 당신을 찾고 있습니다…", effect: "flashBorder" },
   "cd ..": { effect: "logoOut" },
