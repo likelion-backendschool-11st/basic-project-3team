@@ -6,6 +6,8 @@ import { usePopularTags } from "../../hooks/useTagData";
 import PopularTags from "../tag/PopularTags";
 import { CHIP, FOCUS, INPUT, MENU, NOTICE } from "../uiStyles";
 import { buildSearchUrl, MAX_KEYWORD_LENGTH, SCOPES, SEARCH_PATH } from "./searchCondition";
+import { findEasterEgg, runEasterEgg } from "../easterEgg/easterEggs";
+import { useSearchShake } from "../easterEgg/useEasterEggEffects";
 
 // 헤더 검색창 + 검색 드롭다운 (REQ-MAIN-009, REQ-SEARCH-001)
 // 검색창을 누르면 검색 범위·최근 검색어 드롭다운이 열리고, 엔터나 검색 버튼으로 검색 결과 화면에 간다.
@@ -19,6 +21,8 @@ export default function SearchBar() {
   const [open, setOpen] = useState(false);
   const [emptyWarning, setEmptyWarning] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  useSearchShake(formRef);
 
   // 검색 결과 화면에서는 지금 검색어를 검색창에 보여준다.
   useEffect(() => {
@@ -54,6 +58,9 @@ export default function SearchBar() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    // 이스터에그 검색어면 알림·효과를 더하고, 검색은 그대로 한다.
+    const egg = findEasterEgg(text);
+    if (egg) runEasterEgg(egg);
     search(text, scope);
   }
 
@@ -70,7 +77,7 @@ export default function SearchBar() {
   // #147: 휴대폰 폭에서는 Header가 펼친 한 줄을 꽉 채운다.
   return (
     <div className="relative flex-1 sm:max-w-devin-narrow sm:mx-6" ref={boxRef} onKeyDown={handleKeyDown}>
-      <form className="relative flex items-center" role="search" onSubmit={handleSubmit}>
+      <form ref={formRef} className="relative flex items-center" role="search" onSubmit={handleSubmit}>
         <input
           className={`${INPUT.base} pr-12`}
           placeholder="검색어를 입력하세요"
