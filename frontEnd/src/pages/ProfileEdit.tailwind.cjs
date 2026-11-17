@@ -5,24 +5,4 @@ module.exports = {
   content: ["./src/pages/ProfileEdit.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
-  ...{
-    theme: {
-      extend: {
-        colors: {
-          brand: {
-            surface: "#f3f4f6",
-            border: "#111827",
-            primary: "#bfdbfe",
-            accent: "#3b82f6",
-            tag: "#f9fafb",
-          },
-        },
-        boxShadow: {
-          brutal: "3px 3px 0px #111827",
-          "brutal-sm": "2px 2px 0px #111827",
-          "brutal-lg": "4px 4px 0px #111827",
-        },
-      },
-    },
-  },
 };

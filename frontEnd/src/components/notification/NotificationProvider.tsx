@@ -45,7 +45,7 @@ export default function NotificationProvider({ children }: { children: ReactNode
       setItems(page.content);
       setUnreadCount(count);
     } catch (err) {
-      setError(getErrorMessage(err, "알림을 불러오지 못했습니다."));
+      setError(getErrorMessage(err, "알림을 불러오지 못했어요."));
     } finally {
       setLoading(false);
     }

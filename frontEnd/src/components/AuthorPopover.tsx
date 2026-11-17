@@ -8,7 +8,14 @@ import { Link } from "react-router-dom";
 import { getErrorCode } from "../api/client";
 import { getProfile, type Profile } from "../api/mypage";
 import { useAuth } from "../hooks/useAuth";
-import { GRADES } from "./gradeBadge";
+import GradeIcon from "./GradeIcon";
+import { buttonClass, TAG } from "./uiStyles";
+import { formatPercent } from "./writer";
+
+// 팝오버 안에는 이동하는 링크를 두지 않으므로 태그도 누르는 모양(마우스 올림 노랑)을 뺀다.
+const STATIC_TAG = TAG.split(" ")
+  .filter((name) => !name.startsWith("hover:"))
+  .join(" ");
 
 // 같은 회원을 다시 열면 이전 결과를 쓴다 (새로고침하면 비워진다). 실패한 결과는 넣지 않는다.
 const profileCache = new Map<number, Profile>();
@@ -159,44 +166,26 @@ export default function AuthorPopover({ memberId, nickname, className }: Props) 
           className={`absolute z-30 ${placement === "top" ? "bottom-full pb-2" : "top-full pt-2"}`}
           style={{ left: shiftX }}
         >
+          {/* 작성자 팝오버: 메뉴와 같은 모양 (ui-guide.md 12절), 등급은 닉네임 옆 메달 아이콘만 (7절) */}
           <section
             id={popoverId}
-            className="w-[min(430px,calc(100vw-2rem))] bg-white border-[2.5px] border-[#111111] rounded-[12px] p-6 shadow-[5px_5px_0_#111111] text-left font-normal text-[#111111] cursor-default"
+            className="w-[min(360px,calc(100vw-2rem))] p-4 bg-devin-paper border-devin border-devin-ink rounded-xl shadow-devin-sm text-left font-normal text-devin-ink cursor-default"
             data-purpose="author-summary-popover"
           >
-            <div className="flex items-center pb-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <h3 className="text-lg font-black tracking-tight text-[#111111] flex items-center gap-1.5 min-w-0">
-                  <span className="truncate">{profile?.nickname ?? nickname}</span>
-                  {profile && (
-                    <span
-                      className="inline-flex items-center justify-center w-5 h-5 text-white rounded-full border border-black text-xs font-bold shrink-0"
-                      style={{ backgroundColor: GRADES[profile.grade].color }}
-                    >
-                      ★
-                    </span>
-                  )}
-                </h3>
-                {profile && (
-                  <span className="bg-[#FFD43B] text-[#111111] px-2 py-0.5 rounded text-xs font-bold border-2 border-black shadow-[1px_1px_0px_#000] shrink-0">
-                    {GRADES[profile.grade].label}
-                  </span>
-                )}
-              </div>
-            </div>
+            <h3 className="flex items-center gap-1 min-w-0 pb-3 text-base font-extrabold">
+              <span className="truncate">{profile?.nickname ?? nickname}</span>
+              {profile && <GradeIcon grade={profile.grade} />}
+            </h3>
 
             {error ? (
-              <p className="py-2 text-sm font-semibold text-stone-600">{error}</p>
+              <p className="text-sm font-semibold text-devin-gray">{error}</p>
             ) : !profile ? (
-              <p className="py-2 text-sm font-semibold text-stone-500">불러오는 중...</p>
+              <p className="text-sm font-semibold text-devin-gray">불러오는 중이에요.</p>
             ) : (
               <ProfileSummary profile={profile} />
             )}
             {isMe && (
-              <Link
-                to="/mypage"
-                className="mt-5 w-full bg-[#FFD43B] hover:bg-amber-300 border-[2.5px] border-[#111111] text-black font-extrabold py-2.5 px-4 rounded-md shadow-[3px_3px_0_#111111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all flex items-center justify-center text-sm"
-              >
+              <Link to="/mypage" className={`${buttonClass("accent")} mt-4 w-full`}>
                 마이페이지
               </Link>
             )}
@@ -214,39 +203,26 @@ function ProfileSummary({ profile }: { profile: Profile }) {
   return (
     <>
       {bio && (
-        <div className="mt-1 bg-stone-50 border border-stone-200 rounded-md p-2.5">
-          <p className="text-xs text-stone-700 italic font-medium leading-relaxed break-words">“{bio}”</p>
-        </div>
+        <p className="px-3 py-2 rounded-lg bg-devin-bg text-xs leading-relaxed break-words text-devin-ink">“{bio}”</p>
       )}
       {hasCareerRow && (
-        <div className="mt-4 flex items-center justify-between flex-wrap gap-2 text-xs">
+        <div className="mt-3 flex items-center flex-wrap gap-2 text-xs">
           {careerYears !== null && (
-            <div className="flex items-center gap-2">
-              <span className="text-stone-500 font-medium">경력</span>
-              <span className="font-bold text-stone-900 font-mono">
-                {careerYears === 0 ? "신입" : `${careerYears}년차`}
-              </span>
-            </div>
+            <span className="flex items-center gap-1.5">
+              <span className="text-devin-gray">경력</span>
+              <span className="font-bold">{careerYears === 0 ? "신입" : `${careerYears}년차`}</span>
+            </span>
           )}
-          {techStacks.length > 0 && (
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {techStacks.map((stack) => (
-                <span
-                  key={stack}
-                  className="bg-stone-100 border border-stone-400 px-2 py-0.5 rounded font-mono text-[11px] font-semibold text-stone-800"
-                >
-                  #{stack}
-                </span>
-              ))}
-            </div>
-          )}
+          {techStacks.map((stack) => (
+            <span key={stack} className={STATIC_TAG}>
+              {stack}
+            </span>
+          ))}
         </div>
       )}
-      <div className="mt-4 bg-stone-50 p-3 rounded-lg border border-black/10 text-center font-mono">
-        <div className="flex flex-col items-center">
-          <span className="text-lg font-extrabold text-green-600 tracking-tight">{acceptRate}%</span>
-          <span className="text-[11px] text-stone-500 font-sans mt-0.5">채택률</span>
-        </div>
+      <div className="mt-3 flex items-baseline justify-between pt-3 border-t border-devin-line">
+        <span className="text-xs font-bold text-devin-gray">채택률</span>
+        <span className="text-lg font-black tabular-nums">{formatPercent(acceptRate)}</span>
       </div>
     </>
   );
