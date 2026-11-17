@@ -26,7 +26,8 @@ export default function LoginPromptProvider({ children }: { children: ReactNode 
           className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-devin-bg/60 backdrop-blur-sm"
           onClick={close}
         >
-          {/* 확인 모달과 같은 카드 모양 (docs/ui-guide.md 6절). 로그인하기가 주요 버튼, 닫기는 보조 버튼 */}
+          {/* 확인 모달과 같은 카드 모양 (docs/ui-guide.md 6절). 로그인하기가 주요 버튼, 닫기는 보조 버튼.
+              안내 팝업이라 아이콘·글자와 같이 버튼도 가운데에 둔다 (#213) */}
           <section
             aria-labelledby="login-prompt-title"
             aria-modal="true"
@@ -41,7 +42,7 @@ export default function LoginPromptProvider({ children }: { children: ReactNode 
               로그인이 필요해요
             </h2>
             <p className="text-sm text-devin-gray mb-6">{message}</p>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-center gap-2">
               <button className={buttonClass("secondary")} type="button" onClick={close}>
                 닫기
               </button>
