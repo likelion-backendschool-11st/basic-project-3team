@@ -24,7 +24,7 @@ html {
   40%, 80% { transform: translateX(8px); }
 }
 
-/* 화면 테두리 빨간 깜빡임 (git push --force) */
+/* 화면 테두리 빨간 깜빡임 (git push --force). 3번 깜빡이고 알림과 같이 꺼진다 */
 @keyframes egg-flash-border {
   0%, 100% { opacity: 0; }
   30% { opacity: 1; }
@@ -44,7 +44,7 @@ html {
 
 .egg-cursor { animation: egg-cursor-blink 1s step-end infinite; }
 .egg-shake-search { animation: egg-shake-search 0.4s ease-in-out; }
-.egg-flash-border { animation: egg-flash-border 0.8s ease-in-out; }
+.egg-flash-border { animation: egg-flash-border 0.8s ease-in-out 3; }
 .egg-toast { animation: egg-toast-down 0.25s ease-out; }
 .egg-logo-hop { animation: egg-logo-hop 0.4s ease-out; }
 
