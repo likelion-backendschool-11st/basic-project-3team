@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* #210: 스크롤바 자리를 항상 비워 두어, 데이터를 불러와 내용이 길어져도 헤더가 좌우로 움직이지 않게 한다.
+   비워 둔 자리가 흰 줄로 보이지 않게 html 배경을 화면 배경색(devin-bg)으로 둔다. */
+html {
+  scrollbar-gutter: stable;
+  background-color: #FFFDF5;
+}
