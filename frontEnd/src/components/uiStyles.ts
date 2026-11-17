@@ -36,7 +36,7 @@ export function buttonClass(variant: ButtonVariant = "secondary", size: ButtonSi
 
 // 입력칸 (ui-guide.md 5절). textarea는 높이 없는 box를 쓴다.
 // focus:ring-0은 @tailwindcss/forms의 기본 테두리 고리를 끄는 것이고, 포커스 표시는 그림자 + FOCUS 외곽선이다.
-const INPUT_BOX = `w-full px-3 bg-devin-paper border-devin border-devin-ink rounded-lg text-sm font-medium text-devin-ink placeholder:text-devin-gray-light focus:ring-0 focus:border-devin-ink focus:shadow-devin-sm disabled:bg-devin-disabled disabled:text-[#8C897F] disabled:cursor-not-allowed ${FOCUS}`;
+const INPUT_BOX = `w-full px-3 bg-devin-paper border-devin border-devin-ink rounded-lg text-sm font-medium text-devin-ink placeholder:text-devin-gray-light focus:ring-0 focus:border-devin-ink focus:shadow-devin-sm disabled:bg-devin-disabled disabled:text-devin-disabled-ink disabled:cursor-not-allowed ${FOCUS}`;
 
 export const INPUT = {
   base: `h-10 ${INPUT_BOX}`,
@@ -55,7 +55,7 @@ export const CARD = "bg-devin-paper border-devin border-devin-ink rounded-xl sha
 export const CATEGORY =
   "inline-flex items-center gap-1.5 text-xs font-extrabold text-devin-ink whitespace-nowrap before:content-[''] before:w-2.5 before:h-2.5 before:rounded-[3px] before:bg-devin-yellow before:border-[1.5px] before:border-devin-ink";
 export const TAG =
-  "inline-flex items-center h-[22px] px-[7px] rounded bg-devin-tag text-xs font-semibold text-[#3F3D37] hover:bg-devin-yellow hover:text-devin-ink";
+  "inline-flex items-center h-[22px] px-[7px] rounded bg-devin-tag text-xs font-semibold text-devin-tag-ink hover:bg-devin-yellow hover:text-devin-ink";
 
 // 칩 (ui-guide.md 7절 "칩")
 // 지울 수 있는 칩: 태그 모양 + 오른쪽 close 버튼
@@ -68,7 +68,7 @@ const UNSELECTED = "bg-devin-paper text-devin-ink hover:bg-devin-paper-hover";
 
 export const CHIP = {
   removable:
-    "inline-flex items-center gap-0.5 h-[22px] pl-[7px] pr-0.5 rounded bg-devin-tag text-xs font-semibold text-[#3F3D37]",
+    "inline-flex items-center gap-0.5 h-[22px] pl-[7px] pr-0.5 rounded bg-devin-tag text-xs font-semibold text-devin-tag-ink",
   remove: `inline-flex items-center justify-center w-[18px] h-[18px] rounded text-devin-gray hover:text-devin-red ${FOCUS}`,
 };
 
@@ -124,7 +124,7 @@ export const TABLE = {
 const NOTICE_BASE = "flex items-start gap-2 px-3 py-2.5 border-[1.5px] rounded-lg text-sm font-semibold";
 export const NOTICE = {
   success: `${NOTICE_BASE} bg-devin-green-soft border-devin-ink text-devin-ink`,
-  error: `${NOTICE_BASE} bg-devin-red-soft border-devin-red text-[#9F1239]`,
+  error: `${NOTICE_BASE} bg-devin-red-soft border-devin-red text-devin-red-ink`,
   info: `${NOTICE_BASE} bg-devin-paper border-devin-ink text-devin-ink`,
 };
 

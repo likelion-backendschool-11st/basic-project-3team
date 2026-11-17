@@ -45,6 +45,10 @@ module.exports = {
           "green-soft": "#DCFCE7",
           "red-soft": "#FFF1F3",
           tag: "#F1F0EB",
+          // 연한 바탕 위 글자: 태그, 오류 안내 상자, 비활성 입력칸
+          "tag-ink": "#3F3D37",
+          "red-ink": "#9F1239",
+          "disabled-ink": "#8C897F",
           // 표 줄 사이, 메뉴 구분선 (12절)
           line: "#E7E4DA",
           disabled: "#ECEAE3",
