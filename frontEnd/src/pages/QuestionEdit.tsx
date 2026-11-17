@@ -3,24 +3,12 @@ import "./QuestionEdit.css";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorCode, getErrorMessage } from "../api/client";
-import {
-  QUESTION_RULES as RULES,
-  getQuestion,
-  readQuestionId,
-  updateQuestion,
-  type QuestionRequest,
-} from "../api/question";
-import FieldError from "../components/FieldError";
+import { getQuestion, readQuestionId, updateQuestion, type QuestionRequest } from "../api/question";
 import Header from "../components/Header";
-import Markdown from "../components/markdown/Markdown";
-import { useMarkdownToolbar } from "../hooks/useMarkdownToolbar";
-import RecommendedTags from "../components/tag/RecommendedTags";
-import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
-import { useCategories } from "../hooks/useTagData";
-
-// Page-local styles from the Stitch <head>; mounted only while this page is shown.
-const css =
-  "body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1d5db 1.2px, transparent 1.2px);\n      background-size: 20px 20px;\n    }\n    .neo-border {\n      border: 2.5px solid #111111;\n    }\n    .neo-box-shadow {\n      box-shadow: 5px 5px 0px #111111;\n    }\n    .neo-btn-shadow {\n      box-shadow: 3.5px 3.5px 0px #111111;\n    }\n    .neo-btn-shadow:active {\n      transform: translate(2px, 2px);\n      box-shadow: 1.5px 1.5px 0px #111111;\n    }";
+import ListStatus from "../components/ListStatus";
+import QuestionFormFields from "../components/question/QuestionFormFields";
+import { buttonClass, CARD, PAGE_BACKGROUND } from "../components/uiStyles";
+import { useQuestionForm } from "../hooks/useQuestionForm";
 
 const LIST_PATH = "/questions";
 const detailPath = (questionId: number) => `/question-detail?questionId=${questionId}`;
@@ -28,37 +16,14 @@ const detailPath = (questionId: number) => `/question-detail?questionId=${questi
 const sameRequest = (a: QuestionRequest, b: QuestionRequest) =>
   a.title === b.title && a.content === b.content && a.categoryId === b.categoryId && a.tags.join() === b.tags.join();
 
-// 작성/미리보기 탭 (디자인의 선택·비선택 모양)
-const ACTIVE_TAB = "bg-white neo-border shadow-[1.5px_1.5px_0_#111111] hover:bg-gray-50";
-const INACTIVE_TAB =
-  "bg-gray-200 border border-gray-400 text-gray-600 hover:bg-white hover:text-black hover:neo-border transition-all";
-
 type LoadState = { status: "loading" } | { status: "error"; message: string } | { status: "done" };
 
 export default function QuestionEdit() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const questionId = readQuestionId(searchParams.get("questionId"));
-  const {
-    user,
-    initializing,
-    values,
-    reset,
-    tagInput,
-    setTagInput,
-    errors,
-    formError,
-    submitting,
-    change,
-    handleTagKeyDown,
-    removeTag,
-    toggleTag,
-    submit,
-  } = useQuestionForm();
-  // #62: 툴바(B, I, 코드 블록, 링크, 이미지)는 내용칸에 마크다운 기호를 넣고, 미리보기는 상세 화면과 같은 모양으로 보여 준다.
-  const toolbar = useMarkdownToolbar(values.content, (content) => change("content", content));
-  const [preview, setPreview] = useState(false);
-  const categories = useCategories();
+  const form = useQuestionForm();
+  const { user, initializing, reset, submitting, submit } = form;
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
   // 불러온 원래 값. 바뀐 것이 없으면 요청하지 않는다 (내용 그대로인데 수정일만 바뀌는 것 방지).
   const original = useRef<QuestionRequest | null>(null);
@@ -67,7 +32,7 @@ export default function QuestionEdit() {
   // 기존 내용을 채운다. 작성자가 아니면 상세로 돌려보낸다 (REQ-QUESTION-006). 비로그인은 훅이 로그인 화면으로 보낸다.
   useEffect(() => {
     if (questionId === null) {
-      setLoad({ status: "error", message: "존재하지 않는 질문입니다." });
+      setLoad({ status: "error", message: "없는 질문이에요." });
       return;
     }
     if (initializing || !user || requestedId.current === questionId) return;
@@ -87,7 +52,7 @@ export default function QuestionEdit() {
         const notFound = getErrorCode(error) === "QUESTION_NOT_FOUND";
         setLoad({
           status: "error",
-          message: notFound ? "삭제되었거나 존재하지 않는 질문입니다." : getErrorMessage(error),
+          message: notFound ? "삭제됐거나 없는 질문이에요." : getErrorMessage(error),
         });
       });
   }, [questionId, initializing, user, navigate, reset]);
@@ -105,277 +70,41 @@ export default function QuestionEdit() {
 
   return (
     <div id="page-question-edit">
-      <style>{css}</style>
-      <div
-        className="min-h-screen text-gray-900 flex flex-col font-sans antialiased selection:bg-yellow-200"
-        style={{
-          backgroundColor: "rgb(255, 253, 245)",
-          backgroundImage: "radial-gradient(rgb(217, 212, 195) 1px, transparent 1px)",
-          backgroundSize: "18px 18px",
-        }}
-      >
-        <Header /> {/* BEGIN: MainContent */}
-        <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 md:py-10">
-          {/* Page Title */}
-
+      <div className={`${PAGE_BACKGROUND} text-devin-ink min-h-screen flex flex-col font-sans antialiased`}>
+        <Header />
+        <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
           <div className="mb-6">
-            <h1 className="text-[22px] font-black tracking-tight text-gray-950 inline-block bg-white neo-border px-3 py-1 shadow-[3px_3px_0_#111111]">
-              {" 질문 수정 "}
-            </h1>
+            <h1 className="text-2xl font-black text-devin-ink">질문 수정</h1>
+            <p className="mt-1 text-xs text-devin-gray">제목·카테고리·내용은 꼭 입력해 주세요. 내용은 마크다운으로 쓸 수 있어요.</p>
           </div>
 
           {load.status === "loading" && (
-            <div className="neo-border bg-white neo-box-shadow p-10 text-center text-sm font-semibold text-gray-600">
-              질문을 불러오는 중입니다...
+            <div className={CARD}>
+              <ListStatus kind="loading">질문을 불러오는 중이에요.</ListStatus>
             </div>
           )}
           {load.status === "error" && (
-            <div className="neo-border bg-white neo-box-shadow p-10 text-center text-sm font-semibold text-gray-600">
-              <p role="alert">{load.message}</p>
-              <Link
-                className="inline-block mt-5 h-11 leading-[38px] px-5 bg-white text-gray-800 font-bold text-sm border-[2.5px] border-[#111111] rounded-[8px] shadow-[3px_3px_0_#111111]"
-                to={LIST_PATH}
-              >
+            <div className={`${CARD} pb-6 text-center`}>
+              <ListStatus kind="error">{load.message}</ListStatus>
+              <Link className={buttonClass("secondary")} to={LIST_PATH}>
                 질문 목록으로 가기
               </Link>
             </div>
           )}
 
-          {/* Question Edit Form Card */}
-
           {load.status === "done" && questionId !== null && (
             <form
-              className="neo-border bg-white neo-box-shadow p-6 md:p-8 space-y-6"
+              className={`${CARD} p-4 sm:p-6`}
               data-purpose="question-edit-form"
               noValidate
               onSubmit={handleSubmit}
             >
-              {formError && (
-                <p className="text-sm font-bold text-rose-600" role="alert">
-                  {formError}
-                </p>
-              )}
-
-              {/* Title Section */}
-
-              <div className="space-y-1.5">
-                <label className="block font-black text-sm text-gray-900" htmlFor="post-title">
-                  제목
-                </label>
-
-                <div className="neo-border flex items-center bg-white overflow-hidden focus-within:ring-2 focus-within:ring-black">
-                  <div className="bg-gray-100 border-r-[2.5px] border-black px-4 py-2.5 font-bold text-sm text-gray-700 select-none">
-                    {" 제목 "}
-                  </div>
-
-                  <input
-                    className="w-full px-3.5 py-2.5 text-sm font-semibold border-none focus:ring-0 bg-transparent text-gray-900"
-                    id="post-title"
-                    name="title"
-                    placeholder={`제목을 입력하세요 (${RULES.titleMin}~${RULES.titleMax}자)`}
-                    type="text"
-                    value={values.title}
-                    onChange={(e) => change("title", e.target.value)}
-                  />
-
-                  <div className="px-3.5 text-xs font-bold text-gray-500 whitespace-nowrap bg-gray-50 h-full flex items-center border-l-[2.5px] border-black py-2.5">
-                    <span className="text-blue-600 font-extrabold">{charLength(values.title.trim())}</span>
-                    {` / ${RULES.titleMax}`}
-                  </div>
-                </div>
-                <FieldError message={errors.title} />
-              </div>
-
-              {/* Category Select */}
-
-              <div className="space-y-1.5">
-                <label className="block font-black text-sm text-gray-900" htmlFor="post-category">
-                  카테고리
-                </label>
-                <div className="neo-border flex items-center bg-white overflow-hidden focus-within:ring-2 focus-within:ring-black">
-                  <select
-                    className="w-full px-3.5 py-2.5 text-sm font-semibold border-none focus:ring-0 bg-transparent text-gray-900 cursor-pointer"
-                    id="post-category"
-                    value={values.categoryId}
-                    onChange={(e) => change("categoryId", e.target.value)}
-                  >
-                    <option value="">카테고리를 선택하세요</option>
-                    {categories.map(({ categoryId: id, name }) => (
-                      <option key={id} value={id}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <FieldError message={errors.categoryId} />
-              </div>
-
-              {/* Markdown Editor Container */}
-
-              <div className="space-y-1.5" data-purpose="markdown-editor-wrapper">
-                <label className="block font-black text-sm text-gray-900" htmlFor="post-content">
-                  내용
-                </label>
-
-                <div className="neo-border bg-white overflow-hidden">
-                  {/* Editor Toolbar */}
-
-                  <div className="flex flex-wrap items-center justify-between bg-gray-100 border-b-[2.5px] border-black px-2 py-1.5 gap-2 select-none">
-                    {/* Left Toolbar Buttons */}
-
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <button
-                        className="w-8 h-8 font-black text-sm bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        title="굵게"
-                        type="button"
-                        disabled={preview}
-                        onClick={() => toolbar.apply("bold")}
-                      >
-                        {" B "}
-                      </button>{" "}
-                      <button
-                        className="w-8 h-8 italic font-serif font-black text-sm bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        title="기울임"
-                        type="button"
-                        disabled={preview}
-                        onClick={() => toolbar.apply("italic")}
-                      >
-                        {" I "}
-                      </button>{" "}
-                      <button
-                        className="h-8 px-2.5 font-mono font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        title="코드 블록"
-                        type="button"
-                        disabled={preview}
-                        onClick={() => toolbar.apply("codeBlock")}
-                      >
-                        {" 코드 블록 "}
-                        <span className="text-gray-500 ml-1">```</span>
-                      </button>{" "}
-                      <button
-                        className="h-8 px-2.5 font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        title="링크 삽입"
-                        type="button"
-                        disabled={preview}
-                        onClick={() => toolbar.apply("link")}
-                      >
-                        {" 링크 "}
-                      </button>{" "}
-                      <button
-                        className="h-8 px-2.5 font-bold text-xs bg-white neo-border hover:bg-yellow-200 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        title="이미지 추가"
-                        type="button"
-                        disabled={preview}
-                        onClick={() => toolbar.apply("image")}
-                      >
-                        {" 이미지 "}
-                      </button>
-                    </div>
-
-                    {/* Right Mode Switch Tabs */}
-
-                    <div className="flex items-center gap-1">
-                      <button
-                        aria-pressed={!preview}
-                        className={`px-3 py-1 font-bold text-xs ${preview ? INACTIVE_TAB : ACTIVE_TAB}`}
-                        data-purpose="editor-tab-write"
-                        type="button"
-                        onClick={() => setPreview(false)}
-                      >
-                        {" 작성 "}
-                      </button>{" "}
-                      <button
-                        aria-pressed={preview}
-                        className={`px-3 py-1 font-bold text-xs ${preview ? ACTIVE_TAB : INACTIVE_TAB}`}
-                        data-purpose="editor-tab-preview"
-                        type="button"
-                        onClick={() => setPreview(true)}
-                      >
-                        {" 미리보기 "}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Content Textarea with Pre-filled Markdown */}
-
-                  <div className="p-1">
-                    {preview && (
-                      <div className="min-h-[260px] p-4 bg-[#FCFDFE]" data-purpose="markdown-preview">
-                        {values.content.trim() ? (
-                          <Markdown content={values.content} />
-                        ) : (
-                          <p className="text-sm text-gray-400">미리 볼 내용이 없습니다.</p>
-                        )}
-                      </div>
-                    )}
-                    <textarea
-                      ref={toolbar.textareaRef}
-                      hidden={preview}
-                      className="w-full p-4 font-mono text-sm leading-relaxed border-none focus:ring-0 resize-y bg-[#FCFDFE] text-gray-800 placeholder-gray-400"
-                      id="post-content"
-                      name="content"
-                      placeholder="질문 내용을 자세하게 작성해주세요 (Markdown 지원)"
-                      rows={12}
-                      value={values.content}
-                      onChange={(e) => change("content", e.target.value)}
-                    />
-                  </div>
-                </div>
-                <FieldError message={errors.content} />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block font-black text-sm text-gray-900" htmlFor="post-tags">
-                  태그
-                </label>
-                <div className="flex flex-wrap items-center gap-2 p-2.5 bg-white border-[2.5px] border-[#111111] rounded-[8px]">
-                  {values.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-[#FFD43B] border-[2px] border-[#111111] rounded shadow-[1.5px_1.5px_0_#111111]"
-                    >
-                      {`${tag} `}
-                      <button
-                        type="button"
-                        className="hover:text-red-600 font-extrabold"
-                        aria-label={`${tag} 태그 삭제`}
-                        onClick={() => removeTag(tag)}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  <input
-                    id="post-tags"
-                    type="text"
-                    placeholder={`태그를 입력 후 Enter를 누르세요 (선택, 최대 ${RULES.maxTags}개)`}
-                    className="flex-1 min-w-[150px] border-none bg-transparent text-sm py-1 px-2 text-gray-900 placeholder-gray-400 focus:ring-0"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={handleTagKeyDown}
-                  />
-                </div>
-                <FieldError message={errors.tags} />
-                {/* #61: 제목·내용 기반 추천 태그. 누르면 추가, 다시 누르면 제거 */}
-                <RecommendedTags
-                  title={values.title}
-                  content={values.content}
-                  selected={values.tags}
-                  onToggle={toggleTag}
-                />
-              </div>
-              <div className="flex items-center justify-end gap-3 pt-4 border-t-[2.5px] border-[#111111]">
-                <button
-                  type="button"
-                  onClick={() => navigate(detailPath(questionId))}
-                  className="h-11 px-5 bg-white text-gray-800 font-bold text-sm border-[2.5px] border-[#111111] rounded-[8px] shadow-[3px_3px_0_#111111] hover:bg-gray-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0_#111111] transition-all"
-                >
+              <QuestionFormFields form={form} />
+              <div className="flex items-center justify-end gap-2 mt-6 pt-6 border-t-devin border-devin-line">
+                <button type="button" onClick={() => navigate(detailPath(questionId))} className={buttonClass("secondary")}>
                   취소
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="h-11 px-6 bg-[#2563EB] text-white font-extrabold text-sm border-[2.5px] border-[#111111] rounded-[8px] shadow-[3px_3px_0_#111111] hover:bg-blue-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0_#111111] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                >
+                <button type="submit" disabled={submitting} className={buttonClass("primary")}>
                   {submitting ? "저장 중..." : "수정 완료"}
                 </button>
               </div>

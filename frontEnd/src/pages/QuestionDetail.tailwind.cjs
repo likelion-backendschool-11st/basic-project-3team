@@ -6,27 +6,4 @@ module.exports = {
   content: ["./src/pages/QuestionDetail.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
-  ...{
-    theme: {
-      extend: {
-        colors: {
-          cream: "#FFFDF5",
-          neoBlack: "#121212",
-          neoGreen: "#4ADE80",
-          neoGreenLight: "#DCFCE7",
-          neoYellow: "#FACC15",
-          neoRed: "#EF4444",
-          terminalBg: "#111111",
-        },
-        boxShadow: {
-          brutal: "5px 5px 0px #121212",
-          "brutal-sm": "3px 3px 0px #121212",
-          "brutal-hover": "2px 2px 0px #121212",
-        },
-        borderWidth: {
-          thick: "2.5px",
-        },
-      },
-    },
-  },
 };
