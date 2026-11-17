@@ -277,7 +277,9 @@ export default function Signup() {
                   {" 전 세계 개발자들과"}
                   <br />
 
-                  <span className="bg-[#FDE047] px-1.5 rounded">실시간으로 연결되는 공간</span>
+                  <span className="bg-[#FDE047] px-1.5 rounded inline-block mt-2 -ml-1.5">
+                    실시간으로 연결되는 공간
+                  </span>
                 </h1>
 
                 <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium">
