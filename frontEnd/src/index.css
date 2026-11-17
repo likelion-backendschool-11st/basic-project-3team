@@ -8,3 +8,45 @@ html {
   scrollbar-gutter: stable;
   background-color: #FFFDF5;
 }
+
+/* 이스터에그 (components/easterEgg). 화면별 Tailwind 설정과 상관없이 모든 화면에 적용되게 일반 CSS로 둔다. */
+
+/* 로고 "_": 터미널 커서처럼 1초마다 켜짐/꺼짐 (서서히 흐려지지 않게 steps) */
+@keyframes egg-cursor-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* 검색창 좌우 흔들기 (try catch) */
+@keyframes egg-shake-search {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+/* 화면 테두리 빨간 깜빡임 (git push --force) */
+@keyframes egg-flash-border {
+  0%, 100% { opacity: 0; }
+  30% { opacity: 1; }
+}
+
+/* 알림창: 아래에서 위로 살짝 올라오기 */
+@keyframes egg-toast-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.egg-cursor { animation: egg-cursor-blink 1s step-end infinite; }
+.egg-shake-search { animation: egg-shake-search 0.4s ease-in-out; }
+.egg-flash-border { animation: egg-flash-border 0.8s ease-in-out; }
+.egg-toast { animation: egg-toast-up 0.25s ease-out; }
+
+/* 움직임 줄이기 설정: 움직임 없이 알림만 보여준다 */
+@media (prefers-reduced-motion: reduce) {
+  .egg-cursor,
+  .egg-shake-search,
+  .egg-flash-border,
+  .egg-toast {
+    animation: none;
+  }
+}

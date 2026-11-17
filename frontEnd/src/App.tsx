@@ -10,6 +10,7 @@ import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import RequireAuth from './components/RequireAuth'
 import LoginPromptProvider from './components/LoginPromptProvider'
+import EasterEggToast from './components/easterEgg/EasterEggToast'
 
 // 로그인하지 않아도 볼 수 있는 화면. 나머지(질문 작성·마이페이지·관리자 등)는 로그인 화면으로 보낸다.
 const PUBLIC_PATHS = new Set([
@@ -48,6 +49,8 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </ErrorBoundary>
+            {/* 검색창 이스터에그 알림창: 화면이 바뀌어도 유지되게 Routes 바깥에 둔다 */}
+            <EasterEggToast />
           </NotificationProvider>
         </LoginPromptProvider>
       </AuthProvider>
