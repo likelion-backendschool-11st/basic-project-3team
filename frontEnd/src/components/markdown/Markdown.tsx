@@ -6,7 +6,7 @@ const MarkdownView = lazy(() => import("./MarkdownView"));
 
 export default function Markdown({ content }: { content: string }) {
   return (
-    <Suspense fallback={<div className="whitespace-pre-wrap break-words text-gray-900">{content}</div>}>
+    <Suspense fallback={<div className="whitespace-pre-wrap break-words text-devin-ink">{content}</div>}>
       <MarkdownView content={content} />
     </Suspense>
   );
