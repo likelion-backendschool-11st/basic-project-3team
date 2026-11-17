@@ -5,23 +5,4 @@ module.exports = {
   content: ["./src/pages/AdminReports.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
-  ...{
-    theme: {
-      extend: {
-        colors: {
-          brand: {
-            yellow: "#FFD43B",
-            primary: "#FF6B6B",
-            dark: "#121212",
-            lightGray: "#F4F4F0",
-          },
-        },
-        boxShadow: {
-          brutal: "3px 3px 0px #121212",
-          "brutal-lg": "5px 5px 0px #121212",
-          "brutal-sm": "2px 2px 0px #121212",
-        },
-      },
-    },
-  },
 };

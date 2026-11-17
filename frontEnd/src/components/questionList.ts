@@ -30,8 +30,3 @@ export function detailPath(questionId: number) {
 export function tagSearchPath(tag: string) {
   return `/search-results?tags=${encodeURIComponent(tag)}`;
 }
-
-// 1234 → "1.2k"
-export function formatCount(count: number) {
-  return count >= 1000 ? `${(count / 1000).toFixed(1).replace(/\.0$/, "")}k` : String(count);
-}

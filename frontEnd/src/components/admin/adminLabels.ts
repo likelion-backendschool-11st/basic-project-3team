@@ -1,4 +1,5 @@
 import type { MemberStatus, ReportReason, ReportStatus, ReportTargetType } from "../../api/admin";
+import type { StatusKind } from "../StatusBadge";
 
 // routes.ts에 등록된 관리자 화면 주소
 export const ADMIN_REPORTS_PATH = "/admin-reports";
@@ -21,14 +22,15 @@ export const REPORT_REASON_LABEL: Record<ReportReason, string> = {
   ETC: "기타",
 };
 
-export const REPORT_STATUS_LABEL: Record<ReportStatus, { label: string; className: string }> = {
-  PENDING: { label: "처리 대기", className: "bg-yellow-200" },
-  RESOLVED: { label: "처리 완료", className: "bg-green-100 text-green-800" },
-  REJECTED: { label: "반려", className: "bg-gray-100 text-neutral-700" },
+// 상태 배지 종류 (docs/ui-guide.md 7절, components/StatusBadge.tsx)
+export const REPORT_STATUS_BADGE: Record<ReportStatus, StatusKind> = {
+  PENDING: "reportPending",
+  RESOLVED: "reportResolved",
+  REJECTED: "reportRejected",
 };
 
-export const MEMBER_STATUS_LABEL: Record<MemberStatus, { label: string; className: string }> = {
-  ACTIVE: { label: "정상", className: "bg-green-100 text-green-800" },
-  BANNED: { label: "정지", className: "bg-red-100 text-red-700" },
-  WITHDRAWN: { label: "탈퇴", className: "bg-gray-100 text-neutral-600" },
+export const MEMBER_STATUS_BADGE: Record<MemberStatus, StatusKind> = {
+  ACTIVE: "memberActive",
+  BANNED: "memberBanned",
+  WITHDRAWN: "memberWithdrawn",
 };

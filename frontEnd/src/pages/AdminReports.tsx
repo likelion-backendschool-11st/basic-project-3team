@@ -16,12 +16,15 @@ import {
 import { getErrorMessage } from "../api/client";
 import type { Page } from "../api/question";
 import AdminLayout from "../components/admin/AdminLayout";
-import { REPORT_REASON_LABEL, REPORT_STATUS_LABEL, TARGET_TYPE_LABEL } from "../components/admin/adminLabels";
+import { REPORT_REASON_LABEL, REPORT_STATUS_BADGE, TARGET_TYPE_LABEL } from "../components/admin/adminLabels";
 import ConfirmModal from "../components/ConfirmModal";
 import ListStatus from "../components/ListStatus";
 import Pagination from "../components/Pagination";
 import { detailPath, PAGE_SIZE, parsePage } from "../components/questionList";
-import { formatDate } from "../components/writer";
+import SortTabs from "../components/SortTabs";
+import StatusBadge from "../components/StatusBadge";
+import { buttonClass, FOCUS, INPUT, NOTICE, TABLE } from "../components/uiStyles";
+import { formatDate, formatNumber } from "../components/writer";
 import "./AdminReports.css";
 
 const TYPE_TABS: { value: ReportTargetType | "all"; label: string }[] = [
@@ -41,8 +44,8 @@ const SORT_OPTIONS: { value: ReportSort; label: string }[] = [
   { value: "reports", label: "신고 많은순" },
 ];
 const ACTION_TEXT: Record<ReportAction, { title: string; label: string; done: string }> = {
-  DELETE_TARGET: { title: "신고 대상 삭제", label: "삭제", done: "삭제했습니다" },
-  REJECT: { title: "신고 반려", label: "반려", done: "반려했습니다" },
+  DELETE_TARGET: { title: "신고 대상을 삭제할까요?", label: "삭제", done: "처리하고 대상을 삭제했어요" },
+  REJECT: { title: "신고를 반려할까요?", label: "반려", done: "반려했어요" },
 };
 
 // URL의 ?type=&status=&sort=&page=. 처음 들어오면 처리 대기 신고만 보여 준다.
@@ -61,8 +64,6 @@ type ModalState =
   | null
   | { kind: "view"; report: ReportListItem; detail: ReportDetail | null; error: string | null }
   | { kind: "process"; report: ReportListItem; action: ReportAction; busy: boolean; error: string | null };
-
-const smallButton = "px-1.5 py-0.5 border border-[#121212] font-bold text-xs";
 
 function targetLabel(report: ReportListItem) {
   const title = report.targetTitle ?? "(제목 없음)";
@@ -127,7 +128,7 @@ export default function AdminReports() {
       setModal(null);
       setNotice(
         `${targetLabel(report)} 신고를 ${ACTION_TEXT[action].done}.` +
-          (result.processedCount > 1 ? ` 같은 대상의 대기 신고 ${result.processedCount}건을 함께 처리했습니다.` : ""),
+          (result.processedCount > 1 ? ` 같은 대상의 대기 신고 ${result.processedCount}건을 함께 처리했어요.` : ""),
       );
       setReloadKey((k) => k + 1);
     } catch (error) {
@@ -142,201 +143,179 @@ export default function AdminReports() {
     <div id="page-admin-reports">
       <AdminLayout title="신고 관리">
         <section
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4"
           aria-label="신고 필터"
         >
-          <div
-            className="inline-flex flex-wrap p-1 bg-white border-2 border-[#121212] shadow-[2px_2px_0_#121212] gap-1"
-            role="tablist"
-          >
-            {TYPE_TABS.map((tab) => (
-              <button
-                key={tab.value}
-                className={`px-3 py-1 border-2 text-xs font-bold ${
-                  tab.value === type
-                    ? "bg-[#121212] text-white border-[#121212]"
-                    : "bg-white border-transparent hover:bg-neutral-100"
-                }`}
-                type="button"
-                role="tab"
-                aria-selected={tab.value === type}
-                onClick={() => update({ type: tab.value })}
+          <SortTabs tabs={TYPE_TABS} value={type} onChange={(next) => update({ type: next })} label="신고 유형" />
+          <div className="flex items-center gap-2">
+            <div className="w-32">
+              <select
+                className={`${INPUT.base} pr-8 font-bold cursor-pointer`}
+                aria-label="처리 상태"
+                value={status}
+                onChange={(event) => update({ status: event.target.value as Query["status"] })}
               >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 self-end sm:self-auto">
-            <select
-              className="bg-white border-2 border-[#121212] shadow-[2px_2px_0_#121212] pl-3 pr-8 py-1 text-xs font-bold focus:ring-0 cursor-pointer"
-              aria-label="처리 상태"
-              value={status}
-              onChange={(event) => update({ status: event.target.value as Query["status"] })}
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <select
-              className="bg-white border-2 border-[#121212] shadow-[2px_2px_0_#121212] pl-3 pr-8 py-1 text-xs font-bold focus:ring-0 cursor-pointer"
-              aria-label="정렬"
-              value={sort}
-              onChange={(event) => update({ sort: event.target.value as ReportSort })}
-            >
-              {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+                {STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="w-32">
+              <select
+                className={`${INPUT.base} pr-8 font-bold cursor-pointer`}
+                aria-label="정렬"
+                value={sort}
+                onChange={(event) => update({ sort: event.target.value as ReportSort })}
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </section>
 
         {notice && (
-          <p className="mb-4 px-4 py-2.5 bg-green-50 border-2 border-[#121212] text-sm font-bold" role="status">
+          <p className={`${NOTICE.success} mb-4`} role="status">
+            <span className="material-symbols-outlined text-[18px] leading-5" aria-hidden="true">
+              check_circle
+            </span>
             {notice}
           </p>
         )}
 
-        <section
-          className="overflow-x-auto bg-white border-2 border-[#121212] shadow-[3px_3px_0_#121212] mb-4"
-          aria-busy={state.status === "loading"}
-        >
-          {state.status === "loading" && <ListStatus>신고를 불러오는 중입니다...</ListStatus>}
+        <section className={`${TABLE.wrap} mb-4`} aria-busy={state.status === "loading"}>
+          {state.status === "loading" && <ListStatus kind="loading">신고를 불러오는 중이에요.</ListStatus>}
           {state.status === "error" && (
-            <ListStatus>
-              <p className="text-[#E11D48]">{state.message}</p>
-              <button
-                className="mt-4 h-9 px-4 bg-white border-2 border-[#111111] text-sm font-bold"
-                type="button"
-                onClick={() => setReloadKey((k) => k + 1)}
-              >
-                다시 시도
-              </button>
+            <ListStatus
+              kind="error"
+              action={
+                <button
+                  className={buttonClass("secondary", "sm")}
+                  type="button"
+                  onClick={() => setReloadKey((k) => k + 1)}
+                >
+                  다시 시도
+                </button>
+              }
+            >
+              {state.message}
             </ListStatus>
           )}
-          {data && data.content.length === 0 && <ListStatus>조건에 맞는 신고가 없습니다.</ListStatus>}
+          {data && data.content.length === 0 && (
+            <ListStatus kind="empty">조건에 맞는 신고가 없어요. 유형이나 처리 상태를 바꿔 보세요.</ListStatus>
+          )}
           {data && data.content.length > 0 && (
-            <table className="w-full text-left border-collapse text-xs sm:text-sm">
+            <table className={TABLE.table}>
               <thead>
-                <tr className="bg-[#FFD43B] border-b-2 border-[#121212] font-black divide-x-2 divide-[#121212] whitespace-nowrap">
-                  <th className="py-2.5 px-3 text-center w-14" scope="col">
+                <tr>
+                  <th className={`${TABLE.th} w-14`} scope="col">
                     유형
                   </th>
-                  <th className="py-2.5 px-3 min-w-[200px]" scope="col">
+                  <th className={`${TABLE.th} min-w-[200px]`} scope="col">
                     신고 대상
                   </th>
-                  <th className="py-2.5 px-3 w-24" scope="col">
+                  <th className={`${TABLE.th} w-24`} scope="col">
                     작성자
                   </th>
-                  <th className="py-2.5 px-3 min-w-[160px]" scope="col">
+                  <th className={`${TABLE.th} min-w-[160px]`} scope="col">
                     신고 사유
                   </th>
-                  <th className="py-2.5 px-3 text-center w-16" scope="col">
+                  <th className={`${TABLE.th} ${TABLE.num} w-16`} scope="col">
                     신고 수
                   </th>
-                  <th className="py-2.5 px-3 text-center w-24" scope="col">
+                  <th className={`${TABLE.th} w-24`} scope="col">
                     신고일
                   </th>
-                  <th className="py-2.5 px-3 text-center w-24" scope="col">
+                  <th className={`${TABLE.th} w-28`} scope="col">
                     상태
                   </th>
-                  <th className="py-2.5 px-3 text-center min-w-[130px]" scope="col">
+                  <th className={`${TABLE.th} min-w-[200px]`} scope="col">
                     관리
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y-2 divide-[#121212] font-medium">
-                {data.content.map((report) => {
-                  const statusLabel = REPORT_STATUS_LABEL[report.status];
-                  return (
-                    <tr
-                      key={report.reportId}
-                      className="hover:bg-yellow-50 divide-x-2 divide-[#121212] whitespace-nowrap"
+              <tbody>
+                {data.content.map((report) => (
+                  <tr key={report.reportId} className={`${TABLE.tr} whitespace-nowrap`}>
+                    <td className={`${TABLE.td} font-bold`}>{TARGET_TYPE_LABEL[report.targetType]}</td>
+                    {/* w-full max-w-0: 다른 칸을 먼저 채우고 남은 폭만 써서, 긴 제목은 표를 넓히지 않고 … 로 자른다 */}
+                    <td
+                      className={`${TABLE.td} w-full max-w-0 ${report.targetDeleted ? "text-devin-gray-light" : "font-semibold"}`}
                     >
-                      <td className="py-2 px-3 text-center font-bold">{TARGET_TYPE_LABEL[report.targetType]}</td>
-                      {/* w-full max-w-0: 다른 칸을 먼저 채우고 남은 폭만 써서, 긴 제목은 표를 넓히지 않고 … 로 자른다 */}
-                      <td
-                        className={`py-2 px-3 w-full max-w-0 ${report.targetDeleted ? "text-neutral-400" : "font-semibold"}`}
-                      >
-                        <div className="truncate" title={targetLabel(report)}>
-                          {targetLabel(report)}
-                        </div>
-                      </td>
-                      <td className="py-2 px-3">{report.targetWriter.nickname}</td>
-                      <td className="py-2 px-3">
-                        {REPORT_REASON_LABEL[report.reason]}
-                        {report.reasonDetail && (
-                          <span
-                            className="block text-[11px] text-neutral-500 truncate max-w-[160px]"
-                            title={report.reasonDetail}
-                          >
-                            {report.reasonDetail}
-                          </span>
-                        )}
-                      </td>
-                      <td
-                        className={`py-2 px-3 text-center font-bold font-mono ${report.reportCount >= 3 ? "text-red-600" : ""}`}
-                      >
-                        {report.reportCount}
-                      </td>
-                      <td className="py-2 px-3 text-center text-neutral-600 font-mono text-xs">
-                        {formatDate(report.createdAt)}
-                      </td>
-                      <td className="py-2 px-3 text-center">
+                      <div className="truncate" title={targetLabel(report)}>
+                        {targetLabel(report)}
+                      </div>
+                    </td>
+                    <td className={TABLE.td}>{report.targetWriter.nickname}</td>
+                    <td className={TABLE.td}>
+                      {REPORT_REASON_LABEL[report.reason]}
+                      {report.reasonDetail && (
                         <span
-                          className={`inline-block px-1.5 py-0.5 border border-[#121212] text-[11px] font-bold ${statusLabel.className}`}
+                          className="block text-xs text-devin-gray truncate max-w-[160px]"
+                          title={report.reasonDetail}
                         >
-                          {statusLabel.label}
+                          {report.reasonDetail}
                         </span>
-                        {report.targetDeleted && (
-                          <span className="block mt-1 text-[11px] font-bold text-neutral-500">대상 삭제됨</span>
+                      )}
+                    </td>
+                    <td
+                      className={`${TABLE.td} ${TABLE.num} font-bold ${report.reportCount >= 3 ? "text-devin-red" : ""}`}
+                    >
+                      {formatNumber(report.reportCount)}
+                    </td>
+                    <td className={`${TABLE.td} text-devin-gray tabular-nums`}>{formatDate(report.createdAt)}</td>
+                    <td className={TABLE.td}>
+                      <StatusBadge kind={REPORT_STATUS_BADGE[report.status]} />
+                      {report.targetDeleted && (
+                        <span className="block mt-1 text-xs font-bold text-devin-gray">대상 삭제됨</span>
+                      )}
+                    </td>
+                    <td className={TABLE.td}>
+                      <div className="inline-flex items-center gap-1.5">
+                        <button
+                          className={buttonClass("secondary", "sm")}
+                          type="button"
+                          onClick={() => openDetail(report)}
+                        >
+                          보기
+                        </button>
+                        {report.status === "PENDING" && (
+                          <>
+                            <button
+                              className={buttonClass("danger", "sm")}
+                              type="button"
+                              onClick={() =>
+                                setModal({
+                                  kind: "process",
+                                  report,
+                                  action: "DELETE_TARGET",
+                                  busy: false,
+                                  error: null,
+                                })
+                              }
+                            >
+                              삭제
+                            </button>
+                            <button
+                              className={buttonClass("secondary", "sm")}
+                              type="button"
+                              onClick={() =>
+                                setModal({ kind: "process", report, action: "REJECT", busy: false, error: null })
+                              }
+                            >
+                              반려
+                            </button>
+                          </>
                         )}
-                      </td>
-                      <td className="py-2 px-3 text-center">
-                        <div className="inline-flex items-center gap-1">
-                          <button
-                            className={`${smallButton} bg-white hover:bg-neutral-100`}
-                            type="button"
-                            onClick={() => openDetail(report)}
-                          >
-                            [보기]
-                          </button>
-                          {report.status === "PENDING" && (
-                            <>
-                              <button
-                                className={`${smallButton} bg-red-100 hover:bg-red-200 text-red-700`}
-                                type="button"
-                                onClick={() =>
-                                  setModal({
-                                    kind: "process",
-                                    report,
-                                    action: "DELETE_TARGET",
-                                    busy: false,
-                                    error: null,
-                                  })
-                                }
-                              >
-                                [삭제]
-                              </button>
-                              <button
-                                className={`${smallButton} bg-white hover:bg-neutral-100 text-neutral-700`}
-                                type="button"
-                                onClick={() =>
-                                  setModal({ kind: "process", report, action: "REJECT", busy: false, error: null })
-                                }
-                              >
-                                [반려]
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           )}
@@ -347,22 +326,22 @@ export default function AdminReports() {
         {modal?.kind === "view" && (
           <ConfirmModal
             title={`신고 상세 · ${TARGET_TYPE_LABEL[modal.report.targetType]}`}
+            error={modal.error}
             onCancel={() => setModal(null)}
           >
-            {modal.error && <p className="font-bold text-[#E11D48]">{modal.error}</p>}
-            {!modal.error && !modal.detail && <p>불러오는 중입니다...</p>}
+            {!modal.error && !modal.detail && <p className="text-devin-gray">불러오는 중이에요.</p>}
             {modal.detail && (
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-xs font-bold text-neutral-500">대상</dt>
+                  <dt className={INPUT.label}>대상</dt>
                   <dd className="font-bold">
                     {targetLabel(modal.report)}
                     {modal.detail.targetDeleted ? (
-                      <span className="ml-2 text-xs text-neutral-500">(삭제됨)</span>
+                      <span className="ml-2 text-xs text-devin-gray">(삭제됨)</span>
                     ) : (
                       modal.detail.questionId && (
                         <Link
-                          className="ml-2 text-xs text-[#2563EB] underline"
+                          className={`ml-2 text-xs font-bold text-devin-blue underline rounded ${FOCUS}`}
                           to={detailPath(modal.detail.questionId)}
                         >
                           질문 보기
@@ -372,23 +351,23 @@ export default function AdminReports() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-bold text-neutral-500">내용</dt>
-                  <dd className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words bg-gray-50 border border-gray-200 rounded p-3">
+                  <dt className={INPUT.label}>내용</dt>
+                  <dd className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words bg-devin-bg border-[1.5px] border-devin-line rounded-lg p-4">
                     {modal.detail.targetContent ?? "(내용 없음)"}
                   </dd>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <dt className="text-xs font-bold text-neutral-500">작성자</dt>
+                    <dt className={INPUT.label}>작성자</dt>
                     <dd>{modal.detail.targetWriter.nickname}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-bold text-neutral-500">신고자</dt>
+                    <dt className={INPUT.label}>신고자</dt>
                     <dd>{modal.detail.reporter.nickname}</dd>
                   </div>
                 </div>
                 <div>
-                  <dt className="text-xs font-bold text-neutral-500">신고 사유</dt>
+                  <dt className={INPUT.label}>신고 사유</dt>
                   <dd>
                     {REPORT_REASON_LABEL[modal.detail.reason]}
                     {modal.detail.reasonDetail && ` — ${modal.detail.reasonDetail}`}
@@ -402,6 +381,15 @@ export default function AdminReports() {
         {modal?.kind === "process" && (
           <ConfirmModal
             title={ACTION_TEXT[modal.action].title}
+            message={
+              modal.action === "DELETE_TARGET"
+                ? `${
+                    modal.report.targetType === "QUESTION"
+                      ? "질문과 딸린 답변·답글이 모두 숨겨져요."
+                      : "답변과 딸린 답글이 숨겨져요."
+                  } 같은 대상의 다른 대기 신고도 처리 완료돼요.`
+                : "삭제하지 않고 반려해요. 같은 대상의 다른 대기 신고도 함께 반려돼요."
+            }
             confirmLabel={ACTION_TEXT[modal.action].label}
             tone={modal.action === "DELETE_TARGET" ? "danger" : "primary"}
             retryable
@@ -410,19 +398,9 @@ export default function AdminReports() {
             onConfirm={confirmProcess}
             onCancel={() => setModal(null)}
           >
-            <p className="font-bold text-black">{targetLabel(modal.report)}</p>
-            {modal.action === "DELETE_TARGET" ? (
-              <p className="mt-1 text-xs font-semibold text-red-600">
-                {modal.report.targetType === "QUESTION"
-                  ? "질문과 딸린 답변·답글이 모두 숨겨집니다."
-                  : "답변과 딸린 답글이 숨겨집니다."}{" "}
-                같은 대상의 다른 대기 신고도 처리 완료됩니다.
-              </p>
-            ) : (
-              <p className="mt-1 text-xs text-neutral-600">
-                삭제하지 않고 반려합니다. 같은 대상의 다른 대기 신고도 함께 반려됩니다.
-              </p>
-            )}
+            <p className="px-4 py-3 bg-devin-bg border-l-4 border-devin-ink rounded font-bold">
+              {targetLabel(modal.report)}
+            </p>
           </ConfirmModal>
         )}
       </AdminLayout>

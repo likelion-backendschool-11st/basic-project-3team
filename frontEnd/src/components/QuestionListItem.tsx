@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import type { QuestionListItem as Question } from "../api/question";
 import Highlight from "./Highlight";
-import { detailPath, formatCount, tagSearchPath } from "./questionList";
-import { formatDate } from "./writer";
+import { detailPath, tagSearchPath } from "./questionList";
+import StatusBadge from "./StatusBadge";
+import { CATEGORY, FOCUS, TAG } from "./uiStyles";
+import { formatDate, formatNumber } from "./writer";
 
 interface Props {
   question: Question;
@@ -13,67 +15,59 @@ interface Props {
   onTagClick?: (tag: string) => void;
 }
 
-const tagClass =
-  "px-2 py-0.5 border border-gray-400 text-gray-700 text-[11px] font-semibold bg-gray-50 hover:bg-[#FFD43B] hover:border-[#111111]";
+const tagClass = `${TAG} ${FOCUS}`;
 
-// 질문 목록 한 줄 (메인 화면, 검색 결과 화면)
+// 질문 목록 한 줄 (메인 화면, 검색 결과 화면). docs/ui-guide.md 7절: 상태는 제목 앞, 카테고리·태그는 제목 아래 줄.
+// 수치(좋아요·답변·조회)는 sm 이상에서 왼쪽 열, 휴대폰 폭에서는 제목 아래 한 줄로 내린다 (13절).
 export default function QuestionListItem({ question, highlightTitle, highlightTag, onTagClick }: Props) {
+  const status = question.accepted ? "accepted" : question.answerCount === 0 ? "waiting" : "unaccepted";
+  const counts = [
+    { label: "좋아요", value: question.likeCount },
+    { label: "답변", value: question.answerCount },
+    { label: "조회", value: question.viewCount },
+  ];
+
   return (
-    <article className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-amber-50/40 transition-colors">
-      <div className="flex items-start gap-4 min-w-0">
-        <div className="w-16 flex-shrink-0 text-center text-xs leading-snug pt-0.5 font-medium text-gray-600">
-          <div>
-            {"좋아요 "}
-            <span className="font-bold text-gray-900">{question.likeCount}</span>
+    <article className="p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 hover:bg-devin-bg transition-colors">
+      <dl className="order-2 sm:order-1 flex sm:flex-col gap-3 sm:gap-0.5 sm:w-16 shrink-0 text-[11px] text-devin-gray sm:text-center tabular-nums">
+        {counts.map((count) => (
+          <div key={count.label}>
+            <dt className="inline">{count.label} </dt>
+            <dd className="inline font-bold text-devin-ink">{formatNumber(count.value)}</dd>
           </div>
-          <div>
-            {"답변 "}
-            <span className="font-bold text-gray-900">{question.answerCount}</span>
-          </div>
-          <div className="text-[11px] text-gray-400">조회 {formatCount(question.viewCount)}</div>
+        ))}
+      </dl>
+
+      <div className="order-1 sm:order-2 flex-1 min-w-0 space-y-2">
+        <div className="flex items-start gap-2">
+          <StatusBadge kind={status} />
+          <Link
+            className={`text-base font-extrabold text-devin-ink leading-6 break-all hover:underline rounded ${FOCUS}`}
+            to={detailPath(question.questionId)}
+          >
+            <Highlight text={question.title} keyword={highlightTitle} />
+          </Link>
         </div>
 
-        <div className="flex-1 min-w-0 space-y-1.5">
-          <div className="flex items-center gap-2 flex-wrap">
-            {question.accepted ? (
-              <span className="px-1.5 py-0.5 bg-[#C7F9CC] text-[#0B5D1E] border border-[#111111] text-xs font-bold">
-                채택
-              </span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={CATEGORY}>{question.category.name}</span>
+          {question.tags.map((tag) =>
+            onTagClick ? (
+              <button key={tag} className={tagClass} type="button" onClick={() => onTagClick(tag)}>
+                <Highlight text={tag} keyword={highlightTag} />
+              </button>
             ) : (
-              <span className="px-1.5 py-0.5 bg-gray-200 border border-gray-800 text-gray-800 text-xs font-bold">
-                미채택
-              </span>
-            )}
-            <Link
-              className="font-bold text-base hover:underline text-gray-900 leading-tight break-all"
-              to={detailPath(question.questionId)}
-            >
-              <Highlight text={question.title} keyword={highlightTitle} />
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-1.5 pt-1 flex-wrap">
-            <span className="px-2 py-0.5 border border-[#111111] text-[#111111] text-[11px] font-bold bg-[#FFD43B]">
-              {question.category.name}
-            </span>
-            {question.tags.map((tag) =>
-              onTagClick ? (
-                <button key={tag} className={tagClass} type="button" onClick={() => onTagClick(tag)}>
-                  <Highlight text={tag} keyword={highlightTag} />
-                </button>
-              ) : (
-                <Link key={tag} className={tagClass} to={tagSearchPath(tag)}>
-                  <Highlight text={tag} keyword={highlightTag} />
-                </Link>
-              ),
-            )}
-          </div>
+              <Link key={tag} className={tagClass} to={tagSearchPath(tag)}>
+                <Highlight text={tag} keyword={highlightTag} />
+              </Link>
+            ),
+          )}
         </div>
-      </div>
 
-      <div className="text-xs text-gray-500 whitespace-nowrap self-end md:self-center font-medium">
-        <span className="text-gray-900 font-semibold">{question.writer.nickname}</span>
-        {` · ${formatDate(question.createdAt)}`}
+        <p className="text-xs text-devin-gray">
+          <span className="font-semibold text-devin-ink">{question.writer.nickname}</span>
+          {` · ${formatDate(question.createdAt)}`}
+        </p>
       </div>
     </article>
   );

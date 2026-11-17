@@ -5,26 +5,37 @@ import { useLoginPrompt } from "../hooks/useLoginPrompt";
 import Logo, { HEADER_INNER_CLASS } from "./Logo";
 import { ADMIN_REPORTS_PATH } from "./admin/adminLabels";
 import { HEADER_BUTTON_COLOR, HEADER_ICON_BUTTON_CLASS, HEADER_LABEL_CLASS } from "./headerStyles";
+import { MENU } from "./uiStyles";
 import NotificationBell from "./notification/NotificationBell";
 import SearchBar from "./search/SearchBar";
 
 const MAIN_PATH = "/questions";
 
-// 닉네임을 누르면 뜨는 프로필 팝오버 (REQ-MAIN-002, 003)
+// 닉네임을 누르면 뜨는 프로필 메뉴 (REQ-MAIN-002, 003). 모양은 docs/ui-guide.md 12절 드롭다운 메뉴.
 function ProfileMenu({ nickname }: { nickname: string }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // 팝오버 바깥을 누르면 닫는다.
+  // 메뉴 바깥을 누르거나 Esc를 누르면 닫는다.
   useEffect(() => {
     if (!open) return;
     function handleClick(event: MouseEvent) {
       if (!menuRef.current?.contains(event.target as Node)) setOpen(false);
     }
+    function handleKey(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      buttonRef.current?.focus();
+    }
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
 
   async function handleLogout() {
@@ -34,12 +45,13 @@ function ProfileMenu({ nickname }: { nickname: string }) {
     navigate("/", { replace: true });
   }
 
-  const itemClass = "block w-full text-left px-4 py-2.5 text-sm font-bold hover:bg-[#FFD43B]";
+  const close = () => setOpen(false);
 
   return (
     <div className="relative" ref={menuRef}>
       {/* #147: lg 미만에서는 닉네임 첫 글자만 보인다. */}
       <button
+        ref={buttonRef}
         className={`${HEADER_ICON_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`}
         type="button"
         aria-haspopup="menu"
@@ -50,28 +62,38 @@ function ProfileMenu({ nickname }: { nickname: string }) {
           {Array.from(nickname)[0]}
         </span>
         <span className={HEADER_LABEL_CLASS}>{nickname}</span>
-        <span className="hidden lg:inline text-[11px]" aria-hidden="true">
-          ▼
+        <span className={`hidden lg:inline ${MENU.icon}`} aria-hidden="true">
+          expand_more
         </span>
       </button>
       {open && (
-        <div
-          className="absolute right-0 mt-2 w-40 bg-white border-2 border-[#111111] shadow-[3px_3px_0_#111111] divide-y-2 divide-[#111111] z-50"
-          role="menu"
-        >
-          <Link className={itemClass} to="/mypage" role="menuitem" onClick={() => setOpen(false)}>
+        <div className={`${MENU.panel} absolute right-0 mt-2 w-44 z-50`} role="menu">
+          <Link className={MENU.item} to="/mypage" role="menuitem" onClick={close}>
+            <span className={MENU.icon} aria-hidden="true">
+              person
+            </span>
             프로필
           </Link>
-          <Link className={itemClass} to="/profile-edit" role="menuitem" onClick={() => setOpen(false)}>
+          <Link className={MENU.item} to="/profile-edit" role="menuitem" onClick={close}>
+            <span className={MENU.icon} aria-hidden="true">
+              edit
+            </span>
             프로필 수정
           </Link>
           {/* #33: 관리자에게만 관리자 화면 메뉴를 보여 준다. */}
           {user?.role === "ROLE_ADMIN" && (
-            <Link className={itemClass} to={ADMIN_REPORTS_PATH} role="menuitem" onClick={() => setOpen(false)}>
+            <Link className={MENU.item} to={ADMIN_REPORTS_PATH} role="menuitem" onClick={close}>
+              <span className={MENU.icon} aria-hidden="true">
+                admin_panel_settings
+              </span>
               관리자 페이지
             </Link>
           )}
-          <button className={`${itemClass} text-[#E11D48]`} type="button" role="menuitem" onClick={handleLogout}>
+          <div className={MENU.divider} role="separator" />
+          <button className={`${MENU.item} ${MENU.danger}`} type="button" role="menuitem" onClick={handleLogout}>
+            <span className={MENU.icon} aria-hidden="true">
+              logout
+            </span>
             로그아웃
           </button>
         </div>
@@ -81,7 +103,7 @@ function ProfileMenu({ nickname }: { nickname: string }) {
 }
 
 // 공통 헤더: 로고, 검색바, 로그인 여부에 따른 버튼 (REQ-MAIN-004, 009)
-// #147: lg 미만에서는 버튼을 아이콘으로 줄이고, 휴대폰 폭(sm 미만)에서는 검색창도 숨겨 🔍 버튼을 누르면 헤더 아래에 펼친다.
+// #147: lg 미만에서는 버튼을 아이콘으로 줄이고, 휴대폰 폭(sm 미만)에서는 검색창도 숨겨 검색 아이콘 버튼을 누르면 헤더 아래에 펼친다.
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -120,7 +142,10 @@ export default function Header() {
   }, [searchOpen]);
 
   return (
-    <header className="w-full bg-white border-b-2 sticky top-0 z-40 border-[#111111]" data-purpose="global-header">
+    <header
+      className="w-full bg-devin-paper border-b-2 sticky top-0 z-40 border-devin-ink"
+      data-purpose="global-header"
+    >
       <div className={HEADER_INNER_CLASS}>
         <Logo to={MAIN_PATH} />
 
@@ -128,7 +153,7 @@ export default function Header() {
         <div
           id="header-search"
           ref={searchPanelRef}
-          className={`${searchOpen ? "flex" : "hidden"} absolute inset-x-0 top-full px-4 py-3 bg-white border-b-2 border-[#111111] sm:static sm:flex sm:flex-1 sm:justify-center sm:p-0 sm:bg-transparent sm:border-0`}
+          className={`${searchOpen ? "flex" : "hidden"} absolute inset-x-0 top-full px-4 py-3 bg-devin-paper border-b-2 border-devin-ink sm:static sm:flex sm:flex-1 sm:justify-center sm:p-0 sm:bg-transparent sm:border-0`}
         >
           <SearchBar />
         </div>
@@ -143,7 +168,9 @@ export default function Header() {
             aria-label={searchOpen ? "검색창 닫기" : "검색창 열기"}
             onClick={() => setSearchOpen((value) => !value)}
           >
-            <span aria-hidden="true">🔍</span>
+            <span className={MENU.icon} aria-hidden="true">
+              search
+            </span>
           </button>
           {/* #64: 채택 랭킹은 로그인하지 않아도 본다. */}
           {/* #159: 랭킹 페이지에서는 노란 바탕으로 현재 위치를 보여 준다 (NavLink가 aria-current="page"를 붙인다). */}
@@ -153,7 +180,9 @@ export default function Header() {
             }
             to="/ranking"
           >
-            <span aria-hidden="true">🏆</span>
+            <span className={`lg:hidden ${MENU.icon}`} aria-hidden="true">
+              emoji_events
+            </span>
             <span className={HEADER_LABEL_CLASS}>랭킹</span>
           </NavLink>
           <button
@@ -161,8 +190,8 @@ export default function Header() {
             type="button"
             onClick={() => (user ? navigate("/ask") : openLoginPrompt("질문을 작성하려면 로그인이 필요해요."))}
           >
-            <span className="lg:hidden" aria-hidden="true">
-              ✏️
+            <span className={`lg:hidden ${MENU.icon}`} aria-hidden="true">
+              edit
             </span>
             <span className={HEADER_LABEL_CLASS}>질문하기</span>
           </button>
@@ -176,14 +205,14 @@ export default function Header() {
           ) : (
             <>
               <Link className={`${HEADER_ICON_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.white}`} to="/login">
-                <span className="lg:hidden" aria-hidden="true">
-                  🔑
+                <span className={`lg:hidden ${MENU.icon}`} aria-hidden="true">
+                  login
                 </span>
                 <span className={HEADER_LABEL_CLASS}>로그인</span>
               </Link>
               <Link className={`${HEADER_ICON_BUTTON_CLASS} ${HEADER_BUTTON_COLOR.yellow}`} to="/signup">
-                <span className="lg:hidden" aria-hidden="true">
-                  📝
+                <span className={`lg:hidden ${MENU.icon}`} aria-hidden="true">
+                  person_add
                 </span>
                 <span className={HEADER_LABEL_CLASS}>회원가입</span>
               </Link>

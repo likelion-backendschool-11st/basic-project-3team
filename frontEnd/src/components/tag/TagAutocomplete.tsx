@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { getTags, type Tag } from "../../api/tag";
+import { INPUT, MENU } from "../uiStyles";
 
 interface Props {
   // 이미 고른 태그 (추천 목록에서 뺀다)
@@ -92,9 +93,9 @@ export default function TagAutocomplete({ selected, onSelect, disabled, placehol
   const showList = open && keyword !== "" && (suggestions.length > 0 || notFound);
 
   return (
-    <div className={`relative ${className ?? ""}`} ref={boxRef}>
+    <div className={`relative w-full sm:w-56 ${className ?? ""}`} ref={boxRef}>
       <input
-        className="h-8 w-48 px-2.5 text-xs border-2 border-[#111111] focus:outline-none focus:shadow-[2px_2px_0_#111111] disabled:opacity-40"
+        className={INPUT.base}
         placeholder={placeholder ?? "태그 검색"}
         aria-label="태그 검색"
         role="combobox"
@@ -113,27 +114,23 @@ export default function TagAutocomplete({ selected, onSelect, disabled, placehol
         onKeyDown={handleKeyDown}
       />
       {showList && (
-        <ul
-          id={listId}
-          role="listbox"
-          className="absolute left-0 top-9 z-30 w-48 bg-white border-2 border-[#111111] shadow-[3px_3px_0_#111111] text-xs"
-        >
+        <ul id={listId} role="listbox" className={`${MENU.panel} absolute left-0 top-12 z-30 w-full`}>
           {suggestions.map((tag, index) => (
             <li
               key={tag.tagId}
               id={`${listId}-${index}`}
               role="option"
               aria-selected={index === active}
-              className={`px-2.5 py-1.5 font-bold cursor-pointer ${index === active ? "bg-[#FFD43B]" : "hover:bg-gray-100"}`}
+              className={`${MENU.item} cursor-pointer ${index === active ? "bg-devin-yellow" : ""}`}
               onMouseDown={(event) => event.preventDefault()}
               onMouseEnter={() => setActive(index)}
               onClick={() => choose(tag.name)}
             >
-              #{tag.name}
+              {tag.name}
             </li>
           ))}
           {notFound && suggestions.length === 0 && (
-            <li className="px-2.5 py-1.5 text-gray-500">일치하는 태그가 없습니다.</li>
+            <li className="px-2.5 py-2 text-sm text-devin-gray">일치하는 태그가 없어요. 다른 이름으로 찾아 주세요.</li>
           )}
         </ul>
       )}

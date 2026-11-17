@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getSimilarQuestions, type QuestionListItem } from "../api/question";
 import { detailPath } from "./questionList";
+import StatusBadge from "./StatusBadge";
+import { CARD, FOCUS } from "./uiStyles";
+import { formatNumber } from "./writer";
 
 export default function SimilarQuestions({ questionId }: { questionId: number }) {
   const [questions, setQuestions] = useState<QuestionListItem[]>([]);
@@ -27,35 +30,27 @@ export default function SimilarQuestions({ questionId }: { questionId: number })
 
   return (
     <section className="space-y-3 pt-8" data-purpose="similar-questions-container">
-      <h3 className="text-base font-black flex items-center gap-2">
-        <svg className="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-        </svg>
-        <span>이런 질문도 있어요</span>
-      </h3>
+      <h2 className="text-lg font-extrabold flex items-center gap-2 text-devin-ink">
+        <span className="material-symbols-outlined text-[20px] leading-none" aria-hidden="true">
+          info
+        </span>
+        이런 질문도 있어요
+      </h2>
       <div className="space-y-2">
         {questions.map((question) => (
           <Link
             key={question.questionId}
-            className="block bg-white hover:bg-amber-50/50 border-[2.5px] border-[#111111] rounded-lg p-3 shadow-[3px_3px_0_#111111] transition-transform hover:-translate-y-0.5"
+            className={`${CARD} shadow-devin-sm block p-4 hover:bg-devin-bg transition-colors ${FOCUS}`}
             to={detailPath(question.questionId)}
           >
             <div className="flex items-center gap-3">
-              {question.accepted ? (
-                <span className="bg-[#DCFCE7] text-[#15803D] border border-emerald-600 text-xs font-black px-2 py-0.5 rounded shrink-0">
-                  채택
-                </span>
-              ) : (
-                <span className="bg-[#F1F5F9] text-[#64748B] border border-slate-400 text-xs font-black px-2 py-0.5 rounded shrink-0">
-                  미채택
-                </span>
-              )}
-              <span className="text-sm font-bold text-gray-900 hover:underline truncate">{question.title}</span>
-              <span className="text-xs text-gray-400 font-medium ml-auto shrink-0">답변 {question.answerCount}</span>
+              <StatusBadge
+                kind={question.accepted ? "accepted" : question.answerCount === 0 ? "waiting" : "unaccepted"}
+              />
+              <span className="text-sm font-bold text-devin-ink truncate">{question.title}</span>
+              <span className="text-[11px] text-devin-gray ml-auto shrink-0 tabular-nums">
+                답변 {formatNumber(question.answerCount)}
+              </span>
             </div>
           </Link>
         ))}

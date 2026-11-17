@@ -17,7 +17,7 @@ export default function Highlight({ text, keyword }: { text: string; keyword?: s
     <>
       {parts.map((part, i) =>
         part.match ? (
-          <mark key={i} className="bg-[#FFD43B] text-inherit px-0.5">
+          <mark key={i} className="bg-devin-yellow text-inherit px-0.5">
             {part.value}
           </mark>
         ) : (

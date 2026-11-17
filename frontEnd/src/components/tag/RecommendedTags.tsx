@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { recommendTags } from "../../api/tag";
+import { chipClass } from "../uiStyles";
 
 interface Props {
   title: string;
@@ -38,22 +39,24 @@ export default function RecommendedTags({ title, content, selected, onToggle }: 
   }, [title, content]);
 
   if (tags.length === 0) return null;
+  // 고를 수 있는 칩 (docs/ui-guide.md 7절). 고르면 검정, 아이콘으로 추가(+)·선택됨(✓)을 함께 알린다.
   return (
-    <div className="flex items-center gap-2 flex-wrap text-xs" data-purpose="recommended-tags">
-      <span className="font-bold text-gray-700">추천 태그</span>
+    <div className="flex items-center gap-2 flex-wrap" data-purpose="recommended-tags">
+      <span className="text-xs font-extrabold text-devin-ink">추천 태그</span>
       {tags.map((tag) => {
         const isSelected = selected.includes(tag);
         return (
           <button
             key={tag}
-            className={`px-2 py-0.5 font-bold border-2 border-[#111111] transition-colors ${
-              isSelected ? "bg-[#111111] text-white" : "bg-white hover:bg-[#FFD43B]"
-            }`}
+            className={chipClass(isSelected)}
             type="button"
             aria-pressed={isSelected}
             onClick={() => onToggle(tag)}
           >
-            {isSelected ? "✓ " : "+ "}#{tag}
+            <span className="material-symbols-outlined text-[15px] leading-none" aria-hidden="true">
+              {isSelected ? "check" : "add"}
+            </span>
+            {tag}
           </button>
         );
       })}
