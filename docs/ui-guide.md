@@ -104,7 +104,7 @@
 
 - 카드와 모달은 같은 모양이다 (흰 바탕, 12px, 2px 테두리, 4px 그림자).
 - 모달 버튼은 오른쪽 아래에 `[취소] [확인]` 순서로 둔다. 되돌릴 수 없는 동작은 확인 버튼을 위험(빨강)으로 한다.
-- 확인 모달 컴포넌트는 하나로 합친다 (지금 `components/ConfirmModal.tsx`, `components/admin/ConfirmModal.tsx` 두 개).
+- 확인 모달은 `components/ConfirmModal.tsx` 하나를 쓴다.
 
 ## 7. 상태·카테고리·태그·등급
 
@@ -146,7 +146,7 @@
 ### 등급·획득 뱃지
 
 - 등급은 메달 아이콘 `workspace_premium`(채움) 하나에 등급 색을 입힌다. ★ 별, 이모지(🥉🥈🥇💎), Font Awesome 메달은 쓰지 않는다.
-- 등급 색은 아래 한 세트만 쓴다 (`components/writer.ts`의 `GRADES`). 금속 색은 등급과 랭킹 메달에만 쓰는 예외다.
+- 등급 색은 아래 한 세트만 쓴다 (`components/gradeBadge.ts`의 `GRADES`). 금속 색은 등급과 랭킹 메달에만 쓰는 예외다.
 
 | 등급 | 색 |
 |---|---|
@@ -161,7 +161,7 @@
 | 마이페이지, 프로필, 등급·뱃지 화면 | 아이콘 + 이름 ("골드") |
 | 랭킹 1·2·3위 메달 | 골드 · 실버 · 브론즈 색 원 + 순위 숫자 |
 
-- 등급 이름·색·기준은 `writer.ts`(`GRADES`)와 `gradeBadge.ts`(`GRADE_NAME`, `GRADE_MIN_ACCEPTED`), `ProfileDetails.tsx`(`GRADE_LABEL`)에 나뉘어 있으므로 한 파일로 합친다.
+- 등급 이름·색·기준은 `gradeBadge.ts`의 `GRADES` 한 곳에만 둔다. 메달은 `GradeIcon.tsx`로 그린다.
 
 획득 뱃지 6가지는 원 안에 아이콘을 넣는다.
 
@@ -176,7 +176,7 @@
 
 - 획득: 노랑 원, 2px 검정 테두리, 작은 그림자(2px), 검정 아이콘
 - 아직: 흰 원, 2px 회색 점선 테두리, 회색 아이콘과 글자
-- 마이페이지(이모지)와 등급·뱃지 화면(Font Awesome)이 같은 아이콘을 쓰게 `gradeBadge.ts`의 `BADGE_ICON`을 Material 아이콘 이름 하나로 바꾼다.
+- 아이콘 이름은 `gradeBadge.ts`의 `BADGE_ICON`(Material 아이콘 이름)에 있고, 원 모양은 `BadgeIcon.tsx`로 그린다.
 
 ## 8. 안내 문구·화면 상태
 
@@ -210,7 +210,7 @@
 | 알림 | 지난 시간, 하루가 지나면 날짜 | `방금 전`, `5분 전`, `3시간 전`, `2026.11.12` |
 | 숫자 | 천 단위 쉼표, 비율은 소수 첫째 자리 | `1,024`, `33.3%` |
 
-- 날짜는 `components/writer.ts`의 함수로만 만든다. `toLocaleString()`, `slice(0, 10)`, `replaceAll("-", ".")`를 화면에서 직접 쓰지 않는다. 알림의 지난 시간 함수(`NotificationBell.tsx`의 `formatRelative`)도 `writer.ts`로 옮긴다.
+- 날짜·숫자는 `components/writer.ts`의 함수(`formatDate`, `formatDateTime`, `formatRelative`, `formatNumber`, `formatPercent`)로만 만든다. `toLocaleString()`, `slice(0, 10)`, `replaceAll("-", ".")`를 화면에서 직접 쓰지 않는다.
 - 줄을 맞춰야 하는 숫자(표, 수치)는 `tabular-nums`를 쓴다.
 
 ## 11. 본문 폭·화면 배경
@@ -229,7 +229,7 @@
 
 - 고른 탭은 검정 바탕에 흰 글자, 나머지는 흰 바탕에 1.5px 검정 테두리, 8px 둥글기, 높이 32px (7절의 고를 수 있는 칩과 같은 규칙).
 - 개수가 있으면 탭 이름 옆에 작은 숫자 상자를 둔다 (예: "내 답변 3").
-- 정렬(최신순·조회순 등)과 마이페이지 탭을 공통 `components/SortTabs.tsx` 하나로 만든다. `role="tablist"`, `role="tab"`, `aria-selected`를 쓴다.
+- 정렬(최신순·조회순 등)과 마이페이지 탭은 공통 `components/SortTabs.tsx` 하나를 쓴다 (`role="tablist"`, `role="tab"`, `aria-selected`, 좌우 화살표 키로 이동).
 
 ### 드롭다운·더보기 메뉴
 
@@ -265,9 +265,15 @@
 
 | 파일 | 내용 |
 |---|---|
-| `frontEnd/tailwind.preset.cjs` | 글꼴, 색(`devin-*`), 테두리 `border-devin`(2px), 그림자 `shadow-devin-sm`(2px)·`shadow-devin`(4px), 폭 `max-w-devin-narrow`(460px), 배경 `bg-devin-dots` |
-| `frontEnd/src/components/uiStyles.ts` | 버튼 `buttonClass(종류, 크기)`, 입력칸 `INPUT`, 카드 `CARD`, 카테고리 `CATEGORY`, 태그 `TAG`, 안내 상자 `NOTICE`, 화면 배경 `PAGE_BACKGROUND` |
+| `frontEnd/tailwind.preset.cjs` | 글꼴, 색(`devin-*`, 표·메뉴 구분선 `devin-line`), 테두리 `border-devin`(2px), 그림자 `shadow-devin-sm`(2px)·`shadow-devin`(4px), 폭 `max-w-devin-narrow`(460px), 배경 `bg-devin-dots` |
+| `frontEnd/src/components/uiStyles.ts` | 버튼 `buttonClass(종류, 크기)`, 입력칸 `INPUT`, 카드 `CARD`, 카테고리 `CATEGORY`, 태그 `TAG`, 칩 `CHIP`·`chipClass(고름)`, 탭 `tabClass(고름)`·`tabCountClass(고름)`, 메뉴 `MENU`, 표 `TABLE`, 키보드 포커스 `FOCUS`, 안내 상자 `NOTICE`, 화면 배경 `PAGE_BACKGROUND`. 버튼·입력칸에는 `FOCUS`가 이미 들어 있다 |
 | `frontEnd/src/components/StatusBadge.tsx` | 상태 배지 `<StatusBadge kind="accepted" />` (7절 표의 상태를 모두 가짐) |
+| `frontEnd/src/components/SortTabs.tsx` | 탭 `<SortTabs tabs={...} value={...} onChange={...} label="정렬" />`. 정렬 탭과 마이페이지 탭이 같이 쓴다. 탭마다 `count`를 넣으면 개수 상자가 붙는다 |
+| `frontEnd/src/components/ConfirmModal.tsx` | 확인 모달 `<ConfirmModal title message confirmLabel tone onConfirm onCancel />`. `tone`은 `primary`·`accent`(채택)·`danger`(삭제·정지). 대상 정보 등은 `children`으로, `confirmLabel`이 없으면 닫기 버튼만 |
+| `frontEnd/src/components/gradeBadge.ts` | 등급 `GRADES`(이름·색·기준 채택 수), `GRADE_ORDER`, `gradeLevel`, 뱃지 아이콘 `BADGE_ICON`(Material 이름) |
+| `frontEnd/src/components/GradeIcon.tsx` | 등급 메달 `<GradeIcon grade={...} />`(닉네임 옆, 아이콘만) / `withLabel`(아이콘 + 이름) |
+| `frontEnd/src/components/BadgeIcon.tsx` | 획득 뱃지 `<BadgeIcon code={...} acquired={...} size="sm" />` |
+| `frontEnd/src/components/writer.ts` | 날짜·숫자 `formatDate`(목록), `formatDateTime`(상세), `formatRelative`(알림), `formatNumber`, `formatPercent` |
 | `frontEnd/src/components/headerStyles.ts` | 헤더 버튼. `uiStyles`의 보통 크기 버튼과 같다 |
 
 - 화면별 Tailwind 설정(`pages/*.tailwind.cjs`)의 `content`에는 `./src/components/**/*.{ts,tsx}`를 넣는다. `.tsx`만 넣으면 `uiStyles.ts`·`headerStyles.ts`에 있는 클래스가 그 화면 CSS에 만들어지지 않는다.
@@ -278,13 +284,17 @@
 <input className={`${INPUT.base} ${hasError ? INPUT.error : ""}`} />
 <div className={`${CARD} p-6`}>...</div>
 <StatusBadge kind={question.accepted ? "accepted" : question.answerCount === 0 ? "waiting" : "unaccepted"} />
+<button className={chipClass(active)} aria-pressed={active}>백엔드</button>
+<SortTabs tabs={[{ value: "questions", label: "내 질문", count: 3 }]} value={tab} onChange={setTab} label="내 활동" />
+<ConfirmModal tone="danger" title="질문을 삭제할까요?" message="삭제한 질문은 되돌릴 수 없어요." confirmLabel="삭제" onConfirm={remove} onCancel={close} />
+<GradeIcon grade={writer.grade} />
 ```
 
 - 화면별 Tailwind 설정에 있는 `brutal`, `cream`, `neoBlack` 같은 이름은 화면을 공통 값으로 바꾸면서 지운다.
 
 ## 적용 방법
 
-1. 기준 값 반영 (한 명): `tailwind.preset.cjs`, `uiStyles.ts`, `StatusBadge.tsx`를 만든다. (#182에서 반영, 화면은 아직 그대로)
-   - 칩·탭·메뉴·표·키보드 포커스 클래스와 등급 아이콘은 아직 `uiStyles.ts`에 없다. 공통 컴포넌트 작업에서 추가한다.
+1. 기준 값 반영 (한 명): `tailwind.preset.cjs`, `uiStyles.ts`, `StatusBadge.tsx`를 만든다. (#182에서 반영)
+   - 칩·탭·메뉴·표·키보드 포커스 클래스, 공통 탭·확인 모달, 등급·뱃지 아이콘, 날짜 함수를 추가했다 (#186). 화면은 아직 그대로다.
 2. 화면 적용 (화면 담당자): 자기 화면의 요소를 위 공통 값으로 바꾼다. 실제로 쓰는 화면 기준으로 버튼·입력칸·카드 중 기준과 다른 요소가 33개 파일에 약 120개 있다 (2026-11-16 기준). 앱에서 연결되지 않은 시안 확인용 화면 16개는 세지 않았다.
 3. 새 공통 요소가 생기면 이 문서에 먼저 추가한다.

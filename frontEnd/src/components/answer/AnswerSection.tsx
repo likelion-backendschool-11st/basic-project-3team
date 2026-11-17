@@ -21,7 +21,8 @@ import LikeButton from "../LikeButton";
 import Markdown from "../markdown/Markdown";
 import FieldError from "../FieldError";
 import ReportDialog from "../report/ReportDialog";
-import { GRADES, formatDateTime, writerSummary } from "../writer";
+import { GRADES } from "../gradeBadge";
+import { formatDateTime, writerSummary } from "../writer";
 import ReplyThread from "./ReplyThread";
 
 // 서버(answer.controller.js)와 같은 규칙. 통과하면 null
@@ -45,7 +46,7 @@ const CONFIRM = {
     confirmLabel: "삭제",
   },
   accept: {
-    tone: "accept",
+    tone: "accent",
     title: "이 답변을 채택하시겠습니까?",
     message: "채택 후에는 취소할 수 없습니다.",
     confirmLabel: "채택",
@@ -368,7 +369,9 @@ export default function AnswerSection({
                     <button
                       className="bg-white hover:bg-gray-100 border-thick border-neoBlack px-2.5 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-brutal-sm"
                       type="button"
-                      onClick={() => (user ? setReportAnswerId(answer.answerId) : openLoginPrompt("신고하려면 로그인이 필요해요."))}
+                      onClick={() =>
+                        user ? setReportAnswerId(answer.answerId) : openLoginPrompt("신고하려면 로그인이 필요해요.")
+                      }
                     >
                       신고
                     </button>

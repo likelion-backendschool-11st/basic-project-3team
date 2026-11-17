@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../api/client";
 import { getMyGrade, type Badge, type Grade, type GradeInfo } from "../api/mypage";
-import { BADGE_ICON, GRADE_MIN_ACCEPTED, GRADE_NAME, GRADE_ORDER, gradeLevel } from "../components/gradeBadge";
+import { BADGE_ICON, GRADE_ORDER, GRADES, gradeLevel } from "../components/gradeBadge";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
 import "./GradesBadges.css";
@@ -78,7 +78,7 @@ function SummaryCard({ info }: { info: GradeInfo }) {
             <h2 className="text-xl md:text-2xl font-extrabold text-slate-900">
               {"현재 등급 : "}
               <span className="text-blue-600" data-field="gradeName">
-                {GRADE_NAME[info.grade]}
+                {GRADES[info.grade].label}
               </span>
             </h2>
             <div className="text-base font-bold text-slate-700">
@@ -111,7 +111,7 @@ function SummaryCard({ info }: { info: GradeInfo }) {
               ) : (
                 <span>
                   {"다음 등급("}
-                  <span className="font-bold text-amber-600">{GRADE_NAME[info.nextGrade as Grade]}</span>
+                  <span className="font-bold text-amber-600">{GRADES[info.nextGrade as Grade].label}</span>
                   {")까지 채택 "}
                   <span className="font-bold text-slate-800">
                     {(info.nextGradeMin as number) - info.acceptedCount}개
@@ -150,18 +150,18 @@ function GradeTable({ current }: { current: Grade }) {
                   <tr className="bg-blue-50/90 font-bold border-y-2 border-blue-600" data-current="true" key={grade}>
                     <td className="py-2.5 px-3 border-r-2 border-slate-900 text-blue-700">
                       <span className="inline-flex items-center justify-center gap-1">
-                        {GRADE_NAME[grade]}
+                        {GRADES[grade].label}
                         <span className="text-[10px] bg-blue-600 text-white px-1 rounded">현재</span>
                       </span>
                     </td>
-                    <td className="py-2.5 px-3 text-blue-900 font-extrabold">채택 {GRADE_MIN_ACCEPTED[grade]}개 ~</td>
+                    <td className="py-2.5 px-3 text-blue-900 font-extrabold">채택 {GRADES[grade].minAccepted}개 ~</td>
                   </tr>
                 ) : (
                   <tr className="hover:bg-slate-50" key={grade}>
                     <td className={`py-2.5 px-3 border-r-2 border-slate-900 font-bold ${MEDAL_STYLE[grade].row}`}>
-                      {GRADE_NAME[grade]}
+                      {GRADES[grade].label}
                     </td>
-                    <td className="py-2.5 px-3">채택 {GRADE_MIN_ACCEPTED[grade]}개 ~</td>
+                    <td className="py-2.5 px-3">채택 {GRADES[grade].minAccepted}개 ~</td>
                   </tr>
                 ),
               )}
@@ -178,13 +178,17 @@ function BadgeIcon({ badge, size }: { badge: Badge; size: "sm" | "lg" }) {
   const box = size === "sm" ? "w-16 h-16 text-xl" : "w-14 h-14 text-2xl";
   return badge.acquired ? (
     <div className={`${box} rounded-full bg-slate-300 brutal-border shadow-brutal-sm flex items-center justify-center`}>
-      <i className={`fa-solid ${BADGE_ICON[badge.code].fa} text-slate-700`}></i>
+      <span className="material-symbols-outlined text-slate-700" aria-hidden="true">
+        {BADGE_ICON[badge.code]}
+      </span>
     </div>
   ) : (
     <div
       className={`${box} rounded-full bg-white border-2 border-dashed border-slate-400 flex items-center justify-center`}
     >
-      <i className={`fa-solid ${BADGE_ICON[badge.code].fa} text-slate-300`}></i>
+      <span className="material-symbols-outlined text-slate-300" aria-hidden="true">
+        {BADGE_ICON[badge.code]}
+      </span>
     </div>
   );
 }

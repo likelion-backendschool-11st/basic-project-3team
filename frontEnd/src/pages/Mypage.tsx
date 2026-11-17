@@ -20,10 +20,11 @@ import {
   type MyInfo,
 } from "../api/mypage";
 import { getCategories } from "../api/tag";
-import { BADGE_ICON, GRADE_NAME } from "../components/gradeBadge";
+import { BADGE_ICON, GRADES } from "../components/gradeBadge";
+import GradeIcon from "../components/GradeIcon";
 import Header from "../components/Header";
 import Pagination from "../components/Pagination";
-import ProfileDetails, { GRADE_LABEL, formatRate } from "../components/ProfileDetails";
+import ProfileDetails, { formatRate } from "../components/ProfileDetails";
 import { detailPath } from "../components/questionList";
 import { useAuth } from "../hooks/useAuth";
 import "./Mypage.css";
@@ -397,7 +398,7 @@ export default function Mypage() {
                         className="inline-flex items-center gap-1.5 text-base font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 neo-border-thin"
                         data-field="grade"
                       >
-                        {data ? GRADE_LABEL[data.grade.grade] : "-"}
+                        {data ? <GradeIcon grade={data.grade.grade} withLabel /> : "-"}
                       </span>
                     </div>
 
@@ -409,7 +410,7 @@ export default function Mypage() {
                       >
                         {data.grade.nextGrade && data.grade.nextGradeMin !== null ? (
                           <>
-                            {`다음 등급(${GRADE_NAME[data.grade.nextGrade]})까지 `}
+                            {`다음 등급(${GRADES[data.grade.nextGrade].label})까지 `}
                             <span className="font-bold underline underline-offset-2">
                               채택 {data.grade.nextGradeMin - data.grade.acceptedCount}회
                             </span>
@@ -443,7 +444,9 @@ export default function Mypage() {
                             to="/grades-badges"
                           >
                             <div className="w-12 h-12 rounded-full bg-amber-300 neo-border flex items-center justify-center text-xl neo-box-shadow-sm group-hover:-translate-y-1 transition-transform">
-                              {BADGE_ICON[badge.code].emoji}
+                              <span className="material-symbols-outlined" aria-hidden="true">
+                                {BADGE_ICON[badge.code]}
+                              </span>
                             </div>
                             <span className="text-xs font-bold text-neutral-800">{badge.name}</span>
                           </Link>

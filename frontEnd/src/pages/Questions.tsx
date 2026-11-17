@@ -10,12 +10,12 @@ import ListStatus from "../components/ListStatus";
 import Pagination from "../components/Pagination";
 import QuestionListItem from "../components/QuestionListItem";
 import SortTabs from "../components/SortTabs";
-import { PAGE_SIZE, parsePage, parseSort } from "../components/questionList";
+import { PAGE_SIZE, parsePage, parseSort, SORT_TABS } from "../components/questionList";
 import "./Questions.css";
 
 // Page-local styles from the Stitch <head>; mounted only while this page is shown.
 const css =
-  '/* Base canvas styling with cream background and subtle dot pattern */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n\n    /* Standard Neo-brutalism borders and shadows */\n    .neo-border {\n      border: 2.5px solid #111111;\n    }\n    \n    .neo-border-b {\n      border-bottom: 2.5px solid #111111;\n    }\n\n    .neo-shadow {\n      box-shadow: 3px 3px 0px #111111;\n    }\n\n    .neo-shadow-sm {\n      box-shadow: 2px 2px 0px #111111;\n    }\n\n    .neo-shadow-active:active {\n      transform: translate(2px, 2px);\n      box-shadow: 0px 0px 0px #111111;\n    }';
+  "/* Base canvas styling with cream background and subtle dot pattern */\n    body {\n      background-color: #FFFDF5;\n      background-image: radial-gradient(#d1cfc7 1px, transparent 1px);\n      background-size: 20px 20px;\n      color: #111111;\n    }\n\n    /* Standard Neo-brutalism borders and shadows */\n    .neo-border {\n      border: 2.5px solid #111111;\n    }\n    \n    .neo-border-b {\n      border-bottom: 2.5px solid #111111;\n    }\n\n    .neo-shadow {\n      box-shadow: 3px 3px 0px #111111;\n    }\n\n    .neo-shadow-sm {\n      box-shadow: 2px 2px 0px #111111;\n    }\n\n    .neo-shadow-active:active {\n      transform: translate(2px, 2px);\n      box-shadow: 0px 0px 0px #111111;\n    }";
 
 type LoadState =
   { status: "loading" } | { status: "error"; message: string } | { status: "done"; data: Page<Question> };
@@ -80,7 +80,7 @@ export default function Questions() {
               )}
             </div>
 
-            <SortTabs value={sort} onChange={(next) => moveTo({ sort: next })} />
+            <SortTabs tabs={SORT_TABS} value={sort} onChange={(next) => moveTo({ sort: next })} label="정렬" />
           </div>
 
           <div

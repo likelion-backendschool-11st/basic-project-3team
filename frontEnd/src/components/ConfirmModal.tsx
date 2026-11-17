@@ -1,79 +1,94 @@
-// 삭제·채택 이중 확인 창 (DeleteAcceptModal 화면의 삭제/채택 카드 디자인).
-// 쓰는 화면의 *.tailwind.cjs content에 components 폴더가 들어 있어야 스타일이 생긴다.
-const TONES = {
-  danger: {
-    dot: "bg-[#E11D48]",
-    label: "Warning",
-    message: "text-[#E11D48]",
-    button: "bg-[#E11D48] hover:bg-[#BE123C]",
-  },
-  accept: { dot: "bg-[#16A34A]", label: "Accept", message: "text-gray-600", button: "bg-[#16A34A] hover:bg-[#15803D]" },
-} as const;
+import { useEffect, useRef, type ReactNode } from "react";
+import { buttonClass, CARD, NOTICE, type ButtonVariant } from "./uiStyles";
 
+// 확인 버튼 색 (docs/ui-guide.md 4·6절): 되돌릴 수 없는 동작은 danger, 채택은 accent, 나머지는 primary
+type Tone = Exclude<ButtonVariant, "secondary">;
+
+interface Props {
+  title: string;
+  // 한 줄 설명. 더 많은 내용(대상 정보, 신고 상세 등)은 children으로 넣는다.
+  message?: string;
+  children?: ReactNode;
+  // 없으면 "닫기" 버튼 하나만 보여 준다 (상세 보기용)
+  confirmLabel?: string;
+  onConfirm?: () => void;
+  tone?: Tone;
+  busy?: boolean;
+  error?: string | null;
+  // 오류 뒤에도 확인 버튼을 다시 누를 수 있게 한다 (관리자 처리처럼 다시 시도해도 되는 동작).
+  // 기본은 오류가 나면 확인 버튼을 막고 취소 버튼을 "닫기"로 바꾼다 (그사이 삭제·채택된 경우).
+  retryable?: boolean;
+  onCancel: () => void;
+}
+
+// 확인 모달 (docs/ui-guide.md 6절): 카드 모양, 오른쪽 아래 [취소] [확인]. Esc나 바깥을 누르면 닫는다.
+// 쓰는 화면의 *.tailwind.cjs content에 components/**/*.{ts,tsx}가 들어 있어야 스타일이 생긴다.
 export default function ConfirmModal({
-  tone,
   title,
   message,
+  children,
   confirmLabel,
-  busy,
-  error,
-  onCancel,
   onConfirm,
-}: {
-  tone: keyof typeof TONES;
-  title: string;
-  message: string;
-  confirmLabel: string;
-  busy: boolean;
-  error: string | null;
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  const style = TONES[tone];
+  tone = "primary",
+  busy = false,
+  error = null,
+  retryable = false,
+  onCancel,
+}: Props) {
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const blocked = error !== null && !retryable;
+
+  // 열릴 때 한 번만 취소(닫기) 버튼에 포커스를 둔다.
+  useEffect(() => {
+    cancelRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    function handleKey(event: KeyboardEvent) {
+      if (event.key === "Escape" && !busy) onCancel();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [busy, onCancel]);
+
+  const showConfirm = onConfirm !== undefined && confirmLabel !== undefined;
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6"
-      style={{ backgroundColor: "rgba(255, 253, 245, 0.55)", backdropFilter: "blur(8px)" }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-devin-bg/60 backdrop-blur-sm"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !busy) onCancel();
+      }}
     >
-      <div className="relative w-full max-w-md bg-white border-[2.5px] border-[#111111] rounded-[14px] shadow-[5px_5px_0_#111111] p-8 md:p-10">
-        <div className="absolute top-4 left-4 flex items-center gap-1.5">
-          <span className={`w-3 h-3 rounded-full border-[1.5px] border-black ${style.dot}`}></span>
-          <span className="text-xs font-mono font-bold tracking-tight text-gray-500 uppercase">{style.label}</span>
-        </div>
-        <div className="pt-6 text-center space-y-2">
-          <h2 className="text-2xl font-black tracking-tight text-[#111111]" id="confirm-modal-title">
-            {title}
-          </h2>
-          <p className={`text-base font-bold ${style.message}`}>{message}</p>
-        </div>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-modal-title"
+        className={`${CARD} w-full max-w-devin-narrow p-6`}
+      >
+        <h2 id="confirm-modal-title" className="text-base font-extrabold text-devin-ink">
+          {title}
+        </h2>
+        {message && <p className="mt-2 text-sm text-devin-gray">{message}</p>}
+        {children && <div className="mt-4 text-sm text-devin-ink leading-relaxed">{children}</div>}
         {error && (
-          <p
-            className="mt-6 px-4 py-3 bg-white border-[2.5px] border-[#111111] rounded-xl text-sm font-bold text-center text-[#111111]"
-            role="alert"
-          >
+          <p className={`${NOTICE.error} mt-4`} role="alert">
+            <span className="material-symbols-outlined text-[18px] leading-5" aria-hidden="true">
+              error
+            </span>
             {error}
           </p>
         )}
-        <div className="pt-8 flex items-center justify-center gap-4">
-          <button
-            autoFocus
-            className="w-32 h-11 px-6 font-bold text-sm bg-white hover:bg-gray-100 text-[#111111] border-[2.5px] border-[#111111] rounded-lg shadow-[3px_3px_0_#111111]"
-            type="button"
-            onClick={onCancel}
-          >
-            {error ? "닫기" : "취소"}
+        <div className="mt-6 flex justify-end gap-2">
+          <button ref={cancelRef} className={buttonClass("secondary")} type="button" disabled={busy} onClick={onCancel}>
+            {showConfirm && !blocked ? "취소" : "닫기"}
           </button>
-          <button
-            className={`w-32 h-11 px-6 font-bold text-sm text-white border-[2.5px] border-[#111111] rounded-lg shadow-[3px_3px_0_#111111] disabled:opacity-60 disabled:cursor-not-allowed ${style.button}`}
-            type="button"
-            disabled={busy || error !== null}
-            onClick={onConfirm}
-          >
-            {busy ? "처리 중..." : confirmLabel}
-          </button>
+          {showConfirm && (
+            <button className={buttonClass(tone)} type="button" disabled={busy || blocked} onClick={onConfirm}>
+              {busy ? "처리 중..." : confirmLabel}
+            </button>
+          )}
         </div>
       </div>
     </div>

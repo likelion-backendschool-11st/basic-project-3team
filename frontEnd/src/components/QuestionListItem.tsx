@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import type { QuestionListItem as Question } from "../api/question";
 import Highlight from "./Highlight";
-import { detailPath, formatCount, formatDate, tagSearchPath } from "./questionList";
+import { detailPath, formatCount, tagSearchPath } from "./questionList";
+import { formatDate } from "./writer";
 
 interface Props {
   question: Question;
