@@ -15,6 +15,16 @@
 - 프론트·백엔드 모두 Vercel에 배포했다. 배포 구성은 `docs/environment.md`의 "배포" 절을 따른다.
 - 백엔드가 Vercel 서버리스 함수라 실시간 알림(socket.io)은 동작하지 않고, 알림 수는 30초마다 다시 불러온다.
 
+## 화면
+
+### 메인 (전체 질문 목록)
+
+![메인 화면: 전체 질문 목록](docs/images/main.png)
+
+### 질문 상세 · 답변 채택
+
+![질문 상세 화면: 채택된 질문과 채택된 답변](docs/images/question-detail-accept.png)
+
 ## 주요 기능
 
 ### 필수 기능
