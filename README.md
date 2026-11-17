@@ -193,7 +193,7 @@ basic-project-3team/
 | 이름 | GitHub | 역할 |
 |---|---|---|
 | 박인호(팀장) | [@innoo47](https://github.com/innoo47) | 메인, 검색 페이지 |
-| 김수현 | [@kimbeaver127](https://github.com/kimbeaver127) | 마이페이지 |
+| 김수현 | [@kimbeaver127](https://github.com/kimbeaver127) | 마이페이지 + 랭킹 |
 | 박정호 | [@4ksnnvbk5y-max](https://github.com/4ksnnvbk5y-max) | 질문 + 답변CRUD |
 | 정일오 | [@io1014](https://github.com/io1014) | 회원가입, 로그인 |
 
