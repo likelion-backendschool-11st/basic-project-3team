@@ -23,6 +23,7 @@ import { formatCareer } from "../components/ProfileDetails";
 import TagAutocomplete from "../components/tag/TagAutocomplete";
 import { buttonClass, CARD, CHIP, chipClass, INPUT, NOTICE, PAGE_BACKGROUND } from "../components/uiStyles";
 import { useAuth } from "../hooks/useAuth";
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./ProfileEdit.css";
 
 // 서버와 같은 입력값 규칙 (docs/api.md 입력값 규칙)
@@ -117,6 +118,7 @@ function ErrorNotice({ message }: { message: string }) {
 }
 
 export default function ProfileEdit() {
+  usePageTitle("프로필 수정");
   const navigate = useNavigate();
   const { user, initializing, refreshUser } = useAuth();
   const [initial, setInitial] = useState<FormValues | null>(null);
