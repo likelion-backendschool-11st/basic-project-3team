@@ -2,43 +2,21 @@
 import "./Ask.css";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { QUESTION_RULES as RULES, createQuestion } from "../api/question";
-import { useCategories } from "../hooks/useTagData";
-import FieldError from "../components/FieldError";
-import Header from "../components/Header";
-import Markdown from "../components/markdown/Markdown";
-import { useMarkdownToolbar } from "../hooks/useMarkdownToolbar";
+import { createQuestion } from "../api/question";
 import ConfirmModal from "../components/ConfirmModal";
+import Header from "../components/Header";
+import QuestionFormFields from "../components/question/QuestionFormFields";
 import { QUESTION_TEMPLATE, isUnchangedTemplate } from "../components/questionTemplate";
-import RecommendedTags from "../components/tag/RecommendedTags";
-import { charLength, useQuestionForm } from "../hooks/useQuestionForm";
-
-// Page-local styles from the Stitch <head>; mounted only while this page is shown.
-const css =
-  "body {\n      background-color: #FAFAFA;\n      color: #111827;\n    }";
+import { buttonClass, CARD, FOCUS, PAGE_BACKGROUND } from "../components/uiStyles";
+import { useQuestionForm } from "../hooks/useQuestionForm";
 
 export default function Ask() {
   const navigate = useNavigate();
-  const {
-    values,
-    tagInput,
-    setTagInput,
-    errors,
-    formError,
-    submitting,
-    change,
-    handleTagKeyDown,
-    removeTag,
-    toggleTag,
-    submit,
-  } = useQuestionForm({ initialContent: QUESTION_TEMPLATE, isBlankContent: isUnchangedTemplate });
+  const form = useQuestionForm({ initialContent: QUESTION_TEMPLATE, isBlankContent: isUnchangedTemplate });
+  const { values, submitting, change, submit } = form;
   // #59 질문 템플릿: 처음에는 켜져 있고 내용칸에 템플릿이 채워져 있다 (REQ-QUESTION-002)
   const [useTemplate, setUseTemplate] = useState(true);
   const [templateNotice, setTemplateNotice] = useState<string | null>(null);
-  // #62: 툴바(B, I, 코드 블록, 링크, 이미지)는 내용칸에 마크다운 기호를 넣고, 미리보기는 상세 화면과 같은 모양으로 보여 준다.
-  const toolbar = useMarkdownToolbar(values.content, (content) => change("content", content));
-  const [preview, setPreview] = useState(false);
-  const categories = useCategories();
   // 직접 쓴 글이 있을 때 템플릿을 끄면 지우기 전에 확인한다.
   const [confirmTemplateOff, setConfirmTemplateOff] = useState(false);
 
@@ -55,7 +33,7 @@ export default function Ask() {
     if (on) {
       setUseTemplate(true);
       if (values.content.trim() === "") change("content", QUESTION_TEMPLATE);
-      else setTemplateNotice("작성 중인 내용이 있어 템플릿을 넣지 않았습니다.");
+      else setTemplateNotice("작성 중인 내용이 있어 템플릿을 넣지 않았어요.");
     } else if (values.content.trim() === "" || isUnchangedTemplate(values.content)) {
       turnTemplateOff();
     } else {
@@ -74,296 +52,43 @@ export default function Ask() {
 
   return (
     <div id="page-ask">
-      <style>{css}</style>
-      <div
-        className="min-h-screen flex flex-col antialiased"
-        style={{
-          backgroundColor: "rgb(255, 253, 245)",
-          backgroundImage: "radial-gradient(rgb(217, 212, 195) 1px, transparent 1px)",
-          backgroundSize: "18px 18px",
-        }}
-      >
-        <Header /> {/* BEGIN: MainContent */}
-        <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
-          {/* Page Title */}
-
-          <div className="mb-6 flex items-baseline justify-between border-b-2 border-black pb-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-              <span>질문하기</span>{" "}
-              <span className="text-xs font-mono font-normal px-2 py-0.5 bg-gray-200 border border-black rounded-none">
-                MARKDOWN
-              </span>
-            </h1>
-
-            <span className="text-xs text-gray-500 font-medium">* 표시는 필수 항목입니다.</span>
+      <div className={`${PAGE_BACKGROUND} text-devin-ink min-h-screen flex flex-col antialiased`}>
+        <Header />
+        <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+          <div className="mb-6">
+            <h1 className="text-2xl font-black text-devin-ink">질문하기</h1>
+            <p className="mt-1 text-xs text-devin-gray">제목·카테고리·내용은 꼭 입력해 주세요. 내용은 마크다운으로 쓸 수 있어요.</p>
           </div>
 
-          {/* Question Form */}
-
-          <form className="space-y-6" id="question-form" noValidate onSubmit={handleSubmit}>
-            {formError && (
-              <p className="text-sm font-bold text-rose-600" role="alert">
-                {formError}
-              </p>
-            )}
-
-            {/* Title Input Section */}
-
-            <section data-purpose="title-field-group">
-              <div className="border-[2.5px] border-[#111111] bg-white shadow-brutal flex flex-col sm:flex-row items-stretch rounded">
-                <label
-                  className="bg-gray-100 border-b-2 sm:border-b-0 sm:border-r-2 border-black font-bold text-sm px-6 py-3.5 flex items-center shrink-0 w-28"
-                  htmlFor="title"
-                >
-                  {" 제목 "}
-                </label>
-
-                <div className="flex-1 flex items-center px-4 py-2 relative">
-                  <input
-                    className="w-full border-none focus:ring-0 text-sm font-medium p-0 text-gray-900 placeholder-gray-400"
-                    id="title"
-                    placeholder={`제목을 입력하세요 (${RULES.titleMin}~${RULES.titleMax}자)`}
-                    type="text"
-                    value={values.title}
-                    onChange={(e) => {
-                      change("title", e.target.value);
-                    }}
-                  />{" "}
-                  <span className="text-xs font-mono text-gray-400 ml-2 whitespace-nowrap" id="title-char-counter">
-                    {charLength(values.title.trim())} / {RULES.titleMax}
-                  </span>
-                </div>
-              </div>
-
-              <FieldError message={errors.title} />
-            </section>
-
-            {/* Category Select */}
-
-            <section data-purpose="category-field-group">
-              <div className="border-[2.5px] border-[#111111] bg-white shadow-brutal flex flex-col sm:flex-row items-stretch rounded">
-                <label
-                  className="bg-gray-100 border-b-2 sm:border-b-0 sm:border-r-2 border-black font-bold text-sm px-6 py-3.5 flex items-center shrink-0 w-28"
-                  htmlFor="category"
-                >
-                  카테고리
-                </label>
-                <div className="flex-1 flex items-center px-4 py-2">
-                  <select
-                    className="w-full border-none focus:ring-0 text-sm font-medium p-0 text-gray-900 bg-transparent cursor-pointer"
-                    id="category"
-                    value={values.categoryId}
-                    onChange={(e) => {
-                      change("categoryId", e.target.value);
-                    }}
-                  >
-                    <option value="">카테고리를 선택하세요</option>
-                    {categories.map(({ categoryId: id, name }) => (
-                      <option key={id} value={id}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <FieldError message={errors.categoryId} />
-            </section>
-
-            {/* Template Checkbox */}
-
-            <div className="flex items-center" data-purpose="template-toggle">
-              <label className="inline-flex items-center gap-2 cursor-pointer select-none border-[2.5px] border-[#111111] bg-white px-3 py-1.5 rounded shadow-brutal-sm hover:bg-gray-50 transition-colors">
-                <input
-                  checked={useTemplate}
-                  className="w-4 h-4 rounded-none border-2 border-black text-blue-600 focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                  id="template-checkbox"
-                  type="checkbox"
-                  onChange={(e) => toggleTemplate(e.target.checked)}
-                />{" "}
-                <span className="text-xs font-bold text-gray-800">질문 템플릿 사용</span>
-              </label>
-              {templateNotice && (
-                <span className="ml-3 text-xs font-medium text-gray-500" role="status">
-                  {templateNotice}
-                </span>
-              )}
-            </div>
-
-            {/* Markdown Editor Container */}
-
-            <section
-              className="border-[2.5px] border-[#111111] bg-white shadow-brutal rounded"
-              data-purpose="markdown-editor"
-            >
-              {/* Editor Toolbar */}
-
-              <div className="border-b-[2.5px] border-[#111111] bg-gray-50 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
-                {/* Formatting Buttons */}
-
-                <div className="flex items-center flex-wrap gap-1.5 font-mono">
-                  <button
-                    className="w-8 h-8 flex items-center justify-center font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="굵게"
-                    type="button"
-                    disabled={preview}
-                    onClick={() => toolbar.apply("bold")}
-                  >
-                    {" B "}
-                  </button>{" "}
-                  <button
-                    className="w-8 h-8 flex items-center justify-center italic font-bold text-sm border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="기울임"
-                    type="button"
-                    disabled={preview}
-                    onClick={() => toolbar.apply("italic")}
-                  >
-                    {" I "}
-                  </button>{" "}
-                  <button
-                    className="px-2.5 h-8 flex items-center justify-center font-bold text-xs border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="코드 블록"
-                    type="button"
-                    disabled={preview}
-                    onClick={() => toolbar.apply("codeBlock")}
-                  >
-                    {" 코드 블록 ``` "}
-                  </button>{" "}
-                  <button
-                    className="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="링크 추가"
-                    type="button"
-                    disabled={preview}
-                    onClick={() => toolbar.apply("link")}
-                  >
-                    {" 링크 "}
-                  </button>{" "}
-                  <button
-                    className="px-2.5 h-8 flex items-center justify-center text-xs font-medium border border-black bg-white hover:bg-black hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="이미지 첨부"
-                    type="button"
-                    disabled={preview}
-                    onClick={() => toolbar.apply("image")}
-                  >
-                    {" 이미지 "}
-                  </button>
-                </div>
-
-                {/* Write/Preview Toggle Tabs */}
-
-                <div className="flex items-center border border-black">
-                  <button
-                    aria-pressed={!preview}
-                    className={`px-4 py-1 text-xs font-bold ${preview ? "bg-white text-gray-700 hover:bg-gray-100" : "bg-black text-white"}`}
-                    type="button"
-                    onClick={() => setPreview(false)}
-                  >
-                    {" 작성 "}
-                  </button>{" "}
-                  <button
-                    aria-pressed={preview}
-                    className={`px-4 py-1 text-xs font-bold border-l border-black transition-colors ${preview ? "bg-black text-white" : "bg-white text-gray-700 hover:bg-gray-100"}`}
-                    type="button"
-                    onClick={() => setPreview(true)}
-                  >
-                    {" 미리보기 "}
-                  </button>
-                </div>
-              </div>
-
-              {/* Editor Content Area */}
-
-              <div className="p-4">
-                {preview && (
-                  <div className="min-h-[300px] p-2" data-purpose="markdown-preview">
-                    {values.content.trim() ? (
-                      <Markdown content={values.content} />
-                    ) : (
-                      <p className="text-sm text-gray-400">미리 볼 내용이 없습니다.</p>
-                    )}
-                  </div>
-                )}
-                <textarea
-                  ref={toolbar.textareaRef}
-                  hidden={preview}
-                  className="w-full p-2 border-0 focus:ring-0 font-mono text-sm leading-relaxed text-gray-900 placeholder-gray-400 resize-y"
-                  id="editor-textarea"
-                  placeholder="질문 내용을 자세하게 작성해주세요..."
-                  rows={15}
-                  value={values.content}
-                  onChange={(e) => {
-                    change("content", e.target.value);
-                    setTemplateNotice(null);
-                  }}
-                />
-              </div>
-            </section>
-            <FieldError message={errors.content} />
-            <section data-purpose="tags-input-group">
-              <div className="border-[2.5px] border-[#111111] bg-white shadow-brutal flex flex-col sm:flex-row items-stretch rounded">
-                <label
-                  className="bg-gray-100 border-b-[2.5px] sm:border-b-0 sm:border-r-[2.5px] border-[#111111] font-bold text-sm px-6 py-3.5 flex items-center shrink-0 w-28"
-                  htmlFor="tags"
-                >
-                  태그
-                </label>
-                <div className="flex-1 flex flex-wrap items-center gap-2 px-4 py-2">
-                  {values.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold bg-[#FFD43B] border-2 border-black rounded shadow-[1.5px_1.5px_0_#111111]"
-                    >
-                      {`#${tag} `}
-                      <button
-                        type="button"
-                        className="hover:text-red-600 font-bold ml-1"
-                        aria-label={`${tag} 태그 삭제`}
-                        onClick={() => removeTag(tag)}
-                      >
-                        ×
-                      </button>
+          <form className={`${CARD} p-4 sm:p-6`} id="question-form" noValidate onSubmit={handleSubmit}>
+            <QuestionFormFields
+              form={form}
+              onContentInput={() => setTemplateNotice(null)}
+              beforeEditor={
+                <div className="flex flex-wrap items-center gap-3" data-purpose="template-toggle">
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none text-sm font-bold text-devin-ink">
+                    <input
+                      checked={useTemplate}
+                      className={`w-4 h-4 rounded border-devin border-devin-ink text-devin-ink focus:ring-0 cursor-pointer ${FOCUS}`}
+                      id="template-checkbox"
+                      type="checkbox"
+                      onChange={(e) => toggleTemplate(e.target.checked)}
+                    />
+                    질문 템플릿 사용
+                  </label>
+                  {templateNotice && (
+                    <span className="text-xs font-medium text-devin-gray" role="status">
+                      {templateNotice}
                     </span>
-                  ))}
-                  <input
-                    className="flex-1 min-w-[140px] border-none focus:ring-0 text-sm font-medium p-1 text-gray-900 placeholder-gray-400"
-                    id="tags"
-                    placeholder={`태그를 입력 후 Enter를 누르세요 (선택, 최대 ${RULES.maxTags}개)`}
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={handleTagKeyDown}
-                  />
+                  )}
                 </div>
-              </div>
-              {errors.tags ? (
-                <FieldError message={errors.tags} />
-              ) : (
-                <p className="mt-2 text-xs font-medium text-gray-500">
-                  질문과 관련된 기술 스택 태그를 추가할 수 있어요. (선택, 최대 {RULES.maxTags}개)
-                </p>
-              )}
-              {/* #61: 제목·내용 기반 추천 태그. 누르면 추가, 다시 누르면 제거 */}
-              <div className="mt-2">
-                <RecommendedTags
-                  title={values.title}
-                  content={values.content}
-                  selected={values.tags}
-                  onToggle={toggleTag}
-                />
-              </div>
-            </section>
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="px-5 py-2.5 text-sm font-bold text-black border-[2.5px] border-[#111111] bg-white rounded shadow-brutal-sm hover:bg-gray-100 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
-              >
+              }
+            />
+            <div className="flex items-center justify-end gap-2 mt-6 pt-6 border-t-devin border-devin-line">
+              <button type="button" onClick={() => navigate(-1)} className={buttonClass("secondary")}>
                 취소
               </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-6 py-2.5 text-sm font-bold text-white border-[2.5px] border-[#111111] bg-[#2563EB] rounded shadow-brutal hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-              >
+              <button type="submit" disabled={submitting} className={buttonClass("primary")}>
                 {submitting ? "등록 중..." : "질문 등록"}
               </button>
             </div>
@@ -372,7 +97,7 @@ export default function Ask() {
             <ConfirmModal
               tone="danger"
               title="템플릿 사용을 끌까요?"
-              message="작성한 내용이 모두 지워집니다."
+              message="작성한 내용이 모두 지워져요."
               confirmLabel="지우고 끄기"
               busy={false}
               error={null}
