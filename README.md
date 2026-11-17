@@ -5,6 +5,16 @@
 - 멋쟁이사자처럼 백엔드스쿨 11기 기초 프로젝트 3팀
 - 기간: 2026.11.09 ~ 2026.11.23
 
+## 배포 주소
+
+| 구분 | 주소 |
+|---|---|
+| 서비스 (프론트엔드) | https://basic-project-3team-g99l.vercel.app |
+| API (백엔드) | https://basic-project-3team.vercel.app/api |
+
+- 프론트·백엔드 모두 Vercel에 배포했다. 배포 구성은 `docs/environment.md`의 "배포" 절을 따른다.
+- 백엔드가 Vercel 서버리스 함수라 실시간 알림(socket.io)은 동작하지 않고, 알림 수는 30초마다 다시 불러온다.
+
 ## 주요 기능
 
 ### 필수 기능
@@ -76,7 +86,7 @@ cp frontEnd/.env.example frontEnd/.env
 
 | 키 (frontEnd/.env) | 설명 |
 |---|---|
-| `VITE_API_URL` | 백엔드 API 주소. 개발 환경은 `/api` 그대로 둔다 (Vite 프록시). 배포 때 실제 주소로 바꾸고 끝에 `/`는 붙이지 않는다. 브라우저에 노출되므로 비밀값을 넣지 않는다. |
+| `VITE_API_URL` | 백엔드 API 주소. 개발 환경(Vite 프록시)과 Vercel 배포(`frontEnd/vercel.json`이 `/api`를 백엔드로 넘김) 모두 `/api` 그대로 둔다. 브라우저에 노출되므로 비밀값을 넣지 않는다. |
 
 ### 3. DB 만들기
 
