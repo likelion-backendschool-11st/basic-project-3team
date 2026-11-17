@@ -5,20 +5,4 @@ module.exports = {
   content: ["./src/pages/Login.tsx", "./src/components/**/*.{ts,tsx}"],
   corePlugins: { preflight: false },
   plugins: [require("@tailwindcss/container-queries")],
-  ...{
-    theme: {
-      extend: {
-        colors: {
-          brand: {
-            cream: "#FFFDF5",
-            yellow: "#FFD43B",
-            blue: "#2563EB",
-            dark: "#121212",
-            card: "#FFFFFF",
-            subtle: "#F4F0EA",
-          },
-        },
-      },
-    },
-  },
 };
