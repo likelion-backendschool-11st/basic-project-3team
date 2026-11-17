@@ -31,7 +31,7 @@ import ProfileDetails from "../components/ProfileDetails";
 import { detailPath } from "../components/questionList";
 import SortTabs from "../components/SortTabs";
 import StatusBadge from "../components/StatusBadge";
-import { BUTTON, buttonClass, CARD, CATEGORY, FOCUS, NOTICE, PAGE_BACKGROUND } from "../components/uiStyles";
+import { buttonClass, CARD, CATEGORY, FOCUS, NOTICE, PAGE_BACKGROUND } from "../components/uiStyles";
 import { formatDate, formatNumber, formatPercent } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
 import "./Mypage.css";
@@ -335,10 +335,10 @@ export default function Mypage() {
                       <Icon name="emoji_events" />
                       등급 및 뱃지
                     </h2>
-                    {/* 밑줄은 글자에만 긋는다. 아이콘까지 그으면 아이콘 글꼴의 기준선이 달라 밑줄이 끊겨 보인다.
+                    {/* 같은 화면의 "프로필 수정" 버튼과 같은 작은 보조 버튼.
                         아이콘은 폭을 고정해 글꼴을 불러오기 전에 이름(arrow_forward)이 글자로 늘어지지 않게 한다. */}
-                    <Link className={`${BUTTON.text} no-underline`} to="/grades-badges">
-                      <span className="underline underline-offset-[3px]">전체 보기</span>
+                    <Link className={buttonClass("secondary", "sm")} to="/grades-badges">
+                      전체 보기
                       <span
                         className="material-symbols-outlined inline-block w-[18px] overflow-hidden text-[18px] leading-none"
                         aria-hidden="true"
