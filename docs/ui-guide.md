@@ -270,6 +270,8 @@
 | `frontEnd/src/components/StatusBadge.tsx` | 상태 배지 `<StatusBadge kind="accepted" />` (7절 표의 상태를 모두 가짐) |
 | `frontEnd/src/components/headerStyles.ts` | 헤더 버튼. `uiStyles`의 보통 크기 버튼과 같다 |
 
+- 화면별 Tailwind 설정(`pages/*.tailwind.cjs`)의 `content`에는 `./src/components/**/*.{ts,tsx}`를 넣는다. `.tsx`만 넣으면 `uiStyles.ts`·`headerStyles.ts`에 있는 클래스가 그 화면 CSS에 만들어지지 않는다.
+
 ```tsx
 <button className={buttonClass("primary")}>질문 등록</button>
 <button className={buttonClass("secondary", "sm")}>취소</button>
