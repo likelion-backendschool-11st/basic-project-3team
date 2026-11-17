@@ -14,6 +14,7 @@ import ListStatus from "../components/ListStatus";
 import { buttonClass, CARD, FOCUS, NOTICE, PAGE_BACKGROUND, TABLE, tabCountClass } from "../components/uiStyles";
 import { formatNumber } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./GradesBadges.css";
 
 const ICON = "material-symbols-outlined text-[18px] leading-none shrink-0";
@@ -265,6 +266,7 @@ function BadgeSection({ badges }: { badges: Badge[] }) {
 }
 
 export default function GradesBadges() {
+  usePageTitle("등급 및 뱃지");
   const navigate = useNavigate();
   const { user, initializing } = useAuth();
   const [info, setInfo] = useState<GradeInfo | null>(null);

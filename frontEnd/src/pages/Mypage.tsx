@@ -34,6 +34,7 @@ import StatusBadge from "../components/StatusBadge";
 import { buttonClass, CARD, CATEGORY, FOCUS, NOTICE, PAGE_BACKGROUND } from "../components/uiStyles";
 import { formatDate, formatNumber, formatPercent } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./Mypage.css";
 
 const RECENT_ACCEPTED_SIZE = 5;
@@ -239,6 +240,7 @@ function StatRow({ label, field, value }: { label: string; field: string; value?
 }
 
 export default function Mypage() {
+  usePageTitle("마이페이지");
   const navigate = useNavigate();
   const { user, initializing } = useAuth();
   const [data, setData] = useState<MypageData | null>(null);

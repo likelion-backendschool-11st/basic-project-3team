@@ -12,6 +12,7 @@ import Header from "../components/Header";
 import ListStatus from "../components/ListStatus";
 import { buttonClass, CARD, PAGE_BACKGROUND } from "../components/uiStyles";
 import { formatNumber, formatPercent } from "../components/writer";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 // 앞에서 3명은 시상대 카드로, 나머지는 줄로 보여 준다 (#159). 동점이라 rank가 같아도 앞 3명만 카드다.
 const PODIUM_SIZE = 3;
@@ -32,6 +33,7 @@ const FIRST_CARD = CARD.replace("bg-devin-paper", "bg-devin-bg");
 type State = { status: "loading" } | { status: "error"; message: string } | { status: "done"; items: RankingItem[] };
 
 export default function Ranking() {
+  usePageTitle("채택 랭킹");
   const [state, setState] = useState<State>({ status: "loading" });
   const [retryKey, setRetryKey] = useState(0);
 

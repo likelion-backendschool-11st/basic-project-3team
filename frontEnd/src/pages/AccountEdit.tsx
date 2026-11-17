@@ -13,6 +13,7 @@ import ListStatus from "../components/ListStatus";
 import { buttonClass, CARD, FOCUS, INPUT, NOTICE, PAGE_BACKGROUND } from "../components/uiStyles";
 import { formatDate } from "../components/writer";
 import { useAuth } from "../hooks/useAuth";
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./AccountEdit.css";
 
 // 서버(member.constants.js)와 같은 입력값 규칙 (docs/api.md 입력값 규칙)
@@ -240,6 +241,7 @@ function WithdrawDialog({ onClose, onWithdrawn }: { onClose: () => void; onWithd
 const EMPTY_VALUES: Record<Field, string> = { currentPassword: "", newPassword: "", passwordConfirm: "", phone: "" };
 
 export default function AccountEdit() {
+  usePageTitle("개인정보 수정");
   const navigate = useNavigate();
   const { user, initializing, logout } = useAuth();
   const [me, setMe] = useState<MyInfo | null>(null);
