@@ -37,20 +37,25 @@
 - 개발 환경에서는 `frontEnd/vite.config.ts`의 프록시로 `/api` 요청을 `http://localhost:8080`에 넘긴다. CORS 설정은 배포 환경용이다.
 
 ## 배포 (#75)
-프론트는 Vercel, 백엔드는 계속 켜져 있는 서버(Render·Railway·EC2 등), DB는 외부 MySQL에 둔다.
-백엔드를 Vercel에 두지 않는 이유: 실시간 알림(socket.io)은 연결을 계속 유지해야 해서 Vercel 서버리스 함수에서 동작하지 않는다.
+프론트와 백엔드를 각각 Vercel 프로젝트로 배포하고, DB는 외부 MySQL에 둔다.
+
+| 구분 | Vercel 프로젝트 | 주소 |
+|---|---|---|
+| 프론트 | Root Directory `frontEnd`, Framework Vite | |
+| 백엔드 | Root Directory `backEnd` (Express) | `https://basic-project-3team.vercel.app` |
 
 | 요청 | 경로 |
 |---|---|
-| 화면 | Vercel. 모든 주소를 `index.html`로 보낸다 (React Router, `frontEnd/vercel.json`) |
-| `/api` | Vercel이 백엔드로 넘긴다 (`frontEnd/vercel.json`의 rewrites). 브라우저에는 같은 주소라 CORS가 필요 없고 Refresh 쿠키(`SameSite=Strict`)도 그대로 오간다 |
-| 실시간 알림 | Vercel이 WebSocket을 넘기지 않으므로 브라우저가 백엔드 주소로 바로 접속한다 (`VITE_SOCKET_URL`). 인증은 Access Token으로 한다 |
+| 화면 | 프론트 Vercel. 모든 주소를 `index.html`로 보낸다 (React Router, `frontEnd/vercel.json`) |
+| `/api` | 프론트 Vercel이 백엔드 주소로 넘긴다 (`frontEnd/vercel.json`의 rewrites). 브라우저에는 같은 주소라 CORS가 필요 없고 Refresh 쿠키(`SameSite=Strict`)도 그대로 오간다 |
+| 실시간 알림 | 동작하지 않는다. socket.io는 연결을 계속 유지해야 하는데 Vercel 서버리스 함수는 요청이 끝나면 멈춘다. 연결이 끊긴 동안 30초마다 안 읽은 알림 수를 다시 불러오는 예비 조회로 대신한다 |
 
-- Vercel 프로젝트: Root Directory `frontEnd`, Framework Vite. 환경변수 `VITE_API_URL=/api`, `VITE_SOCKET_URL=백엔드 주소`(끝에 `/` 없이). `VITE_` 값은 브라우저에 노출되므로 비밀값을 넣지 않는다.
-- 백엔드 서버 환경변수: `.env.example`의 값에 더해 `NODE_ENV=production`(Refresh 쿠키에 `Secure` 적용), `CORS_ORIGIN=Vercel 프론트 주소`(쉼표로 여러 개, 끝에 `/` 없이). `PORT`는 호스팅이 정해 주면 그 값을 쓴다.
-- DB: 외부 MySQL에 `npm run db:setup`과 같은 내용(`schema.sql`, `seed.sql`)을 실행하고, `DB_HOST` 등을 백엔드 서버 환경변수에 넣는다.
-- 백엔드 주소가 바뀌면 `frontEnd/vercel.json`의 `/api` 대상과 Vercel의 `VITE_SOCKET_URL`을 같이 바꾼다.
-- 프론트와 백엔드를 다른 사이트에 두고 `/api`를 바로 부르는 방식(`VITE_API_URL=https://...`)은 Refresh 쿠키가 `SameSite=Strict`(`docs/auth.md`)라 재발급이 실패하므로 쓰지 않는다.
+- 프론트 환경변수: `VITE_API_URL=/api`, `VITE_SOCKET_URL`은 비워 둔다. `VITE_` 값은 브라우저에 노출되므로 비밀값을 넣지 않는다. 바꾼 뒤에는 Redeploy해야 반영된다.
+- 백엔드 환경변수: `.env.example`의 값(DB 접속 정보, `JWT_SECRET`, `JWT_REFRESH_SECRET`)에 더해 `NODE_ENV=production`(Refresh 쿠키에 `Secure` 적용). `/api`는 Vercel을 거쳐 오므로 `CORS_ORIGIN`은 비워 둬도 된다.
+- DB: Vercel에는 MySQL이 없다. 외부 MySQL에 `schema.sql`, `seed.sql`을 실행하고 접속 정보를 백엔드 환경변수에 넣는다 (`DB_HOST=localhost`로는 연결되지 않는다).
+- 백엔드 주소가 바뀌면 `frontEnd/vercel.json`의 `/api` 대상을 같이 바꾼다.
+- 실시간 알림이 필요하면 백엔드를 계속 켜져 있는 서버(Render·Railway·EC2 등)로 옮기고, 프론트 `VITE_SOCKET_URL`에 그 주소, 백엔드 `CORS_ORIGIN`에 프론트 주소를 넣는다.
+- 프론트에서 백엔드를 바로 부르는 방식(`VITE_API_URL=https://...`)은 쓰지 않는다. `vercel.app` 주소끼리는 서로 다른 사이트라 Refresh 쿠키(`SameSite=Strict`)가 전송되지 않아 재발급이 실패한다.
 
 ## 디렉터리 구조
 ```
