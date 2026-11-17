@@ -4,6 +4,8 @@ export type EasterEggEffect = "none" | "shakeSearch" | "flashBorder" | "logoOut"
 export interface EasterEgg {
   // 로고·검색창이 움직이는 이스터에그는 그 효과가 잘 보이게 알림을 띄우지 않는다.
   message?: string;
+  // 알림 위치: 기본은 헤더 아래(검색창 밑), 경고는 화면 가운데
+  toastAt?: "top" | "center";
   effect: EasterEggEffect;
 }
 
@@ -11,7 +13,7 @@ export interface EasterEgg {
 const EASTER_EGGS: Record<string, EasterEgg> = {
   "try catch": { effect: "shakeSearch" },
   "system.out.println": { message: "Hello, World! 👋", effect: "none" },
-  "git push --force": { message: "⚠️ 팀원들이 당신을 찾고 있습니다…", effect: "flashBorder" },
+  "git push --force": { message: "⚠️ 팀원들이 당신을 찾고 있습니다…", effect: "flashBorder", toastAt: "center" },
   "cd ..": { effect: "logoOut" },
 };
 

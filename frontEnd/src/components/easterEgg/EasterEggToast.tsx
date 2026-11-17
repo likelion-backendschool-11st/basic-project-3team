@@ -5,17 +5,17 @@ import { EASTER_EGG_EVENT, prefersReducedMotion, type EasterEgg } from "./easter
 const TOAST_DURATION_MS = 3000;
 
 // 이스터에그 알림창과 빨간 테두리 (App.tsx에 한 번만 둔다). 화면이 바뀌어도 사라지지 않는다.
-// 알림창은 헤더(높이 64px) 바로 아래 가운데, 검색창 밑에 띄운다.
+// 알림창은 헤더(높이 64px) 바로 아래 가운데(검색창 밑)에 띄우고, 경고(git push --force)는 화면 가운데에 띄운다.
 // 화면별 Tailwind 설정(#page-* 안에서만 적용)과 상관없게 body에 그린다.
 export default function EasterEggToast() {
-  const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const [toast, setToast] = useState<{ id: number; message: string; center: boolean } | null>(null);
   const [flashId, setFlashId] = useState(0);
 
   useEffect(() => {
     function handleEgg(event: Event) {
       const egg = (event as CustomEvent<EasterEgg>).detail;
       const { message } = egg;
-      if (message) setToast((prev) => ({ id: (prev?.id ?? 0) + 1, message }));
+      if (message) setToast((prev) => ({ id: (prev?.id ?? 0) + 1, message, center: egg.toastAt === "center" }));
       if (egg.effect === "flashBorder" && !prefersReducedMotion()) setFlashId((id) => id + 1);
     }
     window.addEventListener(EASTER_EGG_EVENT, handleEgg);
@@ -40,13 +40,13 @@ export default function EasterEggToast() {
         />
       )}
       <div
-        className="fixed top-[76px] left-1/2 -translate-x-1/2 z-[100] w-max max-w-[calc(100vw-2rem)] pointer-events-none"
+        className={`fixed ${toast?.center ? "top-1/2 -translate-y-1/2" : "top-[76px]"} left-1/2 -translate-x-1/2 z-[100] w-max max-w-[calc(100vw-2rem)] pointer-events-none`}
         role="status"
       >
         {toast && (
           <p
             key={toast.id}
-            className="egg-toast bg-black text-green-400 font-mono text-base sm:text-lg font-bold text-center px-6 py-4 rounded-lg border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,0.35)]"
+            className="egg-toast bg-black text-green-400 font-mono text-sm sm:text-base font-bold text-center px-5 py-3 rounded-lg border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,0.35)]"
           >
             {toast.message}
           </p>
