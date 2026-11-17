@@ -40,7 +40,7 @@ export default function SimilarQuestions({ questionId }: { questionId: number })
         {questions.map((question) => (
           <Link
             key={question.questionId}
-            className={`${CARD} shadow-devin-sm block p-4 hover:bg-devin-bg transition-colors ${FOCUS}`}
+            className={`${CARD} block p-4 hover:bg-devin-bg transition-colors ${FOCUS}`}
             to={detailPath(question.questionId)}
           >
             <div className="flex items-center gap-3">
