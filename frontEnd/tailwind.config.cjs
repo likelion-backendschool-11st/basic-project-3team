@@ -1,4 +1,4 @@
-// Global config: preflight + forms base styles once, plus utilities for the screen index.
+// Global config: preflight + forms base styles once.
 // Each screen has its own scoped config in src/pages/*.tailwind.cjs, which only scans that screen's file.
 // Shared components (src/components) and screens without a Stitch config (NotFound, Ranking) are scanned here instead,
 // otherwise their classes are never generated (#33).

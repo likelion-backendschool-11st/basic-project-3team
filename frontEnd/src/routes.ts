@@ -2,22 +2,16 @@
 import AccountEdit from "./pages/AccountEdit";
 import AdminMembers from "./pages/AdminMembers";
 import AdminReports from "./pages/AdminReports";
-import Answers from "./pages/Answers";
 import Ask from "./pages/Ask";
-import AuthorPopover from "./pages/AuthorPopover";
 import FindId from "./pages/FindId";
 import FindPassword from "./pages/FindPassword";
 import GradesBadges from "./pages/GradesBadges";
 import Login from "./pages/Login";
-import MemberBanModal from "./pages/MemberBanModal";
 import Mypage from "./pages/Mypage";
-import NicknameCheckModal from "./pages/NicknameCheckModal";
 import ProfileEdit from "./pages/ProfileEdit";
 import QuestionDetail from "./pages/QuestionDetail";
 import QuestionEdit from "./pages/QuestionEdit";
 import Questions from "./pages/Questions";
-import Replies from "./pages/Replies";
-import ReplyEditing from "./pages/ReplyEditing";
 import SearchResults from "./pages/SearchResults";
 import Signup from "./pages/Signup";
 
@@ -25,22 +19,16 @@ export const routes = [
   { path: "/account-edit", title: "Dev in_ 개인정보 수정 (21번)", Component: AccountEdit },
   { path: "/admin-members", title: "Dev in_ 관리자 회원 관리 (12번)", Component: AdminMembers },
   { path: "/admin-reports", title: "Dev in_ 관리자 신고 관리 (11번)", Component: AdminReports },
-  { path: "/answers", title: "Dev in_ 답변 목록 및 작성 (24번)", Component: Answers },
   { path: "/ask", title: "Dev in_ 질문하기 (20번)", Component: Ask },
-  { path: "/author-popover", title: "Dev in_ 작성자 요약 팝오버 (30번)", Component: AuthorPopover },
   { path: "/find-id", title: "Dev in_ 아이디 찾기", Component: FindId },
   { path: "/find-password", title: "Dev in_ 비밀번호 찾기", Component: FindPassword },
   { path: "/grades-badges", title: "Dev in_ 등급 및 뱃지 (19번)", Component: GradesBadges },
   { path: "/login", title: "Dev in_ 로그인", Component: Login },
-  { path: "/member-ban-modal", title: "Dev in_ 회원 추방 모달 (13번)", Component: MemberBanModal },
   { path: "/mypage", title: "Dev in_ 마이페이지 (17번)", Component: Mypage },
-  { path: "/nickname-check-modal", title: "Dev in_ 닉네임 중복확인 모달 (15번)", Component: NicknameCheckModal },
   { path: "/profile-edit", title: "Dev in_ 프로필 수정 (18번)", Component: ProfileEdit },
   { path: "/question-detail", title: "Dev in_ 질문 상세 (23번)", Component: QuestionDetail },
   { path: "/question-edit", title: "Dev in_ 질문 수정 (22번)", Component: QuestionEdit },
   { path: "/questions", title: "Dev in_ 전체 질문 목록 (5번)", Component: Questions },
-  { path: "/replies", title: "Dev in_ 답글 목록 및 작성 (25번)", Component: Replies },
-  { path: "/reply-editing", title: "Dev in_ 답변/답글 수정 중 (26번)", Component: ReplyEditing },
   { path: "/search-results", title: "Dev in_ 검색 결과 (9번)", Component: SearchResults },
   { path: "/signup", title: "Dev in_ 회원가입 (14번)", Component: Signup },
 ];
