@@ -335,9 +335,14 @@ export default function Mypage() {
                       <Icon name="emoji_events" />
                       등급 및 뱃지
                     </h2>
-                    <Link className={BUTTON.text} to="/grades-badges">
-                      전체 보기
-                      <span className="material-symbols-outlined text-[18px] leading-none" aria-hidden="true">
+                    {/* 밑줄은 글자에만 긋는다. 아이콘까지 그으면 아이콘 글꼴의 기준선이 달라 밑줄이 끊겨 보인다.
+                        아이콘은 폭을 고정해 글꼴을 불러오기 전에 이름(arrow_forward)이 글자로 늘어지지 않게 한다. */}
+                    <Link className={`${BUTTON.text} no-underline`} to="/grades-badges">
+                      <span className="underline underline-offset-[3px]">전체 보기</span>
+                      <span
+                        className="material-symbols-outlined inline-block w-[18px] overflow-hidden text-[18px] leading-none"
+                        aria-hidden="true"
+                      >
                         arrow_forward
                       </span>
                     </Link>
