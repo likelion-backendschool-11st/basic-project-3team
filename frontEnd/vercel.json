@@ -1,0 +1,4 @@
+{
+  "$schema": "https://basic-project-3team.vercel.app/",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

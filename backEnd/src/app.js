@@ -4,7 +4,9 @@ const path = require('node:path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env'), quiet: true });
 
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const { corsOrigin } = require('./config/cors');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 const AppError = require('./utils/AppError');
@@ -13,6 +15,8 @@ const { initNotificationSocket } = require('./notification/notification.socket')
 
 const app = express();
 
+// 허용한 프론트 주소만 다른 출처 요청을 받고, Refresh 쿠키가 오가도록 credentials를 허용한다 (#75)
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 // Refresh Token 쿠키를 읽는다 (docs/auth.md)
 app.use(cookieParser());
