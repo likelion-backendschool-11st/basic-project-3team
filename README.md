@@ -86,7 +86,7 @@ cp frontEnd/.env.example frontEnd/.env
 
 | 키 (frontEnd/.env) | 설명 |
 |---|---|
-| `VITE_API_URL` | 백엔드 API 주소. 개발 환경은 `/api` 그대로 둔다 (Vite 프록시). 배포 때 실제 주소로 바꾸고 끝에 `/`는 붙이지 않는다. 브라우저에 노출되므로 비밀값을 넣지 않는다. |
+| `VITE_API_URL` | 백엔드 API 주소. 개발 환경(Vite 프록시)과 Vercel 배포(`frontEnd/vercel.json`이 `/api`를 백엔드로 넘김) 모두 `/api` 그대로 둔다. 브라우저에 노출되므로 비밀값을 넣지 않는다. |
 
 ### 3. DB 만들기
 
