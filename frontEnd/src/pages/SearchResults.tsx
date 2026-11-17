@@ -255,10 +255,11 @@ export default function SearchResults() {
             <SortTabs tabs={SORT_TABS} value={condition.sort} onChange={(sort) => update({ sort })} label="정렬" />
           </div>
 
+          {/* 질문이 있으면 질문마다 카드(QuestionListItem)를 12px 띄워 쌓고, 불러오는 중·실패·빈 목록은 카드 하나에 보여 준다. */}
           <section
             aria-label="검색 결과 목록"
             aria-busy={state.status === "loading"}
-            className={`${CARD} overflow-hidden divide-y-2 divide-devin-ink`}
+            className={data && data.content.length > 0 ? "flex flex-col gap-3" : CARD}
           >
             {state.status === "loading" && <ListStatus kind="loading">검색하는 중이에요.</ListStatus>}
             {state.status === "error" && (

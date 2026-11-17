@@ -3,7 +3,7 @@ import type { QuestionListItem as Question } from "../api/question";
 import Highlight from "./Highlight";
 import { detailPath, tagSearchPath } from "./questionList";
 import StatusBadge from "./StatusBadge";
-import { CATEGORY, FOCUS, TAG } from "./uiStyles";
+import { CARD, CATEGORY, FOCUS, TAG } from "./uiStyles";
 import { formatDate, formatNumber } from "./writer";
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 
 const tagClass = `${TAG} ${FOCUS}`;
 
-// 질문 목록 한 줄 (메인 화면, 검색 결과 화면). docs/ui-guide.md 7절: 상태는 제목 앞, 카테고리·태그는 제목 아래 줄.
+// 질문 목록 한 줄 (메인 화면, 검색 결과 화면). 한 줄이 카드 하나이고, 목록에서 12px씩 띄워 쌓는다 (ui-guide.md 6절). docs/ui-guide.md 7절: 상태는 제목 앞, 카테고리·태그는 제목 아래 줄.
 // 수치(좋아요·답변·조회)는 sm 이상에서 왼쪽 열, 휴대폰 폭에서는 제목 아래 한 줄로 내린다 (13절).
 export default function QuestionListItem({ question, highlightTitle, highlightTag, onTagClick }: Props) {
   const status = question.accepted ? "accepted" : question.answerCount === 0 ? "waiting" : "unaccepted";
@@ -28,7 +28,7 @@ export default function QuestionListItem({ question, highlightTitle, highlightTa
   ];
 
   return (
-    <article className="p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 hover:bg-devin-bg transition-colors">
+    <article className={`${CARD} p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 hover:bg-devin-bg transition-colors`}>
       <dl className="order-2 sm:order-1 flex sm:flex-col gap-3 sm:gap-0.5 sm:w-16 shrink-0 text-[11px] text-devin-gray sm:text-center tabular-nums">
         {counts.map((count) => (
           <div key={count.label}>

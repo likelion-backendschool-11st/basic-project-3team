@@ -75,8 +75,9 @@ export default function Questions() {
             <SortTabs tabs={SORT_TABS} value={sort} onChange={(next) => moveTo({ sort: next })} label="정렬" />
           </div>
 
+          {/* 질문이 있으면 질문마다 카드(QuestionListItem)를 12px 띄워 쌓고, 불러오는 중·실패·빈 목록은 카드 하나에 보여 준다. */}
           <div
-            className={`${CARD} overflow-hidden divide-y-2 divide-devin-ink`}
+            className={data && data.content.length > 0 ? "flex flex-col gap-3" : CARD}
             data-purpose="question-items-container"
             aria-busy={state.status === "loading"}
           >
