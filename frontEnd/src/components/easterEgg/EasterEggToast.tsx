@@ -5,6 +5,7 @@ import { EASTER_EGG_EVENT, prefersReducedMotion, type EasterEgg } from "./easter
 const TOAST_DURATION_MS = 3000;
 
 // 이스터에그 알림창과 빨간 테두리 (App.tsx에 한 번만 둔다). 화면이 바뀌어도 사라지지 않는다.
+// 알림창은 헤더(높이 64px) 바로 아래 가운데, 검색창 밑에 띄운다.
 // 화면별 Tailwind 설정(#page-* 안에서만 적용)과 상관없게 body에 그린다.
 export default function EasterEggToast() {
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
@@ -38,7 +39,7 @@ export default function EasterEggToast() {
         />
       )}
       <div
-        className="fixed bottom-[15vh] left-1/2 -translate-x-1/2 z-[100] w-max max-w-[calc(100vw-2rem)] pointer-events-none"
+        className="fixed top-[76px] left-1/2 -translate-x-1/2 z-[100] w-max max-w-[calc(100vw-2rem)] pointer-events-none"
         role="status"
       >
         {toast && (
